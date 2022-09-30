@@ -122,6 +122,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/bot/code/esp-idf/lib/build/esp-idf/ulp/cmake_install.cmake")
   include("/home/bot/code/esp-idf/lib/build/esp-idf/wifi_provisioning/cmake_install.cmake")
   include("/home/bot/code/esp-idf/lib/build/esp-idf/main/cmake_install.cmake")
+  include("/home/bot/code/esp-idf/lib/build/esp-idf/myModules/cmake_install.cmake")
 
 endif()
 

@@ -676,3 +676,10 @@
 /home/bot/code/esp-idf/lib/build/esp-idf/main/CMakeFiles/install.dir
 /home/bot/code/esp-idf/lib/build/esp-idf/main/CMakeFiles/install/local.dir
 /home/bot/code/esp-idf/lib/build/esp-idf/main/CMakeFiles/install/strip.dir
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/CMakeFiles/__idf_myModules.dir
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/CMakeFiles/edit_cache.dir
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/CMakeFiles/rebuild_cache.dir
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/CMakeFiles/list_install_components.dir
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/CMakeFiles/install.dir
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/CMakeFiles/install/local.dir
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/CMakeFiles/install/strip.dir

@@ -70,3 +70,4 @@
 /home/bot/code/esp-idf/lib/build/esp-idf/ulp/libulp.a
 /home/bot/code/esp-idf/lib/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
 /home/bot/code/esp-idf/lib/build/esp-idf/main/libmain.a
+/home/bot/code/esp-idf/lib/build/esp-idf/myModules/libmyModules.a
