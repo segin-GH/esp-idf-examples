@@ -10,5 +10,8 @@
     ],
     "idf.port": "/dev/ttyUSB0",
     "idf.pythonBinPath": "/home/bot/esp/esp-idf/tools/python_env/idf4.4_py3.8_env/bin/python",
-    "idf.toolsPath": "/home/bot/esp/esp-idf/tools"
+    "idf.toolsPath": "/home/bot/esp/esp-idf/tools",
+    "files.associations": {
+        "freertos.h": "c"
+    }
 }
