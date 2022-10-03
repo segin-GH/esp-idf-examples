@@ -22,7 +22,7 @@
                 ],
                 "limitSymbolsToIncludedHeaders": false
             },
-            "configurationProvider": "ms-vscode.makefile-tools"
+            // "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
