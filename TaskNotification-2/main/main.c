@@ -31,20 +31,20 @@ void receiver(void * params)
 
 void app_main(void)
 {
-    xTaskCreate(
-        &receiver,
-        "sender",
-        2048,
-        NULL,
-        2,
-        &receiverHandler);
+  xTaskCreate(
+    &receiver,
+    "sender",
+    2048,
+    NULL,
+    2,
+    &receiverHandler);
 
-   xTaskCreate(
-        &sender,
-        "receiver",
-        2048,
-        NULL,
-        2,
-        NULL);
+  xTaskCreate(
+    &sender,
+    "receiver",
+    2048,
+    NULL,
+    2,
+    NULL);
 
 }
