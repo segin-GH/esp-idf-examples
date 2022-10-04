@@ -10,10 +10,13 @@ void sender(void * params)
 {
     while (true)
     {
-      xTaskNotifyGive(receiverHandler);
-      xTaskNotifyGive(receiverHandler);
-      xTaskNotifyGive(receiverHandler);
-      xTaskNotifyGive(receiverHandler);
+      xTaskNotify(receiverHandler,(1 << 0),eSetValueWithOverwrite);
+      vTaskDelay(5000 / portTICK_PERIOD_MS);
+      xTaskNotify(receiverHandler,(0x02),eSetValueWithOverwrite);
+      vTaskDelay(5000 / portTICK_PERIOD_MS);
+      xTaskNotify(receiverHandler,(0b0011),eSetValueWithOverwrite);
+      vTaskDelay(5000 / portTICK_PERIOD_MS);
+      xTaskNotify(receiverHandler,(0x04),eSetValueWithOverwrite);
       vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
     
@@ -21,10 +24,11 @@ void sender(void * params)
 
 void receiver(void * params) 
 {
+  uint state;
   while (true)
   {
-    int count = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-    printf("received notification %d times\n", count);
+    xTaskNotifyWait(0,0,&state,portMAX_DELAY);
+    printf("received state %d times\n",state);
   }
   
 }
