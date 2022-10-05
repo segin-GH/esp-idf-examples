@@ -16,5 +16,6 @@ void app_main(void)
     esp_timer_handle_t espTimmerHandle;
     esp_timer_create(&esp_timer_create_args,&espTimmerHandle);
     esp_timer_start_once(espTimmerHandle,20);
+    // esp_timer_start_periodic(&espTimmerHandle,50);// to get periodic callback 
     
 }
