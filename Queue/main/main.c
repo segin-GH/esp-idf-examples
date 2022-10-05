@@ -9,20 +9,35 @@ xQueueHandle queue;
 
 void listenFromHTPPS(void *parms)
 {
-    int count 0;
+    int count = 0;
+    
     for(;;)
     {
         count++;
         printf("recived http message\n");
-        xQueueSend(queue,&count,);
-        vTaskDelay(5000/portTICK_PERIOD_MS);
+        long ok = xQueueSend(queue, &count, 1000/portTICK_PERIOD_MS);
+        if(ok)
+        {
+            printf("added message to queue\n");
+        }
+        else
+        {
+            printf("unable add to queue\n");
+        }
+        
+        vTaskDelay(1000/portTICK_PERIOD_MS);
     }
 }
 
 void task1(void *parms)
 {
+    int rxint;
     for(;;)
     {
+        if(xQueueReceive(queue, &rxint, 5000/portTICK_PERIOD_MS))
+        {
+            printf("%d\n",rxint);
+        }
         printf("doing something with https\n");
     }
 } 
@@ -35,7 +50,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(
         listenFromHTPPS,
         "listenFromHTPPs",
-        1024,
+        2048,
         NULL,
         1,
         NULL,
@@ -45,7 +60,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(
         task1,
         "task1",
-        1024,
+        2048,
         NULL,
         1,
         NULL,

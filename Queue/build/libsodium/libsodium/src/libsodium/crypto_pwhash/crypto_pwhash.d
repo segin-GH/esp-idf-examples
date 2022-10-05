@@ -1,0 +1,21 @@
+libsodium/src/libsodium/crypto_pwhash/crypto_pwhash.o: \
+ /home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/crypto_pwhash/crypto_pwhash.c \
+ /home/bot/esp/esp-idf/components/newlib/platform_include/errno.h \
+ /home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/core.h \
+ /home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/export.h \
+ /home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_pwhash.h \
+ /home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_pwhash_argon2i.h \
+ /home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_pwhash_argon2id.h
+
+/home/bot/esp/esp-idf/components/newlib/platform_include/errno.h:
+
+/home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/core.h:
+
+/home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/export.h:
+
+/home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_pwhash.h:
+
+/home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_pwhash_argon2i.h:
+
+/home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/include/sodium/crypto_pwhash_argon2id.h:
+/home/bot/esp/esp-idf/components/libsodium/libsodium/src/libsodium/crypto_pwhash/crypto_pwhash.c:
