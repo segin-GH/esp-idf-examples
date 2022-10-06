@@ -1,0 +1,28 @@
+menu "My custom Menu" 
+
+config MY_BOOL
+    bool "select yes ^ no"
+
+config MY_STRING
+    string "enter a string"
+    default "Hello World!"
+        help
+            this is help text in description
+config MY_INT
+    int "in int"
+    range 1 15
+    
+config MY_CHOICE
+    choice 
+        bool "select a choice"
+            default OPTION_1
+        config  OPTION_1
+            bool "this is option 1"
+        config OPTION_2
+            bool "this is option 2"
+        config  OPTION_3
+            bool "this is option 3"
+
+    endchoice
+
+endmenu
