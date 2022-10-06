@@ -14,6 +14,9 @@ void app_main(void)
     int DRam = heap_caps_get_free_size(MALLOC_CAP_8BIT);
     int IRam = heap_caps_get_free_size(MALLOC_CAP_32BIT);
 
+    int DramFree = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    int stackMem = uxTaskGetStackHighWaterMark(NULL);
+
     ESP_LOGI(TAG, "DRam \t\t%d", DRam);
     ESP_LOGI(TAG, "IRam \t\t%d",IRam);
 
