@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+/home/bot/code/esp-idf/NVS-rw/build/CMakeFiles/bootloader
+/home/bot/code/esp-idf/NVS-rw/build/CMakeFiles/bootloader.rule
+/home/bot/code/esp-idf/NVS-rw/build/CMakeFiles/bootloader-complete.rule
+/home/bot/code/esp-idf/NVS-rw/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/home/bot/code/esp-idf/NVS-rw/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/home/bot/code/esp-idf/NVS-rw/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/home/bot/code/esp-idf/NVS-rw/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/home/bot/code/esp-idf/NVS-rw/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/home/bot/code/esp-idf/NVS-rw/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/home/bot/code/esp-idf/NVS-rw/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
