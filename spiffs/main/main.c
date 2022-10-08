@@ -40,7 +40,6 @@ void app_main(void)
   esp_spiffs_info(NULL,&total, &used);
   ESP_LOGI(TAG,"total = %d, used = %d",total, used);
 
-
   FILE *file = fopen("/spiffs/index.html", "r");
   if(file ==NULL)
   {
