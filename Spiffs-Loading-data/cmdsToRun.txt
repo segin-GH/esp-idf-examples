@@ -1,0 +1,12 @@
+# to generate a bin file
+python spiffsgen.py <size of file> <path to the file> <name of the bin file to be created>
+
+eg:
+    python spiffsgen.py 0x100000 /main/spiffs_dir spiffs_dir.bin
+
+
+# to flash a spiff without reflashing the whole chip
+esptool.py --chip < chip name > --port <the port which esp is connected> --baud <baudrate> write_flash -z <start address> <the .bin file> 
+
+eg:
+    esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 0x110000 spiffs_dir.bin
