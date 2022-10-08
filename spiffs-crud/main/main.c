@@ -94,7 +94,4 @@ void app_main(void)
         ESP_LOGI(TAG, "SPIFFS unmounted");
     }
 
-    
-
-
 }
