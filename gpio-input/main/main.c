@@ -8,9 +8,6 @@
 
 void app_main(void)
 {
-    gpio_pad_select_gpio(switchPin);
-    gpio_pad_select_gpio(ledPin);
-
     gpio_set_direction(ledPin,GPIO_MODE_OUTPUT);
     gpio_set_direction(switchPin,GPIO_MODE_INPUT);
 
