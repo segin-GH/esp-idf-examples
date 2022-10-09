@@ -30,7 +30,7 @@ void when_switch_is_pushed(void *args)
         {
             printf(" gpio %d was pressed %d times, the state is %d \n",pinNumber,count++,
             gpio_get_level(switchPin));
-        }   
+        }
     }
 }
 
