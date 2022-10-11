@@ -19,7 +19,7 @@ QueueHandle_t uartQueue;
 void uart_event_task(void* parms)
 {
     uart_event_t uartEvent;
-    uint8_t *recivedBuffer = Malloc(rxBuffer);
+    uint8_t *recivedBuffer = malloc(rxBuffer);
     size_t dataLen;
     for(;;)
     {
@@ -28,7 +28,7 @@ void uart_event_task(void* parms)
             switch(uartEvent.type)
             {
                case UART_DATA:
-                    ESP_LOGI(TAG,"UART_DATA")              /*!< UART data event*/
+                    ESP_LOGI(TAG,"UART_DATA");              /*!< UART data event*/
                     uart_read_bytes(UART_NUM_1,recivedBuffer,uartEvent.size,portMAX_DELAY);
                     printf("rec: %.*s\n",uartEvent.size,recivedBuffer);
                     break;
@@ -54,7 +54,7 @@ void uart_event_task(void* parms)
                     ESP_LOGI(TAG,"UART_PATTERN_DET");
                     uart_get_buffered_data_len(UART_NUM_1,&dataLen);
                     int pos = uart_pattern_pop_pos(UART_NUM_1);
-                    ES
+                    ESP_LOGI(TAG,"Detected %d pos %d", dataLen, pos);
                     break;       /*!< UART pattern detected */
                case UART_EVENT_MAX:
                     ESP_LOGI(TAG,"UART_EVENT_MAX");
@@ -75,10 +75,10 @@ void app_main (void)
     };
 
     uart_param_config(UART_NUM_1,&uartConfig);
-    uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE);
+    uart_set_pin(UART_NUM_1, txPin, rxPin, UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE);
     uart_driver_install(UART_NUM_1, rxBuffer, txBuffer, 20, &uartQueue, 0);
 
-    uart_enable_pattern_det_intr(UART_PORT_NUM_1,'+',patternLen,10000,10,10);
+    uart_enable_pattern_det_intr(UART_NUM_1,'+',patternLen,10000,10,10);
     uart_pattern_queue_reset(UART_NUM_1,20);
     
     xTaskCreate(
