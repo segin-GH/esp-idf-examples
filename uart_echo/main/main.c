@@ -1,12 +1,9 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <esp_log.h>
-#include <esp_system.h>
-#include <soc/uart_struct.h>
 #include <driver/uart.h>
 
 #define uart_one_txd  4
