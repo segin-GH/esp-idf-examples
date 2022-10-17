@@ -9,5 +9,9 @@
         "target/esp32.cfg"
     ],
     "idf.pythonBinPath": "/home/bot/esp/esp-idf/tools/python_env/idf4.4_py3.8_env/bin/python",
-    "idf.toolsPath": "/home/bot/esp/esp-idf/tools"
+    "idf.toolsPath": "/home/bot/esp/esp-idf/tools",
+    "files.associations": {
+        "*.inc": "c",
+        "string": "c"
+    }
 }

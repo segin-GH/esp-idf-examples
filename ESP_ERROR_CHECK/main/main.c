@@ -4,6 +4,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <esp_log.h>
+#include <esp_err.h>
 #include <driver/uart.h>
 
 #define uart_one_txd  4
@@ -12,6 +13,19 @@
 
 #define uart_two_txd  17
 #define uart_two_rxd  16
+
+void err_handler(int val, char *tag ){
+   printf("in err handler\n");
+   if(val == ESP_FAIL){
+        ESP_LOGE(tag,"Parameter error");
+        abort();
+   }
+   else{
+        const char *data = esp_err_to_name(val);
+        printf("%s\n",data);
+   }
+     
+}
 
 
 void exChangeUartData(void *parms)
@@ -32,7 +46,13 @@ void exChangeUartData(void *parms)
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
     };
 
-    uart_param_config(UART_NUM_1,&uart_one_config);
+    esp_err_t err;
+ 
+    err =  uart_param_config(UART_NUM_1,&uart_one_config);
+
+    if(err != 0)
+        err_handler(err,"UART");
+
     uart_param_config(UART_NUM_2,&uart_two_config);
 
     uart_set_pin(UART_NUM_1,uart_one_txd,uart_one_rxd,UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE);
