@@ -1,2 +1,0 @@
-//cmd to run openocd with jlink
-openocd -f interface/jlink.cfg -c "adapter_khz 4000" -f target/esp32.cfg
