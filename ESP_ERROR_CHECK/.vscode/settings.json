@@ -12,6 +12,7 @@
     "idf.toolsPath": "/home/bot/esp/esp-idf/tools",
     "files.associations": {
         "*.inc": "c",
-        "string": "c"
+        "string": "c",
+        "uart.h": "c"
     }
 }
