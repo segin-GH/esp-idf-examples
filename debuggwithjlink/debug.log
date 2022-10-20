@@ -1,5 +1,5 @@
-2022-10-19 17:13:24,370 - Debug Adapter (main) - INFO - Working directory: /home/bot
-2022-10-19 17:13:24,371 - Debug Adapter (main) - INFO - Arguments: 
+2022-10-20 11:05:13,192 - Debug Adapter (main) - INFO - Working directory: /home/bot
+2022-10-20 11:05:13,193 - Debug Adapter (main) - INFO - Arguments: 
 {   'app_flash_off': 65536,
     'board_type': None,
     'cmdfile': '/home/bot/code/esp-idf/debuggwithjlink/esp-idf-vscode-generated.gdb',
@@ -16,11 +16,11 @@
     'oocd_ip': 'localhost',
     'oocd_mode': 'connect_to_instance',
     'oocd_scripts': None,
-    'port': 3333,
+    'port': 6666,
     'postmortem': False,
     'tmo_scale_factor': 6,
     'toolchain_prefix': 'xtensa-esp32-elf-'}
-2022-10-19 17:13:24,372 - Debug Adapter (main) - CRITICAL - Debug adapter -> Extension: DEBUG_ADAPTER_STARTED
-2022-10-19 17:13:24,372 - Debug Adapter (main) - INFO - Starting. Cmd: /home/bot/.vscode/extensions/espressif.esp-idf-extension-1.5.0/esp_debug_adapter/debug_adapter_main.py -d 3 -e /home/bot/code/esp-idf/debuggwithjlink/build/debuggwithjlink.elf -l /home/bot/code/esp-idf/debuggwithjlink/debug.log -p 3333 -dn esp32 -a 0x10000 -t xtensa-esp32-elf- -x /home/bot/code/esp-idf/debuggwithjlink/esp-idf-vscode-generated.gdb -tsf 6
+2022-10-20 11:05:13,193 - Debug Adapter (main) - CRITICAL - Debug adapter -> Extension: DEBUG_ADAPTER_STARTED
+2022-10-20 11:05:13,193 - Debug Adapter (main) - INFO - Starting. Cmd: /home/bot/.vscode/extensions/espressif.esp-idf-extension-1.5.0/esp_debug_adapter/debug_adapter_main.py -d 3 -e /home/bot/code/esp-idf/debuggwithjlink/build/debuggwithjlink.elf -l /home/bot/code/esp-idf/debuggwithjlink/debug.log -p 6666 -dn esp32 -a 0x10000 -t xtensa-esp32-elf- -x /home/bot/code/esp-idf/debuggwithjlink/esp-idf-vscode-generated.gdb -tsf 6
 
-2022-10-19 17:13:24,392 - Debug Adapter (main) - WARNING - Error with a port #3333
+2022-10-20 11:05:13,193 - Debug Adapter (main) - WARNING - Error with a port #6666

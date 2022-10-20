@@ -1,0 +1,6 @@
+//echos's loaction of openocd scripts
+echo $OPENOCD_SCRIPTS
+
+
+// to run openocd
+openocd -f interface/jlink.cfg -c "adapter_khz 1200" -f target/esp32.cfg
