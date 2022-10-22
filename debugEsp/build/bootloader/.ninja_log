@@ -197,3 +197,5 @@
 4086	4364	1666439771686066218	/home/bot/code/esp-idf/debugEsp/build/bootloader/.bin_timestamp	b7b3eb594e977bad
 4364	4442	0	esp-idf/esptool_py/CMakeFiles/bootloader_check_size	211680635356414e
 4364	4442	0	/home/bot/code/esp-idf/debugEsp/build/bootloader/esp-idf/esptool_py/CMakeFiles/bootloader_check_size	211680635356414e
+1	28	0	esp-idf/esptool_py/CMakeFiles/bootloader_check_size	211680635356414e
+1	28	0	/home/bot/code/esp-idf/debugEsp/build/bootloader/esp-idf/esptool_py/CMakeFiles/bootloader_check_size	211680635356414e
