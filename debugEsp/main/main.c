@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-
 typedef struct Params_struct
 {
     char aString[20];
