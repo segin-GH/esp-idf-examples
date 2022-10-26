@@ -4,7 +4,7 @@
 
 void timer_callback(void *args)
 {
-    printf("this if fired after 20us\n");
+    printf("this is fired after 20us\n");
 }
 
 void app_main(void)
