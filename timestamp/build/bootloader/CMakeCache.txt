@@ -248,7 +248,7 @@ LEGACY_INCLUDE_COMMON_HEADERS:UNINITIALIZED=
 PROJECT_SOURCE_DIR:UNINITIALIZED=/home/bot/code/esp-idf/timestamp
 
 //No help, variable specified on the command line.
-PYTHON:UNINITIALIZED=/home/bot/esp/esp-idf/tools/python_env/idf4.4_py3.8_env/bin/python
+PYTHON:UNINITIALIZED=/home/bot/.espressif/python_env/idf4.4_py3.8_env/bin/python
 
 //No help, variable specified on the command line.
 PYTHON_DEPS_CHECKED:UNINITIALIZED=1
