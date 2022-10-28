@@ -9,9 +9,9 @@
 
 struct timeval tv;
 
-void get_time_stamp(char *buffer, struct timeval tv_now)
+void get_time_stamp(char *buffer, struct timeval *tv_now)
 {
-    gettimeofday(&tv_now, NULL);
+    gettimeofday(tv_now, NULL);
     sprintf(buffer,"%ld:",(unsigned long )time(NULL));
 }
 
@@ -29,7 +29,7 @@ void app_main()
 
     while(true)
     {
-        get_time_stamp(str,tv);
+        get_time_stamp(str,&tv);
         strcat(str,dataBuf);
         printf("%s\n",str);
         vTaskDelay(1000/portTICK_PERIOD_MS);
