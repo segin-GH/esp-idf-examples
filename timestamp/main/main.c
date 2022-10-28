@@ -7,19 +7,24 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-void app_main()
+void get_time_stamp(char *buffer)
 {
     struct timeval tv_now;
-    char str[100];
+    gettimeofday(&tv_now, NULL);
+    sprintf(buffer,"%ld:%ld:",(tv_now.tv_usec), tv_now.tv_sec);
     
+}
+
+void app_main()
+{
+    char str[100];
+    char dataBuf[] = {"data"};
+    memset(str,0,sizeof(str));
     while(true)
     {
-        gettimeofday(&tv_now, NULL);
-        // int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
-        sprintf(str,"%ld:%ld",(tv_now.tv_usec), tv_now.tv_sec);
+        get_time_stamp(str);
+        strcat(str,dataBuf);
         printf("%s\n",str);
-        // printf("%ld:%ld")
-        // vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
     }
-
 }
