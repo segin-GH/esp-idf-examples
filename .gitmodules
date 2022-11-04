@@ -1,0 +1,3 @@
+[submodule "esp-idf_cpp"]
+	path = esp-idf_cpp
+	url = https://github.com/segin-GH/esp-idf_cpp.git
