@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/CMakeFiles/bootloader"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/CMakeFiles/bootloader.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/CMakeFiles/bootloader-complete.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+		},
+		{
+			"file" : "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"bootloader"
+		],
+		"name" : "bootloader"
+	}
+}
