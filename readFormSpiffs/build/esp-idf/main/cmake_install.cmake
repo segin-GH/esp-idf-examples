@@ -1,4 +1,4 @@
-# Install script for directory: /home/bot/code/esp-idf/esp-idf_cpp/spiffs/main
+# Install script for directory: /home/bot/code/esp-idf/esp-idf_cpp/readFormSpiffs/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

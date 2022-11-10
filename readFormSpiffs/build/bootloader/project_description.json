@@ -1,8 +1,8 @@
 {
     "project_name":       "bootloader",
     "project_path":       "/home/bot/esp/esp-idf/components/bootloader/subproject",
-    "build_dir":          "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/build/bootloader",
-    "config_file":        "/home/bot/code/esp-idf/esp-idf_cpp/spiffs/sdkconfig",
+    "build_dir":          "/home/bot/code/esp-idf/esp-idf_cpp/readFormSpiffs/build/bootloader",
+    "config_file":        "/home/bot/code/esp-idf/esp-idf_cpp/readFormSpiffs/sdkconfig",
     "config_defaults":    "",
     "app_elf":            "bootloader.elf",
     "app_bin":            "bootloader.bin",

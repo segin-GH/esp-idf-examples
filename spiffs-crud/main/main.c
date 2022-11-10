@@ -49,6 +49,7 @@ void app_main(void)
     }
 
     ESP_LOGI(TAG, "Opening File");
+
     FILE *file = fopen("/spiffs/hello.txt","w");
     if(file == NULL)
     {
@@ -64,6 +65,7 @@ void app_main(void)
     {
         unlink("/spiffs/foo.txt");
     }
+
     ESP_LOGI(TAG, "renaming file");
     if (rename("/spiffs/hello.txt","/spiffs/foo.txt") != 0)
     {
