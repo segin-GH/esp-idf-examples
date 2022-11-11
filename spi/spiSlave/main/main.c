@@ -50,11 +50,11 @@ sending a transaction. As soon as the transaction is done, the line gets set low
 Pins in use. The SPI Master can use the GPIO mux, so feel free to change these if needed.
 */
 #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
-#define GPIO_HANDSHAKE 14
-#define GPIO_MOSI 23
-#define GPIO_MISO 19
-#define GPIO_SCLK 18
-#define GPIO_CS 21
+#define GPIO_HANDSHAKE 2
+#define GPIO_MOSI 12
+#define GPIO_MISO 13
+#define GPIO_SCLK 15
+#define GPIO_CS 14
 
 #elif CONFIG_IDF_TARGET_ESP32C3
 #define GPIO_HANDSHAKE 3
