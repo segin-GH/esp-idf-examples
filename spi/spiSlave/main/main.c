@@ -1,11 +1,7 @@
-/* SPI Slave example, receiver (uses SPI Slave driver to communicate with sender)
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+/* 
+    @brief SPI SLAVE 
 */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -44,33 +40,15 @@ sending a transaction. As soon as the transaction is done, the line gets set low
 /*
 Pins in use. The SPI Master can use the GPIO mux, so feel free to change these if needed.
 */
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
 #define GPIO_HANDSHAKE 14
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
 
-#elif CONFIG_IDF_TARGET_ESP32C3
-#define GPIO_HANDSHAKE 3
-#define GPIO_MOSI 7
-#define GPIO_MISO 2
-#define GPIO_SCLK 6
-#define GPIO_CS 10
-
-#endif //CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
+#define RCV_HOST HSPI_HOST
 
 
-#ifdef CONFIG_IDF_TARGET_ESP32
-#define RCV_HOST    HSPI_HOST
-
-#elif defined CONFIG_IDF_TARGET_ESP32S2
-#define RCV_HOST    SPI2_HOST
-
-#elif defined CONFIG_IDF_TARGET_ESP32C3
-#define RCV_HOST    SPI2_HOST
-
-#endif
 
 
 

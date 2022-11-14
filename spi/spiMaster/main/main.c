@@ -1,11 +1,7 @@
-/* SPI Slave example, sender (uses SPI master driver)
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+/* 
+    @brief SPI MASTER 
 */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -29,49 +25,13 @@
 #include "esp_intr_alloc.h"
 
 
-/*
-SPI sender (master) example.
-
-This example is supposed to work together with the SPI receiver. It uses the standard SPI pins (MISO, MOSI, SCLK, CS) to
-transmit data over in a full-duplex fashion, that is, while the master puts data on the MOSI pin, the slave puts its own
-data on the MISO pin.
-
-This example uses one extra pin: GPIO_HANDSHAKE is used as a handshake pin. The slave makes this pin high as soon as it is
-ready to receive/send data. This code connects this line to a GPIO interrupt which gives the rdySem semaphore. The main
-task waits for this semaphore to be given before queueing a transmission.
-*/
-
-
-/*
-Pins in use. The SPI Master can use the GPIO mux, so feel free to change these if needed.
-*/
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
 #define GPIO_HANDSHAKE 14
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
 
-#elif CONFIG_IDF_TARGET_ESP32C3
-#define GPIO_HANDSHAKE 3
-#define GPIO_MOSI 7
-#define GPIO_MISO 2
-#define GPIO_SCLK 6
-#define GPIO_CS 10
-
-#endif //CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
-
-
-#ifdef CONFIG_IDF_TARGET_ESP32
 #define SENDER_HOST HSPI_HOST
-
-#elif defined CONFIG_IDF_TARGET_ESP32S2
-#define SENDER_HOST SPI2_HOST
-
-#elif defined CONFIG_IDF_TARGET_ESP32C3
-#define SENDER_HOST SPI2_HOST
-
-#endif
 
 
 //The semaphore indicating the slave is ready to receive stuff.
