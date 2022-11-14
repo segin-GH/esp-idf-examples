@@ -1,4 +1,4 @@
-/* SPI Master example, sender (uses SPI master driver)
+/* SPI Slave example, sender (uses SPI master driver)
 
    This example code is in the Public Domain (or CC0 licensed, at your option.)
 
@@ -50,10 +50,34 @@ task waits for this semaphore to be given before queueing a transmission.
 /*
 Pins in use. The SPI Master can use the GPIO mux, so feel free to change these if needed.
 */
+#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
+#define GPIO_HANDSHAKE 14
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
+
+#elif CONFIG_IDF_TARGET_ESP32C3
+#define GPIO_HANDSHAKE 3
+#define GPIO_MOSI 7
+#define GPIO_MISO 2
+#define GPIO_SCLK 6
+#define GPIO_CS 10
+
+#endif //CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
+
+
+#ifdef CONFIG_IDF_TARGET_ESP32
+#define SENDER_HOST HSPI_HOST
+
+#elif defined CONFIG_IDF_TARGET_ESP32S2
+#define SENDER_HOST SPI2_HOST
+
+#elif defined CONFIG_IDF_TARGET_ESP32C3
+#define SENDER_HOST SPI2_HOST
+
+#endif
+
 
 //The semaphore indicating the slave is ready to receive stuff.
 static xQueueHandle rdySem;
