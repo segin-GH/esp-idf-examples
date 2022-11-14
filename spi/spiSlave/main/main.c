@@ -16,11 +16,6 @@
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
 
-#include "lwip/sockets.h"
-#include "lwip/dns.h"
-#include "lwip/netdb.h"
-#include "lwip/igmp.h"
-
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_event.h"
