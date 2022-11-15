@@ -1,11 +1,7 @@
-/* SPI Slave example, receiver (uses SPI Slave driver to communicate with sender)
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+/* 
+    @brief SPI SLAVE 
 */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -15,11 +11,6 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
-
-#include "lwip/sockets.h"
-#include "lwip/dns.h"
-#include "lwip/netdb.h"
-#include "lwip/igmp.h"
 
 #include "esp_wifi.h"
 #include "esp_system.h"
@@ -49,45 +40,27 @@ sending a transaction. As soon as the transaction is done, the line gets set low
 /*
 Pins in use. The SPI Master can use the GPIO mux, so feel free to change these if needed.
 */
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
 #define GPIO_HANDSHAKE 14
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
 
-#elif CONFIG_IDF_TARGET_ESP32C3
-#define GPIO_HANDSHAKE 3
-#define GPIO_MOSI 7
-#define GPIO_MISO 2
-#define GPIO_SCLK 6
-#define GPIO_CS 10
-
-#endif //CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
-
-
-#ifdef CONFIG_IDF_TARGET_ESP32
-#define RCV_HOST    HSPI_HOST
-
-#elif defined CONFIG_IDF_TARGET_ESP32S2
-#define RCV_HOST    SPI2_HOST
-
-#elif defined CONFIG_IDF_TARGET_ESP32C3
-#define RCV_HOST    SPI2_HOST
-
-#endif
+#define RCV_HOST HSPI_HOST
 
 
 
-//Called after a transaction is queued and ready for pickup by master. We use this to set the handshake line high.
-void my_post_setup_cb(spi_slave_transaction_t *trans) {
-    WRITE_PERI_REG(GPIO_OUT_W1TS_REG, (1<<GPIO_HANDSHAKE));
-}
 
-//Called after transaction is sent/received. We use this to set the handshake line low.
-void my_post_trans_cb(spi_slave_transaction_t *trans) {
-    WRITE_PERI_REG(GPIO_OUT_W1TC_REG, (1<<GPIO_HANDSHAKE));
-}
+
+// //Called after a transaction is queued and ready for pickup by master. We use this to set the handshake line high.
+// void my_post_setup_cb(spi_slave_transaction_t *trans) {
+//     WRITE_PERI_REG(GPIO_OUT_W1TS_REG, (1<<GPIO_HANDSHAKE));
+// }
+
+// //Called after transaction is sent/received. We use this to set the handshake line low.
+// void my_post_trans_cb(spi_slave_transaction_t *trans) {
+//     WRITE_PERI_REG(GPIO_OUT_W1TC_REG, (1<<GPIO_HANDSHAKE));
+// }
 
 //Main application
 void app_main(void)
@@ -107,22 +80,22 @@ void app_main(void)
     //Configuration for the SPI slave interface
     spi_slave_interface_config_t slvcfg={
         .mode=0,
-        .spics_io_num=GPIO_CS,
+        .spics_io_num=-1,
         .queue_size=3,
         .flags=0,
-        .post_setup_cb=my_post_setup_cb,
-        .post_trans_cb=my_post_trans_cb
+        .post_setup_cb=NULL,
+        .post_trans_cb=NULL
     };
 
-    //Configuration for the handshake line
-    gpio_config_t io_conf={
-        .intr_type=GPIO_INTR_DISABLE,
-        .mode=GPIO_MODE_OUTPUT,
-        .pin_bit_mask=(1<<GPIO_HANDSHAKE)
-    };
+    // //Configuration for the handshake line
+    // gpio_config_t io_conf={
+    //     .intr_type=GPIO_INTR_DISABLE,
+    //     .mode=GPIO_MODE_OUTPUT,
+    //     .pin_bit_mask=(1<<GPIO_HANDSHAKE)
+    // };
 
     //Configure handshake line as output
-    gpio_config(&io_conf);
+    // gpio_config(&io_conf);
     //Enable pull-ups on SPI lines so we don't detect rogue pulses when no master is connected.
     gpio_set_pull_mode(GPIO_MOSI, GPIO_PULLUP_ONLY);
     gpio_set_pull_mode(GPIO_SCLK, GPIO_PULLUP_ONLY);
@@ -141,8 +114,8 @@ void app_main(void)
     while(1) {
         //Clear receive buffer, set send buffer to something sane
         memset(recvbuf, 0xA5, 129);
-        sprintf(sendbuf, "This is the receiver, sending data for transmission number %04d.", n);
-
+        sprintf(sendbuf, "This is the receiver %i",n);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
         //Set up a transaction of 128 bytes to send/receive
         t.length=128*8;
         t.tx_buffer=sendbuf;
