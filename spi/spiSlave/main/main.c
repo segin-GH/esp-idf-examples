@@ -65,7 +65,8 @@ void app_main(void)
     spi_slave_transaction_t t;
     memset(&t, 0, sizeof(t));
 
-    while(1) {
+    while(1)
+     {
         //Clear receive buffer, set send buffer to something sane
         memset(recvbuf, 0, sizeof(sendbuf));
         sprintf(sendbuf, "This is the receiver %i",n);

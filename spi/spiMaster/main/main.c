@@ -1,6 +1,6 @@
-/** 
-    @brief SPI MASTER
-    @author segin 
+/**
+ * @brief SPI MASTER
+ * @author segin 
 */
 
 #include <stdio.h>
@@ -77,7 +77,8 @@ void app_main(void)
     ret=spi_bus_add_device(SENDER_HOST, &devcfg, &handle);
     assert(ret==ESP_OK);
     
-    while(1) {
+    while(1)
+    {
         int res = snprintf(sendbuf, sizeof(sendbuf),
                 "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
         if (res >= sizeof(sendbuf)) {
