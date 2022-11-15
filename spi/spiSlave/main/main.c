@@ -52,15 +52,15 @@ Pins in use. The SPI Master can use the GPIO mux, so feel free to change these i
 
 
 
-//Called after a transaction is queued and ready for pickup by master. We use this to set the handshake line high.
-void my_post_setup_cb(spi_slave_transaction_t *trans) {
-    WRITE_PERI_REG(GPIO_OUT_W1TS_REG, (1<<GPIO_HANDSHAKE));
-}
+// //Called after a transaction is queued and ready for pickup by master. We use this to set the handshake line high.
+// void my_post_setup_cb(spi_slave_transaction_t *trans) {
+//     WRITE_PERI_REG(GPIO_OUT_W1TS_REG, (1<<GPIO_HANDSHAKE));
+// }
 
-//Called after transaction is sent/received. We use this to set the handshake line low.
-void my_post_trans_cb(spi_slave_transaction_t *trans) {
-    WRITE_PERI_REG(GPIO_OUT_W1TC_REG, (1<<GPIO_HANDSHAKE));
-}
+// //Called after transaction is sent/received. We use this to set the handshake line low.
+// void my_post_trans_cb(spi_slave_transaction_t *trans) {
+//     WRITE_PERI_REG(GPIO_OUT_W1TC_REG, (1<<GPIO_HANDSHAKE));
+// }
 
 //Main application
 void app_main(void)
@@ -83,19 +83,19 @@ void app_main(void)
         .spics_io_num=-1,
         .queue_size=3,
         .flags=0,
-        .post_setup_cb=my_post_setup_cb,
-        .post_trans_cb=my_post_trans_cb
+        .post_setup_cb=NULL,
+        .post_trans_cb=NULL
     };
 
-    //Configuration for the handshake line
-    gpio_config_t io_conf={
-        .intr_type=GPIO_INTR_DISABLE,
-        .mode=GPIO_MODE_OUTPUT,
-        .pin_bit_mask=(1<<GPIO_HANDSHAKE)
-    };
+    // //Configuration for the handshake line
+    // gpio_config_t io_conf={
+    //     .intr_type=GPIO_INTR_DISABLE,
+    //     .mode=GPIO_MODE_OUTPUT,
+    //     .pin_bit_mask=(1<<GPIO_HANDSHAKE)
+    // };
 
     //Configure handshake line as output
-    gpio_config(&io_conf);
+    // gpio_config(&io_conf);
     //Enable pull-ups on SPI lines so we don't detect rogue pulses when no master is connected.
     gpio_set_pull_mode(GPIO_MOSI, GPIO_PULLUP_ONLY);
     gpio_set_pull_mode(GPIO_SCLK, GPIO_PULLUP_ONLY);
