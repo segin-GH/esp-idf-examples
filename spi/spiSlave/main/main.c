@@ -19,13 +19,13 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 
-
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
 
 #define RCV_HOST HSPI_HOST
+
 
 void app_main(void)
 {
@@ -44,7 +44,7 @@ void app_main(void)
     //Configuration for the SPI slave interface
     spi_slave_interface_config_t slvcfg={
         .mode=0,
-        .spics_io_num=-1, // -1 no chip select pin
+        .spics_io_num=-1, // -1 no chip select pin bcz i implemented my own slave select 
         .queue_size=3,
         .flags=0,
         .post_setup_cb=NULL,
@@ -68,6 +68,7 @@ void app_main(void)
     while(1)
      {
         //Clear receive buffer, set send buffer to something sane
+        
         memset(recvbuf, 0, sizeof(sendbuf));
         sprintf(sendbuf, "This is the receiver %i",n);
         vTaskDelay(1000/portTICK_PERIOD_MS);

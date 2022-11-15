@@ -11489,8 +11489,8 @@ LOAD /home/bot/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-
                 0x000000003ffb2cec        0x8 esp-idf/esp_system/libesp_system.a(task_wdt.c.obj)
  .bss.curr_partition$4860
                 0x000000003ffb2cf4        0x4 esp-idf/app_update/libapp_update.a(esp_ota_ops.c.obj)
- *(.ext_ram.bss .ext_ram.bss.*)
  *(.dynbss .dynsbss .gnu.linkonce.b .gnu.linkonce.b.* .gnu.linkonce.sb .gnu.linkonce.sb.* .gnu.linkonce.sb2 .gnu.linkonce.sb2.* .sbss .sbss.* .sbss2 .sbss2.* .scommon .share.mem)
+ *(.ext_ram.bss .ext_ram.bss.*)
  *(COMMON)
  COMMON         0x000000003ffb2cf8        0x4 esp-idf/heap/libheap.a(heap_caps_init.c.obj)
                 0x000000003ffb2cf8                registered_heaps
