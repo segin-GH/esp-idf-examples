@@ -34,27 +34,27 @@
 #define SENDER_HOST HSPI_HOST
 
 
-//The semaphore indicating the slave is ready to receive stuff.
-static xQueueHandle rdySem;
+// //The semaphore indicating the slave is ready to receive stuff.
+// static xQueueHandle rdySem;
 
-/*
-This ISR is called when the handshake line goes high.
-*/
-static void IRAM_ATTR gpio_handshake_isr_handler(void* arg)
-{
-    //Sometimes due to interference or ringing or something, we get two irqs after eachother. This is solved by
-    //looking at the time between interrupts and refusing any interrupt too close to another one.
-    static uint32_t lasthandshaketime;
-    uint32_t currtime=esp_cpu_get_ccount();
-    uint32_t diff=currtime-lasthandshaketime;
-    if (diff<240000) return; //ignore everything <1ms after an earlier irq
-    lasthandshaketime=currtime;
+// /*
+// This ISR is called when the handshake line goes high.
+// */
+// static void IRAM_ATTR gpio_handshake_isr_handler(void* arg)
+// {
+//     //Sometimes due to interference or ringing or something, we get two irqs after eachother. This is solved by
+//     //looking at the time between interrupts and refusing any interrupt too close to another one.
+//     static uint32_t lasthandshaketime;
+//     uint32_t currtime=esp_cpu_get_ccount();
+//     uint32_t diff=currtime-lasthandshaketime;
+//     if (diff<240000) return; //ignore everything <1ms after an earlier irq
+//     lasthandshaketime=currtime;
 
-    //Give the semaphore.
-    BaseType_t mustYield=false;
-    xSemaphoreGiveFromISR(rdySem, &mustYield);
-    if (mustYield) portYIELD_FROM_ISR();
-}
+//     //Give the semaphore.
+//     BaseType_t mustYield=false;
+//     xSemaphoreGiveFromISR(rdySem, &mustYield);
+//     if (mustYield) portYIELD_FROM_ISR();
+// }
 
 //Main application
 void app_main(void)
@@ -99,13 +99,13 @@ void app_main(void)
     memset(&t, 0, sizeof(t));
 
     //Create the semaphore.
-    rdySem=xSemaphoreCreateBinary();
+    // rdySem=xSemaphoreCreateBinary();
 
     //Set up handshake line interrupt.
-    gpio_config(&io_conf);
-    gpio_install_isr_service(0);
-    gpio_set_intr_type(GPIO_HANDSHAKE, GPIO_INTR_POSEDGE);
-    gpio_isr_handler_add(GPIO_HANDSHAKE, gpio_handshake_isr_handler, NULL);
+    // gpio_config(&io_conf);
+    // gpio_install_isr_service(0);
+    // gpio_set_intr_type(GPIO_HANDSHAKE, GPIO_INTR_POSEDGE);
+    // gpio_isr_handler_add(GPIO_HANDSHAKE, gpio_handshake_isr_handler, NULL);
 
     //Initialize the SPI bus and add the device we want to send stuff to.
     ret=spi_bus_initialize(SENDER_HOST, &buscfg, SPI_DMA_CH_AUTO);
@@ -115,11 +115,11 @@ void app_main(void)
 
     //Assume the slave is ready for the first transmission: if the slave started up before us, we will not detect
     //positive edge on the handshake line.
-    xSemaphoreGive(rdySem);
+    // xSemaphoreGive(rdySem);
 
     while(1) {
         int res = snprintf(sendbuf, sizeof(sendbuf),
-                "Sender, transmission no. %04i. Last time, I received: \"%s\"", n, recvbuf);
+                "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
         if (res >= sizeof(sendbuf)) {
             printf("Data truncated\n");
         }
@@ -127,7 +127,8 @@ void app_main(void)
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
         //Wait for slave to be ready for next byte before sending
-        xSemaphoreTake(rdySem, portMAX_DELAY); //Wait until slave is ready
+        
+        vTaskDelay(1000/portTICK_PERIOD_MS);
         ret=spi_device_transmit(handle, &t);
         printf("Received: %s\n", recvbuf);
         n++;

@@ -80,7 +80,7 @@ void app_main(void)
     //Configuration for the SPI slave interface
     spi_slave_interface_config_t slvcfg={
         .mode=0,
-        .spics_io_num=GPIO_CS,
+        .spics_io_num=-1,
         .queue_size=3,
         .flags=0,
         .post_setup_cb=my_post_setup_cb,
@@ -114,8 +114,8 @@ void app_main(void)
     while(1) {
         //Clear receive buffer, set send buffer to something sane
         memset(recvbuf, 0xA5, 129);
-        sprintf(sendbuf, "This is the receiver, sending data for transmission number %04d.", n);
-
+        sprintf(sendbuf, "This is the receiver %i",n);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
         //Set up a transaction of 128 bytes to send/receive
         t.length=128*8;
         t.tx_buffer=sendbuf;
