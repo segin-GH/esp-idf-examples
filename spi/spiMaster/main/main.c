@@ -42,7 +42,6 @@ void app_main(void)
         .quadwp_io_num = -1,
         .quadhd_io_num = -1
     };
-
     //Configuration for the SPI device on the other side of the bus
     spi_device_interface_config_t devcfg={
         .command_bits = 0,
