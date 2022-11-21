@@ -56,8 +56,8 @@ void app_main(void)
     };
     
     int n = 0;
-    char sendbuf[2000] = {0};
-    char recvbuf[2000] = {0};
+    char sendbuf[130] = {0};
+    char recvbuf[130] = {0};
     spi_transaction_t t;
     memset(&t, 0, sizeof(t));
     
@@ -80,7 +80,7 @@ void app_main(void)
         t.rx_buffer=recvbuf;
         //Wait for slave to be ready for next byte before sending
         
-      	//vTaskDelay(1000/portTICK_PERIOD_MS);
+      	vTaskDelay(1000/portTICK_PERIOD_MS);
         ret=spi_device_transmit(handle, &t);
         printf("Received: %s\n", recvbuf);
     	memset(&t, 0, sizeof(t));
