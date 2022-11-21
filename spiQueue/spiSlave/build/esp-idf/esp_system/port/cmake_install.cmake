@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/bot/code/esp-idf/spi/spiSlave/build/esp-idf/esp_system/port/soc/esp32/cmake_install.cmake")
+  include("/home/bot/code/esp-idf/spiQueue/spiSlave/build/esp-idf/esp_system/port/soc/esp32/cmake_install.cmake")
 
 endif()
 

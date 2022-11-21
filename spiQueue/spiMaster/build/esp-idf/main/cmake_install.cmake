@@ -1,4 +1,4 @@
-# Install script for directory: /home/bot/code/esp-idf/spi/spiMaster/main
+# Install script for directory: /home/bot/code/esp-idf/spiQueue/spiMaster/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
