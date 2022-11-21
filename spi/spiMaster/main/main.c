@@ -79,7 +79,7 @@ void app_main(void)
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
         //Wait for slave to be ready for next byte before sending
-        
+       
       	vTaskDelay(1000/portTICK_PERIOD_MS);
         ret=spi_device_transmit(handle, &t);
         printf("Received: %s\n", recvbuf);

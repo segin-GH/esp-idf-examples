@@ -80,7 +80,7 @@ void app_main(void)
         
         ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
 
-        printf("Received: %s\n", recvbuf);
+        printf("Receivedbyslave: %s\n", recvbuf);
         n++;
     }
 
