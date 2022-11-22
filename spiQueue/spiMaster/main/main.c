@@ -56,8 +56,8 @@ void app_main(void)
     };
     
     int n = 0;
-    char sendbuf[130] = {0};
-    char recvbuf[130] = {0};
+    char sendbuf[128] = {0};
+    char recvbuf[128] = {0};
     spi_transaction_t t;
     memset(&t, 0, sizeof(t));
     
@@ -75,14 +75,14 @@ void app_main(void)
         {
             printf("Data truncated\n");
         }
-        t.length=sizeof(sendbuf)*20;
+        t.length=128*8;
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
         //Wait for slave to be ready for next byte before sending
        
       	vTaskDelay(1000/portTICK_PERIOD_MS);
         ret=spi_device_transmit(handle, &t);
-        printf("Received: %s\n", recvbuf);
+        printf("Receivedbysender: %s\n", recvbuf);
     	memset(&t, 0, sizeof(t));
         n++;
     }

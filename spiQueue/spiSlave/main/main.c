@@ -26,9 +26,7 @@
 
 #define RCV_HOST HSPI_HOST
 
-
-
-void app_main(void)
+void sendthroughspi(void * args)
 {
     int n=0;
     esp_err_t ret;
@@ -63,6 +61,7 @@ void app_main(void)
     WORD_ALIGNED_ATTR char sendbuf[129]="";
     WORD_ALIGNED_ATTR char recvbuf[129]="";
     memset(recvbuf, 0, sizeof(recvbuf));
+    memset(sendbuf, 0,sizeof(sendbuf));
     spi_slave_transaction_t t;
     memset(&t, 0, sizeof(t));
 
@@ -70,9 +69,9 @@ void app_main(void)
      {
         //Clear receive buffer, set send buffer to something sane
         
-        memset(recvbuf, 0, sizeof(sendbuf));
+        memset(recvbuf, 0, sizeof(recvbuf));
         sprintf(sendbuf, "This is the receiver %i",n);
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(500/portTICK_PERIOD_MS);
         
         t.length=128*8;
         t.tx_buffer=sendbuf;
@@ -83,5 +82,18 @@ void app_main(void)
         printf("Receivedbyslave: %s\n", recvbuf);
         n++;
     }
+    //
+}
 
+void app_main(void)
+{
+    xTaskCreatePinnedToCore(
+        sendthroughspi,
+        "sndthrspi",
+        2048,
+        NULL,
+        2,
+        NULL,
+        APP_CPU_NUM
+    );
 }
