@@ -5,7 +5,7 @@
 
 
 /**
- * @todo implemnt a slave select implemntion
+ * @todo splitFunction into task 
  */
 
 
@@ -32,9 +32,12 @@
 
 #define RCV_HOST HSPI_HOST
 
+xQueueHandle queue;
+static const int queue_len = 10;
 
+WORD_ALIGNED_ATTR char dataBuff[129]="";
 
-void app_main(void)
+void sendDataThroughSPI(void *args)
 {
     int n=0;
     esp_err_t ret;
@@ -78,7 +81,7 @@ void app_main(void)
         
         memset(recvbuf, 0, sizeof(sendbuf));
         sprintf(sendbuf, "This is the receiver %i",n);
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(900/portTICK_PERIOD_MS);
         
         t.length=128*8;
         t.tx_buffer=sendbuf;
@@ -91,5 +94,45 @@ void app_main(void)
         }
 
     }
+}
 
+void logWithUART(void *args)
+{
+    int count = 0;
+    while(true)
+    {
+        long err = xQueueSend(queue, &count, 1000/portTICK_PERIOD_MS);
+        if(!err)
+        {
+            printf("[queue] Could not add to queue.");
+        }
+        vTaskDelay(600/portTICK_PERIOD_MS);
+    }
+
+}
+
+
+void app_main(void)
+{
+    xQueueCreate(queue_len, sizeof(dataBuff));
+
+    xTaskCreatePinnedToCore(
+        sendDataThroughSPI,
+        "sendDataThroughSPI",
+        2048,
+        NULL,
+        2,
+        NULL,
+        APP_CPU_NUM
+    );
+
+    xTaskCreatePinnedToCore(
+        logWithUART,
+        "logWithUART",
+        2048,
+        NULL,
+        2,
+        NULL,
+        APP_CPU_NUM
+    );
 }
