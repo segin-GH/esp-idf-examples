@@ -3,6 +3,11 @@
  * @author segin 
  */
 
+
+/**
+ * @todo implemnt a slave select implemntion
+ */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -47,7 +52,7 @@ void app_main(void)
         .command_bits = 0,
         .address_bits = 0,
         .dummy_bits = 0,
-        .clock_speed_hz = 5000000,
+        .clock_speed_hz = 6000000,
         .duty_cycle_pos = 128,        //50% duty cycle
         .mode = 0,
         .spics_io_num = -1,
@@ -55,6 +60,9 @@ void app_main(void)
         .queue_size = 5
     };
     
+    gpio_set_direction(GPIO_CS,GPIO_MODE_OUTPUT);
+
+
     int n = 0;
     char sendbuf[130] = {0};
     char recvbuf[130] = {0};
@@ -79,12 +87,13 @@ void app_main(void)
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
         //Wait for slave to be ready for next byte before sending
-       
-      	vTaskDelay(1000/portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_CS,0);       
         ret=spi_device_transmit(handle, &t);
+        gpio_set_level(GPIO_CS,1);       
         printf("ReceivedbyMaster: %s\n", recvbuf);
     	memset(&t, 0, sizeof(t));
         n++;
+      	vTaskDelay(1000/portTICK_PERIOD_MS);
     }
 
     //Never reached.
