@@ -35,7 +35,7 @@
 xQueueHandle queue;
 static const int queue_len = 10;
 
-WORD_ALIGNED_ATTR char dataBuff[129]="";
+WORD_ALIGNED_ATTR char dataBuff[120]="";
 
 void sendDataThroughSPI(void *args)
 {
@@ -78,34 +78,38 @@ void sendDataThroughSPI(void *args)
     while(1)
      {
         //Clear receive buffer, set send buffer to something sane
-        
         memset(recvbuf, 0, sizeof(sendbuf));
-        sprintf(sendbuf, "This is the receiver %i",n);
-        vTaskDelay(900/portTICK_PERIOD_MS);
-        
-        t.length=128*8;
-        t.tx_buffer=sendbuf;
-        t.rx_buffer=recvbuf;
-        if(gpio_get_level(GPIO_CS) != 1 )
+        if(xQueueReceive(queue,&sendbuf,5000/portTICK_PERIOD_MS))
         {
-            ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
-            printf("Receivedbyslave: %s\n", recvbuf);
-            n++;
+            // sprintf(sendbuf, "This is the receiver %i",n);
+            t.length=128*8;
+            t.tx_buffer=sendbuf;
+            t.rx_buffer=recvbuf;
+            if(gpio_get_level(GPIO_CS) != 1)
+            {
+                ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
+                printf("Receivedbyslave: %s\n", recvbuf);
+                n++;
+            }
         }
+        vTaskDelay(900/portTICK_PERIOD_MS);
 
     }
-}
 
+}
 void logWithUART(void *args)
 {
     int count = 0;
     while(true)
     {
-        long err = xQueueSend(queue, &count, 1000/portTICK_PERIOD_MS);
+        sprintf(dataBuff,"UartData %i",count);
+        long err = xQueueSend(queue, &dataBuff, 1000/portTICK_PERIOD_MS);
         if(!err)
         {
-            printf("[queue] Could not add to queue.");
+            printf("[queue] Could not add to queue\n.");
         }
+        memset(dataBuff,0,sizeof(dataBuff));
+        ++count;
         vTaskDelay(600/portTICK_PERIOD_MS);
     }
 
@@ -114,8 +118,9 @@ void logWithUART(void *args)
 
 void app_main(void)
 {
-    xQueueCreate(queue_len, sizeof(dataBuff));
 
+    queue = xQueueCreate(queue_len, sizeof(dataBuff));
+    memset(dataBuff,0,sizeof(dataBuff));
     xTaskCreatePinnedToCore(
         sendDataThroughSPI,
         "sendDataThroughSPI",

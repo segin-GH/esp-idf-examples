@@ -59,10 +59,7 @@ void app_main(void)
         .cs_ena_posttrans = 3,        //Keep the CS low 3 cycles after transaction, to stop slave from missing the last bit when CS has less propagation delay than CLK
         .queue_size = 5
     };
-    
     gpio_set_direction(GPIO_CS,GPIO_MODE_OUTPUT);
-
-
     int n = 0;
     char sendbuf[130] = {0};
     char recvbuf[130] = {0};
