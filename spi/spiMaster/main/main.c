@@ -82,7 +82,7 @@ void app_main(void)
        
       	vTaskDelay(1000/portTICK_PERIOD_MS);
         ret=spi_device_transmit(handle, &t);
-        printf("Received: %s\n", recvbuf);
+        printf("ReceivedbyMaster: %s\n", recvbuf);
     	memset(&t, 0, sizeof(t));
         n++;
     }
