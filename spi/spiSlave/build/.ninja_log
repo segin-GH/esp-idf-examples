@@ -3006,3 +3006,17 @@
 1478	1599	1669202972353192923	.bin_timestamp	4beb24d9f022cc74
 1599	1635	0	esp-idf/esptool_py/CMakeFiles/app_check_size	229482fd73fc17b8
 1635	6421	0	CMakeFiles/flash	d7bcb4f0bf5997f3
+1	10287	1669204887412776360	build.ninja	8a3365923e992f8f
+17	98	1669028571011171289	bootloader-prefix/src/bootloader-stamp/bootloader-build	3f818300e80866a2
+17	98	1669028571011171289	bootloader/bootloader.elf	3f818300e80866a2
+17	98	1669028571011171289	bootloader/bootloader.bin	3f818300e80866a2
+17	98	1669028571011171289	bootloader/bootloader.map	3f818300e80866a2
+26	212	1669204887724774479	esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj	5d6a9bd6b2ed3ca3
+212	262	1669204887772774190	esp-idf/app_update/libapp_update.a	e1d58fb880d63159
+263	357	1669204887868773612	esp-idf/main/CMakeFiles/__idf_main.dir/main.c.obj	3ca40ce8274e7b41
+357	366	1669204887876773563	esp-idf/main/libmain.a	1e95f97c23199406
+366	1291	1669204888776768140	esp-idf/esp_system/ld/sections.ld	c0076a40ed1569fb
+1291	1664	1669204889172765754	spiSlave.elf	e52170ff1a7b3f05
+1664	1763	1669204889272765151	.bin_timestamp	4beb24d9f022cc74
+1763	1794	0	esp-idf/esptool_py/CMakeFiles/app_check_size	229482fd73fc17b8
+1794	6578	0	CMakeFiles/flash	d7bcb4f0bf5997f3

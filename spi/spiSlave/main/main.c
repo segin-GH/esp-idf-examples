@@ -102,7 +102,7 @@ void logWithUART(void *args)
     int count = 0;
     while(true)
     {
-        sprintf(dataBuff,"UartData %i",count);
+        sprintf(dataBuff,"%i",count);
         long err = xQueueSend(queue, &dataBuff, 1000/portTICK_PERIOD_MS);
         if(!err)
         {
