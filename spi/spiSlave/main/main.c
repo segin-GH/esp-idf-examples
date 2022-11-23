@@ -29,7 +29,7 @@
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
-
+#define Buffersize 128
 #define RCV_HOST HSPI_HOST
 
 xQueueHandle queue;
@@ -93,10 +93,9 @@ void sendDataThroughSPI(void *args)
             }
         }
         vTaskDelay(900/portTICK_PERIOD_MS);
-
     }
-
 }
+
 void logWithUART(void *args)
 {
     int count = 0;
@@ -112,14 +111,11 @@ void logWithUART(void *args)
         ++count;
         vTaskDelay(600/portTICK_PERIOD_MS);
     }
-
 }
-
 
 void app_main(void)
 {
-
-    queue = xQueueCreate(queue_len, sizeof(dataBuff));
+    queue = xQueueCreate(queue_len, sizeof(128));
     memset(dataBuff,0,sizeof(dataBuff));
     xTaskCreatePinnedToCore(
         sendDataThroughSPI,
