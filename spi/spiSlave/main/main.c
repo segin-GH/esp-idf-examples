@@ -3,9 +3,8 @@
  * @author segin 
  */
 
-
 /**
- * @todo splitFunction into task 
+ * @todo implemnt a isr for chip select
  */
 
 
@@ -102,7 +101,7 @@ void logWithUART(void *args)
     while(true)
     {
         sprintf(dataBuff,"%i",count);
-        long err = xQueueSend(queue, &dataBuff, 1000/portTICK_PERIOD_MS);
+        long err = xQueueSend(queue, &dataBuff,1000/portTICK_PERIOD_MS);
         if(!err)
         {
             printf("[queue] Could not add to queue\n.");
