@@ -65,7 +65,7 @@ void app_main(void)
     //Initialize SPI slave interface
     ret=spi_slave_initialize(RCV_HOST, &buscfg, &slvcfg, SPI_DMA_CH_AUTO);
     assert(ret==ESP_OK);
-
+    gpio_set_direction(GPIO_CS,GPIO_MODE_OUTPUT);
     WORD_ALIGNED_ATTR char sendbuf[129]="";
     WORD_ALIGNED_ATTR char recvbuf[129]="";
     memset(recvbuf, 0, sizeof(recvbuf));
@@ -83,11 +83,13 @@ void app_main(void)
         t.length=128*8;
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
-        
-        ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
+        if(gpio_get_level(GPIO_CS) != 1 )
+        {
+            ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
+            printf("Receivedbyslave: %s\n", recvbuf);
+            n++;
+        }
 
-        printf("Receivedbyslave: %s\n", recvbuf);
-        n++;
     }
 
 }
