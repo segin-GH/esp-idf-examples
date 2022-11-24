@@ -1547,7 +1547,7 @@ rule C_STATIC_LIBRARY_LINKER____idf_main
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/bin/cmake -S/home/bot/code/esp-idf/spi/spiMaster -B/home/bot/code/esp-idf/spi/spiMaster/build
+  command = /usr/bin/cmake -S/home/bot/code/esp-idf/spi2slave1Master/spiMaster -B/home/bot/code/esp-idf/spi2slave1Master/spiMaster/build
   description = Re-running CMake...
   generator = 1
 
