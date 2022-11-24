@@ -10,5 +10,11 @@
 			"path": "spiSlave2"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"bitset": "c",
+			"chrono": "c",
+			"algorithm": "c"
+		}
+	}
 }

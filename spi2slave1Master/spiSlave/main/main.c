@@ -26,13 +26,12 @@
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
-#define Buffersize 128
+
 #define RCV_HOST HSPI_HOST
 
 xQueueHandle queue;
 static const int queue_len = 10;
-
-WORD_ALIGNED_ATTR char dataBuff[120]="";
+char dataBuff[129]="";
 
 void sendDataThroughSPI(void *args)
 {
@@ -89,7 +88,7 @@ void sendDataThroughSPI(void *args)
                 n++;
             }
         }
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        vTaskDelay(900/portTICK_PERIOD_MS);
     }
 }
 
@@ -98,8 +97,9 @@ void logWithUART(void *args)
     int count = 0;
     while(true)
     {
-        sprintf(dataBuff,"UARTDATA%i",count);
-        long err = xQueueSend(queue, &dataBuff,1000/portTICK_PERIOD_MS);
+        memset(dataBuff,0,sizeof(dataBuff));
+        sprintf(dataBuff,"Data UART %i",count);
+        long err = xQueueSend(queue, dataBuff,1000/portTICK_PERIOD_MS);
         if(!err)
         {
             printf("[queue] Could not add to queue\n.");
@@ -112,8 +112,7 @@ void logWithUART(void *args)
 
 void app_main(void)
 {
-    queue = xQueueCreate(queue_len, sizeof(128));
-    memset(dataBuff,0,sizeof(dataBuff));
+    queue = xQueueCreate(queue_len, sizeof(dataBuff)); /* it should be sizeof(dataBuff)*/
     xTaskCreatePinnedToCore(
         sendDataThroughSPI,
         "sendDataThroughSPI",

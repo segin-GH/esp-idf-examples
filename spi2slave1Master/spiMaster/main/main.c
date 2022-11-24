@@ -79,8 +79,8 @@ void app_main(void)
         t.length=sizeof(sendbuf)*20;
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
-        //Wait for slave to be ready for next byte before sending
         gpio_set_level(GPIO_CS,0);       
+        //Wait for slave to be ready for next byte before sending
         ret=spi_device_transmit(handle, &t);
         printf("ReceivedbyMaster: %s\n", recvbuf);
     	memset(&t, 0, sizeof(t));

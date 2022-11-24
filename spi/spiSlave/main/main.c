@@ -112,7 +112,7 @@ void logWithUART(void *args)
 
 void app_main(void)
 {
-    queue = xQueueCreate(queue_len, sizeof(128));
+    queue = xQueueCreate(queue_len, sizeof(dataBuff));
     memset(dataBuff,0,sizeof(dataBuff));
     xTaskCreatePinnedToCore(
         sendDataThroughSPI,
