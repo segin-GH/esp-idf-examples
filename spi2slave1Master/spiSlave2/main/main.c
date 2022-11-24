@@ -32,7 +32,7 @@
 xQueueHandle queue;
 static const int queue_len = 10;
 
-WORD_ALIGNED_ATTR char dataBuff[120]="";
+WORD_ALIGNED_ATTR char dataBuff[128]="";
 
 void sendDataThroughSPI(void *args)
 {
@@ -85,7 +85,7 @@ void sendDataThroughSPI(void *args)
             if(gpio_get_level(GPIO_CS) == 0)
             {
                 ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
-                printf("Receivedbyslave: %s\n", recvbuf);
+                printf("ReceivedbyslaveTWO: %s\n", recvbuf);
                 n++;
             }
         }
@@ -98,7 +98,7 @@ void logWithUART(void *args)
     int count = 0;
     while(true)
     {
-        sprintf(dataBuff,"%i",count);
+        sprintf(dataBuff,"2sendbyslaveTWO%i",count);
         long err = xQueueSend(queue, &dataBuff,1000/portTICK_PERIOD_MS);
         if(!err)
         {

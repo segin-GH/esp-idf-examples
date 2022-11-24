@@ -30,9 +30,9 @@
 #define RCV_HOST HSPI_HOST
 
 xQueueHandle queue;
-static const int queue_len = 10;
+static const int queue_len = 5;
 
-WORD_ALIGNED_ATTR char dataBuff[120]="";
+WORD_ALIGNED_ATTR char dataBuff[150]="";
 
 void sendDataThroughSPI(void *args)
 {
@@ -78,7 +78,7 @@ void sendDataThroughSPI(void *args)
         memset(recvbuf, 0, sizeof(sendbuf));
         if(xQueueReceive(queue,&sendbuf,5000/portTICK_PERIOD_MS))
         {
-            // sprintf(sendbuf, "This is the receiver %i",n);
+            sprintf(sendbuf, "This is the receiver %i",n);
             t.length=128*8;
             t.tx_buffer=sendbuf;
             t.rx_buffer=recvbuf;
@@ -98,7 +98,7 @@ void logWithUART(void *args)
     int count = 0;
     while(true)
     {
-        sprintf(dataBuff,"%i",count);
+        sprintf(dataBuff,"uartDATA%i",count);
         long err = xQueueSend(queue, &dataBuff,1000/portTICK_PERIOD_MS);
         if(!err)
         {

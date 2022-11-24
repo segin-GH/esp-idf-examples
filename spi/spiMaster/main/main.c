@@ -48,12 +48,12 @@ void app_main(void)
         .command_bits = 0,
         .address_bits = 0,
         .dummy_bits = 0,
-        .clock_speed_hz = 6000000,
+        .clock_speed_hz = 5000000,
         .duty_cycle_pos = 128,        //50% duty cycle
         .mode = 0,
         .spics_io_num = -1,
         .cs_ena_posttrans = 3,        //Keep the CS low 3 cycles after transaction, to stop slave from missing the last bit when CS has less propagation delay than CLK
-        .queue_size = 5
+        .queue_size = 6
     };
     gpio_set_direction(GPIO_CS,GPIO_MODE_OUTPUT);
     int n = 0;
