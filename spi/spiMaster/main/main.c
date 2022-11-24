@@ -4,10 +4,6 @@
  */
 
 
-/**
- * @todo implemnt a slave select implemntion
- */
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
