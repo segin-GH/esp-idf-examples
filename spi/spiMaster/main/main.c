@@ -82,11 +82,11 @@ void app_main(void)
         //Wait for slave to be ready for next byte before sending
         gpio_set_level(GPIO_CS,0);       
         ret=spi_device_transmit(handle, &t);
-        gpio_set_level(GPIO_CS,1);       
         printf("ReceivedbyMaster: %s\n", recvbuf);
     	memset(&t, 0, sizeof(t));
         n++;
       	vTaskDelay(1000/portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_CS,1);       
     }
 
     //Never reached.

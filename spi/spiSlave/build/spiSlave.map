@@ -14096,10 +14096,10 @@ LOAD /home/bot/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-
                 0x00000000400d4ccc                esp_time_impl_init
  *fill*         0x00000000400d4cd4        0x0 
  .text.sendDataThroughSPI
-                0x00000000400d4cd4       0xea esp-idf/main/libmain.a(main.c.obj)
-                                        0x111 (size before relaxing)
+                0x00000000400d4cd4       0xec esp-idf/main/libmain.a(main.c.obj)
+                                        0x10f (size before relaxing)
                 0x00000000400d4cd4                sendDataThroughSPI
- *fill*         0x00000000400d4dbe        0x2 
+ *fill*         0x00000000400d4dc0        0x0 
  .text.logWithUART
                 0x00000000400d4dc0       0x47 esp-idf/main/libmain.a(main.c.obj)
                                          0x4f (size before relaxing)
