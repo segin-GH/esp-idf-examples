@@ -12,11 +12,11 @@ void app_main(void)
     int count = 0;
     for(;;)
     {
+        vTaskDelay(1000/portTICK_PERIOD_MS);
         gpio_set_level(TRIG_GPIO_PIN, 0);
         printf("this many times %i\n",count);
-        vTaskDelay(100/portTICK_PERIOD_MS);
-        gpio_set_level(TRIG_GPIO_PIN,1);
-        vTaskDelay(100/portTICK_PERIOD_MS);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
+        gpio_set_level(TRIG_GPIO_PIN, 1);
         ++count;
     }
 }
