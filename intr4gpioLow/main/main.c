@@ -1,55 +1,58 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/queue.h>
 #include <driver/gpio.h>
 
-xQueueHandle interput_queue;
-int intr_queue_len = 2;
+int ledPin = 2;
+int switchPin = 26;
 
-#define interput_pin 26
+xQueueHandle interputQueue;
+int intrQueuLen = 1;
 
-
-static void IRAM_ATTR gpio_isr_handler(void *args)
+static void IRAM_ATTR gpio_isr_handler(void *arg)
 {
-    int intr_count = (int)args;
-    xQueueSendFromISR(interput_queue, &intr_count++,NULL);
+    int pinNumber = (int)arg;
+    xQueueSendFromISR(
+        interputQueue,
+        &pinNumber,
+        NULL
+    );
 }
 
-
-void when_gpio_is_low(void *args)
-{   
-    int state = 0;
+void when_switch_is_pushed(void *args)
+{
+    int pinNumber, count = 0;
     for(;;)
     {
-        if(xQueueReceive(interput_queue, &state, portMAX_DELAY))
+        if(xQueueReceive(interputQueue,&pinNumber,portMAX_DELAY))
         {
-            printf("gpio was low for %i \n",state);
+            printf(" gpio %d was pressed %d times, the state is %d \n",pinNumber,++count,
+            gpio_get_level(switchPin));
         }
     }
 }
 
-
-
 void app_main(void)
-{   int count = 0;
-    gpio_set_direction(interput_pin, GPIO_MODE_INPUT);
-    gpio_pullup_en(interput_pin);
-    gpio_set_intr_type(interput_pin, GPIO_INTR_LOW_LEVEL);
+{
+    gpio_set_direction(switchPin,GPIO_MODE_INPUT);
+    gpio_set_direction(ledPin,GPIO_MODE_INPUT);
+    gpio_pullup_en(switchPin);
+    gpio_set_intr_type(switchPin,GPIO_INTR_NEGEDGE);
 
-    interput_queue = xQueueCreate(intr_queue_len,sizeof(int));
-
-    gpio_install_isr_service(0);
-    gpio_isr_handler_add(interput_pin, gpio_isr_handler, (void*)count);
-
+    interputQueue = xQueueCreate(intrQueuLen,sizeof(int));
+    
     xTaskCreatePinnedToCore(
-        when_gpio_is_low,
-        "when_gpio_is_low",
-        1024,
+        when_switch_is_pushed,
+        "buttonPressed",
+        2048,
         NULL,
         2,
         NULL,
         APP_CPU_NUM
     );
-
+    
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(switchPin,gpio_isr_handler,(void *)switchPin);
 }
