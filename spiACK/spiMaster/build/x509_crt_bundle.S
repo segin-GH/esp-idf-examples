@@ -1,4 +1,4 @@
-/* * Data converted from /home/bot/code/esp-idf/spiQueue/spiMaster/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /home/bot/code/esp-idf/spiACK/spiMaster/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded
