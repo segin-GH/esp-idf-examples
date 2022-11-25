@@ -3,7 +3,6 @@
  * @author segin 
  */
 
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -27,6 +26,8 @@
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
 #define GPIO_CS 21
+#define GPIO_CS2 26
+
 
 #define SENDER_HOST HSPI_HOST
 
@@ -56,6 +57,7 @@ void app_main(void)
         .queue_size = 5
     };
     gpio_set_direction(GPIO_CS,GPIO_MODE_OUTPUT);
+    gpio_set_direction(GPIO_CS2,GPIO_MODE_OUTPUT);
     int n = 0;
     char sendbuf[130] = {0};
     char recvbuf[130] = {0};
@@ -67,9 +69,10 @@ void app_main(void)
     assert(ret == ESP_OK);
     ret = spi_bus_add_device(SENDER_HOST, &devcfg, &handle);
     assert(ret == ESP_OK);
-    
+    int state = 0;
     while(true)
     {
+
         int res = snprintf(sendbuf, sizeof(sendbuf),
                 "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
         if (res >= sizeof(sendbuf)) 
@@ -79,16 +82,33 @@ void app_main(void)
         t.length=sizeof(sendbuf)*20;
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
-        gpio_set_level(GPIO_CS,0);       
-        //Wait for slave to be ready for next byte before sending
-        ret=spi_device_transmit(handle, &t);
-        printf("ReceivedbyMaster: %s\n", recvbuf);
-    	memset(&t, 0, sizeof(t));
-        n++;
-      	vTaskDelay(1000/portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_CS,1);       
-    }
+        if(state == 1)
+        {
+            gpio_set_level(GPIO_CS,0);       
+            //Wait for slave to be ready for next byte before sending
+            ret=spi_device_transmit(handle, &t);
+            printf("ReceivedbyMaster: %s\n", recvbuf);
+            memset(&t, 0, sizeof(t));
+            n++;
+            state = 0;
+            vTaskDelay(1000/portTICK_PERIOD_MS);
+            gpio_set_level(GPIO_CS,1);
 
+        }
+        if(state == 0)
+        {
+            gpio_set_level(GPIO_CS2,0);
+            //Wait for slave to be ready for next byte before sending
+            ret=spi_device_transmit(handle, &t);
+            printf("ReceivedbyMaster: %s\n", recvbuf);
+            memset(&t, 0, sizeof(t));
+            n++;
+            state = 1;
+            vTaskDelay(1000/portTICK_PERIOD_MS);
+            gpio_set_level(GPIO_CS2,1);
+        }
+        vTaskDelay(10/portTICK_PERIOD_MS);
+    }
     //Never reached.
     ret=spi_bus_remove_device(handle);
     assert(ret==ESP_OK);

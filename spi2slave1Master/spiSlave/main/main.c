@@ -81,10 +81,10 @@ void sendDataThroughSPI(void *args)
             t.length=128*8;
             t.tx_buffer=sendbuf;
             t.rx_buffer=recvbuf;
-            if(gpio_get_level(GPIO_CS) == 0)
+            if(gpio_get_level(GPIO_CS) != 0)
             {
                 ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
-                printf("Receivedbyslave: %s\n", recvbuf);
+                printf("ReceivedbyslaveONE: %s\n", recvbuf);
                 n++;
             }
         }
@@ -99,7 +99,6 @@ void logWithUART(void *args)
     {
         memset(dataBuff,0,sizeof(dataBuff));
         sprintf(dataBuff,"Data UART %i",count);
-        long err = xQueueSend(queue, dataBuff,1000/portTICK_PERIOD_MS);
         if(!err)
         {
             printf("[queue] Could not add to queue\n.");
@@ -122,7 +121,7 @@ void app_main(void)
         NULL,
         APP_CPU_NUM
     );
-
+    
     xTaskCreatePinnedToCore(
         logWithUART,
         "logWithUART",
