@@ -26,6 +26,16 @@
 
 #define RCV_HOST HSPI_HOST
 
+xQueueHandle interput_queue;
+static int intr_queue_len = 1;
+
+void gpio_cs_isr_handler(void *args)
+{
+    int state = 0;
+    xQueueSendFromISR(interput_queue, &state, NULL);
+    
+}
+
 void sendthroughspi(void * args)
 {
     int n=0;
@@ -87,6 +97,13 @@ void sendthroughspi(void * args)
 
 void app_main(void)
 {
+    gpio_set_direction(GPIO_CS, GPIO_MODE_INPUT);
+    gpio_set_intr_type(GPIO_CS,GPIO_INTR_NEGEDGE);
+    interput_queue =  xQueueCreate(intr_queue_len,sizeof(int));
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(GPIO_CS,gpio_cs_isr_handler,NULL);
+
+
     xTaskCreatePinnedToCore(
         sendthroughspi,
         "sndthrspi",
