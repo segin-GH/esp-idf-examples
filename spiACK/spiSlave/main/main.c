@@ -78,10 +78,10 @@ void sendthroughspi(void * args)
 
     while(1)
      {
-        if(!ackRecived)
-        {
-            //
-        }
+        // if(!ackRecived)
+        // {
+        //     //
+        // }
         //Clear receive buffer, set send buffer to something sane
         
         memset(recvbuf, 0, sizeof(recvbuf));
