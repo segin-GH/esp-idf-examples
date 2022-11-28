@@ -3,8 +3,6 @@
  * @author segin 
  */
 
-/** @todo implemnt a isr for chip select */
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -28,11 +26,7 @@
 
 #define RCV_HOST HSPI_HOST
 
-xQueueHandle queue;
-static const int queue_len = 10;
-char dataBuff[129]="";
-
-void sendDataThroughSPI(void *args)
+void sendthroughspi(void * args)
 {
     int n=0;
     esp_err_t ret;
@@ -63,68 +57,39 @@ void sendDataThroughSPI(void *args)
     //Initialize SPI slave interface
     ret=spi_slave_initialize(RCV_HOST, &buscfg, &slvcfg, SPI_DMA_CH_AUTO);
     assert(ret==ESP_OK);
-    gpio_set_direction(GPIO_CS,GPIO_MODE_INPUT);
+
     WORD_ALIGNED_ATTR char sendbuf[129]="";
     WORD_ALIGNED_ATTR char recvbuf[129]="";
     memset(recvbuf, 0, sizeof(recvbuf));
+    memset(sendbuf, 0,sizeof(sendbuf));
     spi_slave_transaction_t t;
     memset(&t, 0, sizeof(t));
 
     while(1)
      {
         //Clear receive buffer, set send buffer to something sane
-        memset(recvbuf, 0, sizeof(sendbuf));
-        if(xQueueReceive(queue,&sendbuf,5000/portTICK_PERIOD_MS))
-        {
-            // sprintf(sendbuf, "This is the receiver %i",n);
-            t.length=128*8;
-            t.tx_buffer=sendbuf;
-            t.rx_buffer=recvbuf;
-            if(gpio_get_level(GPIO_CS) == 0)
-            {
-                ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
-                printf("ReceivedbyslaveTWO: %s\n", recvbuf);
-                n++;
-            }
-        }
+        
+        memset(recvbuf, 0, sizeof(recvbuf));
+        sprintf(sendbuf, "This is the receiver %i",n);
         vTaskDelay(500/portTICK_PERIOD_MS);
-    }
-}
+        
+        t.length=128*8;
+        t.tx_buffer=sendbuf;
+        t.rx_buffer=recvbuf;
+        
+        ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
 
-void logWithUART(void *args)
-{
-    int count = 0;
-    while(true)
-    {
-        memset(dataBuff,0,sizeof(dataBuff));
-        sprintf(dataBuff,"Data UART TWO %i",count);
-        long err = xQueueSend(queue, dataBuff,1000/portTICK_PERIOD_MS);
-        if(!err)
-        {
-            printf("[queue] Could not add to queue\n.");
-        }
-        memset(dataBuff,0,sizeof(dataBuff));
-        ++count;
-        vTaskDelay(600/portTICK_PERIOD_MS);
+        printf("Receivedbyslave: %s\n", recvbuf);
+        n++;
     }
+    //
 }
 
 void app_main(void)
 {
-    queue = xQueueCreate(queue_len, sizeof(dataBuff)); /* it should be sizeof(dataBuff)*/
     xTaskCreatePinnedToCore(
-        sendDataThroughSPI,
-        "sendDataThroughSPI",
-        2048,
-        NULL,
-        2,
-        NULL,
-        APP_CPU_NUM
-    );
-
-    xTaskCreatePinnedToCore(
-        logWithUART,
-        "logWithUART",
+        sendthroughspi,
+        "sndthrspi",
         2048,
         NULL,
         2,

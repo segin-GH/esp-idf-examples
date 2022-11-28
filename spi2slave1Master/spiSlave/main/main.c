@@ -81,7 +81,7 @@ void sendDataThroughSPI(void *args)
             t.length=128*8;
             t.tx_buffer=sendbuf;
             t.rx_buffer=recvbuf;
-            if(gpio_get_level(GPIO_CS) == 0)
+            if(gpio_get_level(GPIO_CS) != 0)
             {
                 ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
                 printf("ReceivedbyslaveONE: %s\n", recvbuf);
