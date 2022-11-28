@@ -3,7 +3,6 @@
  * @author segin 
  */
 
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>

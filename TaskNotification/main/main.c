@@ -20,7 +20,7 @@ void reciver(void *parms)
     while(true)
     {
         int count = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        printf("received notification %d times\n", count);
+        printf("received notification %d times\n",count);
     }
 }
 
