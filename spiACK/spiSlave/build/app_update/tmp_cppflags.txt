@@ -1,1 +1,0 @@
-2dd6627a2 sample_project v4.4.2-dirty
