@@ -3,8 +3,6 @@
  * @author segin 
  */
 
-/** @todo implemnt a isr for chip select */
-
 
 #include <stdio.h>
 #include <stdint.h>
