@@ -75,8 +75,13 @@ void sendthroughspi(void * args)
     spi_slave_transaction_t t;
     memset(&t, 0, sizeof(t));
 
+
     while(1)
      {
+        if(!ackRecived)
+        {
+            //
+        }
         //Clear receive buffer, set send buffer to something sane
         
         memset(recvbuf, 0, sizeof(recvbuf));
