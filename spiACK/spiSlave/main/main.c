@@ -120,7 +120,7 @@ void app_main(void)
         NULL,
         APP_CPU_NUM
     );
-    
+
     xTaskCreatePinnedToCore(
         logWithUART,
         "logWithUART",
@@ -130,4 +130,4 @@ void app_main(void)
         NULL,
         APP_CPU_NUM
     );
-    
+}    
