@@ -30,6 +30,19 @@ xQueueHandle queue;
 static const int queue_len = 10;
 char dataBuff[129]="";
 
+bool slaveSelect = false;
+
+static void IRAM_ATTR cs_isr_handler_when_risingEdge(void *arg)
+{
+    slaveSelect = false;
+}
+
+
+static void IRAM_ATTR cs_isr_handler_when_fallingEdge(void *arg)
+{
+    slaveSelect = true;
+}
+
 void sendDataThroughSPI(void *args)
 {
     int n=0;
