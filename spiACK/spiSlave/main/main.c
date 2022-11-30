@@ -32,15 +32,9 @@ char dataBuff[129]="";
 
 bool slaveSelect = false;
 
-static void IRAM_ATTR cs_isr_handler_when_risingEdge(void *arg)
+static void IRAM_ATTR slaveSelect_isr_handler(void *arg)
 {
-    slaveSelect = false;
-}
-
-
-static void IRAM_ATTR cs_isr_handler_when_fallingEdge(void *arg)
-{
-    slaveSelect = true;
+   slaveSelect = (gpio_get_level(GPIO_CS) == 0) ? true : false;
 }
 
 void sendDataThroughSPI(void *args)
@@ -91,7 +85,7 @@ void sendDataThroughSPI(void *args)
             t.length=128*8;
             t.tx_buffer=sendbuf;
             t.rx_buffer=recvbuf;
-            if(gpio_get_level(GPIO_CS) == 0)
+            if(slaveSelect != false )
             {
                 ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
                 printf("ReceivedbyslaveONE: %s\n", recvbuf);
@@ -123,6 +117,8 @@ void logWithUART(void *args)
 
 void app_main(void)
 {
+    gpio_set_intr_type(GPIO_CS, GPIO_INTR_ANYEDGE);
+
     queue = xQueueCreate(queue_len, sizeof(dataBuff)); /* it should be sizeof(dataBuff)*/
     xTaskCreatePinnedToCore(
         sendDataThroughSPI,
@@ -143,4 +139,7 @@ void app_main(void)
         NULL,
         APP_CPU_NUM
     );
-}    
+    
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(GPIO_CS, slaveSelect_isr_handler,NULL);
+}
