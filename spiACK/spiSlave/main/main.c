@@ -140,7 +140,6 @@ void logWithUART(void *args)
 void app_main(void)
 {
     gpio_set_intr_type(GPIO_CS, GPIO_INTR_ANYEDGE);
-
     queue = xQueueCreate(queue_len, sizeof(dataBuff)); /* it should be sizeof(dataBuff)*/
     xTaskCreatePinnedToCore(
         sendDataThroughSPI,
