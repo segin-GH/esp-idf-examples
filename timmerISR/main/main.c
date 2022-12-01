@@ -5,8 +5,8 @@
 #include "driver/timer.h"
 #include "driver/gpio.h"
 
-#define TIMER_DIVIDER   (16)
-#define LED_PIN         GPIO_NUM_32
+#define TIMER_DIVIDER (16)
+#define LED_PIN GPIO_NUM_2
 static SemaphoreHandle_t s_timer_sem;
 
 
