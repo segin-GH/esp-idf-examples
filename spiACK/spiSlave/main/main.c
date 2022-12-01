@@ -1,7 +1,7 @@
 /**
- * @brief SPI SLAVE 
- * @author segin 
- */
+* @brief SPI SLAVE 
+* @author segin 
+*/
 
 #include <stdio.h>
 #include <stdint.h>
@@ -29,6 +29,14 @@
 xQueueHandle queue;
 static const int queue_len = 10;
 char dataBuff[129]="";
+
+static bool slaveSelect = false;
+static bool ackRecived = false;
+
+static void IRAM_ATTR slaveSelect_isr_handler(void *arg)
+{
+   slaveSelect = (gpio_get_level(GPIO_CS) == 0) ? true : false;
+}
 
 void sendDataThroughSPI(void *args)
 {
@@ -70,19 +78,40 @@ void sendDataThroughSPI(void *args)
 
     while(1)
      {
-        //Clear receive buffer, set send buffer to something sane
-        memset(recvbuf, 0, sizeof(sendbuf));
-        if(xQueueReceive(queue,&sendbuf,5000/portTICK_PERIOD_MS))
+        if(slaveSelect == true)
         {
-            // sprintf(sendbuf, "This is the receiver %i",n);
-            t.length=128*8;
-            t.tx_buffer=sendbuf;
-            t.rx_buffer=recvbuf;
-            if(gpio_get_level(GPIO_CS) == 0)
+            if(ackRecived == false)
             {
-                ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
-                printf("ReceivedbyslaveONE: %s\n", recvbuf);
-                n++;
+                WORD_ALIGNED_ATTR char ackSendbuf[129]="";
+                WORD_ALIGNED_ATTR char ackRecvbuf[129]="";
+                spi_slave_transaction_t ackData;
+                ackData.length = 128 * 8;
+                ackData.tx_buffer = ackSendbuf;
+                ackData.rx_buffer = ackRecvbuf;
+                sprintf(ackSendbuf,"$$$");
+                do
+                {
+                    spi_slave_transmit(RCV_HOST, &ackData, portMAX_DELAY);
+                }
+                while(strcmp("$$$",ackRecvbuf) != 0);
+                ackRecived = true;
+            }
+            else
+            {
+                do
+                {
+                    memset(recvbuf, 0, sizeof(sendbuf));
+                    if(xQueueReceive(queue,&sendbuf,5000/portTICK_PERIOD_MS))
+                    {
+                        t.length=128*8;
+                        t.tx_buffer=sendbuf;
+                        t.rx_buffer=recvbuf;
+                        ret=spi_slave_transmit(RCV_HOST, &t, portMAX_DELAY);
+                        printf("ReceivedbyslaveONE: %s\n", recvbuf);
+                        n++;
+                     }
+                }
+                while(strcmp("~$$$",recvbuf) != 0);
             }
         }
         vTaskDelay(900/portTICK_PERIOD_MS);
@@ -100,7 +129,7 @@ void logWithUART(void *args)
         err = xQueueSend(queue, &dataBuff, 1000/portTICK_PERIOD_MS);
         if(!err)
         {
-            printf("[queue] Could not add to queue\n.");
+            printf("[queue] Could not add to queue\n");
         }
         memset(dataBuff,0,sizeof(dataBuff));
         ++count;
@@ -110,6 +139,8 @@ void logWithUART(void *args)
 
 void app_main(void)
 {
+    gpio_set_intr_type(GPIO_CS, GPIO_INTR_ANYEDGE);
+
     queue = xQueueCreate(queue_len, sizeof(dataBuff)); /* it should be sizeof(dataBuff)*/
     xTaskCreatePinnedToCore(
         sendDataThroughSPI,
@@ -130,4 +161,7 @@ void app_main(void)
         NULL,
         APP_CPU_NUM
     );
-}    
+    
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(GPIO_CS, slaveSelect_isr_handler,NULL);
+}
