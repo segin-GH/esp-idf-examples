@@ -1048,3 +1048,17 @@
 1456	1555	1669881992337046929	.bin_timestamp	1dcdb28465c3d5d2
 1555	1582	0	esp-idf/esptool_py/CMakeFiles/app_check_size	19de9ec357afb9cf
 1582	7564	0	CMakeFiles/flash	92ab9ad7b08e5eea
+1938	21803	1669890729219224921	build.ninja	fc19759961dcb62f
+205	537	1669881892161403597	bootloader-prefix/src/bootloader-stamp/bootloader-build	2db8e4fe3f015547
+205	537	1669881892161403597	bootloader/bootloader.elf	2db8e4fe3f015547
+205	537	1669881892161403597	bootloader/bootloader.bin	2db8e4fe3f015547
+205	537	1669881892161403597	bootloader/bootloader.map	2db8e4fe3f015547
+205	3094	1669890732387205008	esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj	1484e2e3f9368ef
+3094	3407	1669890732703203021	esp-idf/app_update/libapp_update.a	e1d58fb880d63159
+3408	4378	1669890733675196908	esp-idf/main/CMakeFiles/__idf_main.dir/main.c.obj	3795171364fd7126
+4378	4391	1669890733687196832	esp-idf/main/libmain.a	1e95f97c23199406
+4391	12458	1669890741727146214	esp-idf/esp_system/ld/sections.ld	39ca0a1590f694a6
+12458	21495	1669890750787089069	timmerISR.elf	b1d8e10dcf2c683
+21495	22769	1669890752063081013	.bin_timestamp	1dcdb28465c3d5d2
+22769	22822	0	esp-idf/esptool_py/CMakeFiles/app_check_size	19de9ec357afb9cf
+22822	27506	0	CMakeFiles/flash	92ab9ad7b08e5eea

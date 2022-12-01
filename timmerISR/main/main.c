@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -8,7 +9,6 @@
 #define TIMER_DIVIDER (16)
 #define LED_PIN GPIO_NUM_2
 static SemaphoreHandle_t s_timer_sem;
-
 
 static bool IRAM_ATTR timer_group_isr_callback(void * args) {
     BaseType_t high_task_awoken = pdFALSE;
@@ -40,8 +40,7 @@ void app_main(void)
     timer_enable_intr(TIMER_GROUP_0, TIMER_0);
     timer_isr_callback_add(TIMER_GROUP_0, TIMER_0, timer_group_isr_callback, NULL, 0);
     timer_start(TIMER_GROUP_0, TIMER_0);
-
-
+    
     while (1) 
     {
         if (xSemaphoreTake(s_timer_sem, portMAX_DELAY) == pdPASS)
