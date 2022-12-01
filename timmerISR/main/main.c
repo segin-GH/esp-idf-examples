@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -36,17 +35,18 @@ void app_main(void)
     };
     timer_init(TIMER_GROUP_0, TIMER_0, &config);
     timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0);
-    timer_set_alarm_value(TIMER_GROUP_0, TIMER_0, (TIMER_BASE_CLK / TIMER_DIVIDER));
+    timer_set_alarm_value(TIMER_GROUP_0, TIMER_0,(TIMER_BASE_CLK / TIMER_DIVIDER));
     timer_enable_intr(TIMER_GROUP_0, TIMER_0);
     timer_isr_callback_add(TIMER_GROUP_0, TIMER_0, timer_group_isr_callback, NULL, 0);
     timer_start(TIMER_GROUP_0, TIMER_0);
-    
+
+
     while (1) 
     {
         if (xSemaphoreTake(s_timer_sem, portMAX_DELAY) == pdPASS)
          {
             if (led_state == 0)
-             {
+            {
                 led_state = 1;
                 gpio_set_level(LED_PIN, 1);
             }
