@@ -30,8 +30,9 @@
 
 #define SENDER_HOST HSPI_HOST
 
-void app_main(void)
+void readDataFromSPI(void *args)
 {
+    //
     esp_err_t ret;
     spi_device_handle_t handle;
 
@@ -92,4 +93,17 @@ void app_main(void)
     //Never reached.
     ret=spi_bus_remove_device(handle);
     assert(ret==ESP_OK);
+}
+
+void app_main(void)
+{
+    xTaskCreatePinnedToCore(
+        readDataFromSPI,
+        "readDataFromSPI",
+        2024,
+        NULL,
+        2,
+        NULL,
+        APP_CPU_NUM
+    );
 }
