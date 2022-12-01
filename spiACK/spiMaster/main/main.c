@@ -69,7 +69,6 @@ void app_main(void)
     assert(ret == ESP_OK);
     while(true)
     {
-
         int res = snprintf(sendbuf, sizeof(sendbuf),
                 "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
         if (res >= sizeof(sendbuf)) 
@@ -80,12 +79,12 @@ void app_main(void)
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
         {
-            gpio_set_level(GPIO_CS,0);       
+            gpio_set_level(GPIO_CS,0);
             //Wait for slave to be ready for next byte before sending
             ret=spi_device_transmit(handle, &t);
             printf("ReceivedbyMaster: %s\n", recvbuf);
             memset(&t, 0, sizeof(t));
-            n++;
+            ++n;
             vTaskDelay(1000/portTICK_PERIOD_MS);
             gpio_set_level(GPIO_CS,1);
         }
