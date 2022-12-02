@@ -17,7 +17,6 @@
 #include "esp_event.h"
 #include "driver/spi_master.h"
 #include "esp_log.h"
-
 #include "driver/gpio.h"
 #include "esp_intr_alloc.h"
 
@@ -28,7 +27,13 @@
 #define GPIO_CS 21
 
 
+
 #define SENDER_HOST HSPI_HOST
+
+void timmer_callback(void *args)
+{
+    printf("this is after 50us\n");
+}
 
 void readDataFromSPI(void *args)
 {
@@ -97,6 +102,13 @@ void readDataFromSPI(void *args)
 
 void app_main(void)
 {
+    const esp_timer_create_args_t esp_timer_create_args = {
+        .callback = timmer_callback,
+        .name = "timer_task"
+    };
+    esp_timer_handle_t espTimerHandle;
+    esp_timer_create(&esp_timer_create_args, &espTimerHandle);
+    
     xTaskCreatePinnedToCore(
         readDataFromSPI,
         "readDataFromSPI",
@@ -106,4 +118,5 @@ void app_main(void)
         NULL,
         APP_CPU_NUM
     );
+    esp_timer_start_periodic(espTimerHandle,100000);
 }
