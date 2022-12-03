@@ -4,7 +4,7 @@
 void app_main(void)
 {
     UNITY_BEGIN();
-    unity_run_test_by_name("sprintf");
+        unity_run_test_by_name("sprintf");
     UNITY_END();
 
 
