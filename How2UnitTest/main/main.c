@@ -4,11 +4,11 @@
 void app_main(void)
 {
     UNITY_BEGIN();
-    unity_run_test_by_name("sprintf");
+    unity_run_test_by_name("Test 1");
     UNITY_END();
 }
 
-TEST_CASE("sprintf", "[NoFormatOperations]")
+TEST_CASE("Test 1", "Test for sprintf")
 {
     char output[5];
     TEST_ASSERT_EQUAL(4, sprintf(output, "hey"));
