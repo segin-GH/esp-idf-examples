@@ -11431,7 +11431,7 @@ LOAD /home/bot/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-
                 0x000000003ffb11c8       0x90 esp-idf/newlib/libnewlib.a(newlib_init.c.obj)
  .data.test_fn_$3864
                 0x000000003ffb1258        0x4 esp-idf/main/libmain.a(main.c.obj)
- .data.test_desc_13$3865
+ .data.test_desc_11$3865
                 0x000000003ffb125c       0x20 esp-idf/main/libmain.a(main.c.obj)
  .data.ESP_EFUSE_CHIP_VER_REV2
                 0x000000003ffb127c        0x8 esp-idf/efuse/libefuse.a(esp_efuse_table.c.obj)
@@ -12509,7 +12509,7 @@ LOAD /home/bot/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-
  *fill*         0x000000003f4030b1        0x3 
  .rodata.__func__$5207
                 0x000000003f4030b4        0xc esp-idf/newlib/libnewlib.a(locks.c.obj)
- .rodata.test_func_13.str1.4
+ .rodata.test_func_11.str1.4
                 0x000000003f4030c0        0x4 esp-idf/main/libmain.a(main.c.obj)
  .rodata.app_main.str1.4
                 0x000000003f4030c4       0x18 esp-idf/main/libmain.a(main.c.obj)
@@ -13366,13 +13366,13 @@ LOAD /home/bot/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-
  .literal.esp_time_impl_init
                 0x00000000400d059c        0x0 esp-idf/newlib/libnewlib.a(esp_time_impl.c.obj)
                                           0x4 (size before relaxing)
- .literal.test_func_13
+ .literal.test_func_11
                 0x00000000400d059c        0x8 esp-idf/main/libmain.a(main.c.obj)
                                          0x10 (size before relaxing)
  .literal.app_main
                 0x00000000400d05a4        0x8 esp-idf/main/libmain.a(main.c.obj)
                                          0x14 (size before relaxing)
- .literal.test_reg_helper_13
+ .literal.test_reg_helper_11
                 0x00000000400d05ac        0x4 esp-idf/main/libmain.a(main.c.obj)
                                           0x8 (size before relaxing)
  .literal.UnityPrintNumberUnsigned
@@ -14356,7 +14356,7 @@ LOAD /home/bot/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-
                                           0xb (size before relaxing)
                 0x00000000400d4b1c                esp_time_impl_init
  *fill*         0x00000000400d4b24        0x0 
- .text.test_func_13
+ .text.test_func_11
                 0x00000000400d4b24       0x26 esp-idf/main/libmain.a(main.c.obj)
                                          0x2a (size before relaxing)
  *fill*         0x00000000400d4b4a        0x2 
@@ -14365,7 +14365,7 @@ LOAD /home/bot/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-
                                          0x1d (size before relaxing)
                 0x00000000400d4b4c                app_main
  *fill*         0x00000000400d4b61        0x3 
- .text.test_reg_helper_13
+ .text.test_reg_helper_11
                 0x00000000400d4b64        0xb esp-idf/main/libmain.a(main.c.obj)
                                           0xe (size before relaxing)
  *fill*         0x00000000400d4b6f        0x1 
