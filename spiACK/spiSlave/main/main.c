@@ -76,7 +76,7 @@ void sendDataThroughSPI(void *args)
     spi_slave_transaction_t t;
     memset(&t, 0, sizeof(t));
 
-    while(1)
+     while(1)
      {
         if(slaveSelect == true)
         {

@@ -27,17 +27,15 @@
 #define GPIO_CS 21
 
 
-
 #define SENDER_HOST HSPI_HOST
 
 void timmer_callback(void *args)
 {
-    printf("this is after 50us\n");
+    // printf("this is after 50us\n");
 }
 
 void readDataFromSPI(void *args)
 {
-    //
     esp_err_t ret;
     spi_device_handle_t handle;
 
@@ -77,7 +75,7 @@ void readDataFromSPI(void *args)
     {
         int res = snprintf(sendbuf, sizeof(sendbuf),
                 "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
-        if (res >= sizeof(sendbuf)) 
+        if(res >= sizeof(sendbuf)) 
         {
             printf("Data truncated\n");
         }
