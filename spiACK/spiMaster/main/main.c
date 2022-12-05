@@ -73,6 +73,8 @@ void readDataFromSPI(void *args)
     assert(ret == ESP_OK);
     while(true)
     {
+        /* implemt ack from master */
+
         int res = snprintf(sendbuf, sizeof(sendbuf),
                 "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
         if(res >= sizeof(sendbuf)) 
