@@ -35,7 +35,8 @@ static bool ackRecived = false;
 
 static void IRAM_ATTR slaveSelect_isr_handler(void *arg)
 {
-   slaveSelect = (gpio_get_level(GPIO_CS) == 0) ? true : false;
+//    slaveSelect = (gpio_get_level(GPIO_CS) == 0) ? true : false;
+   slaveSelect = !(gpio_get_level(GPIO_CS));
 }
 
 void sendDataThroughSPI(void *args)
