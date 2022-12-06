@@ -27,12 +27,13 @@
 #define GPIO_CS 21
 
 
-#define SENDER_HOST HSPI_HOST
+static bool ackRecived = false;
 
 void timmer_callback(void *args)
 {
     // printf("this is after 50us\n");
 }
+
 
 void readDataFromSPI(void *args)
 {
@@ -67,36 +68,78 @@ void readDataFromSPI(void *args)
     memset(&t, 0, sizeof(t));
     
     //Initialize the SPI bus and add the device we want to send stuff to.
-    ret = spi_bus_initialize(SENDER_HOST, &buscfg, SPI_DMA_CH_AUTO);
+    ret = spi_bus_initialize( HSPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
     assert(ret == ESP_OK);
-    ret = spi_bus_add_device(SENDER_HOST, &devcfg, &handle);
+    ret = spi_bus_add_device( HSPI_HOST, &devcfg, &handle);
     assert(ret == ESP_OK);
+    // gpio_set_level(GPIO_CS,0);
+    
     while(true)
     {
-        int res = snprintf(sendbuf, sizeof(sendbuf),
-                "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
-        if(res >= sizeof(sendbuf)) 
-        {
-            printf("Data truncated\n");
-        }
-        t.length=sizeof(sendbuf)*20;
-        t.tx_buffer=sendbuf;
-        t.rx_buffer=recvbuf;
-        {
-            gpio_set_level(GPIO_CS,0);
-            //Wait for slave to be ready for next byte before sending
+        /* implemt ack from master */
+        
+        if(ackRecived == false)
+        { 
+            sprintf(sendbuf,"data");
+            printf("ackrecived == false\n");
+            t.length=sizeof(sendbuf)*20;
+            t.tx_buffer=sendbuf;
+            t.rx_buffer=recvbuf;
+            do
+            {
+                int res = snprintf(sendbuf, sizeof(sendbuf),
+                        "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
+                if(res >= sizeof(sendbuf)) 
+                {
+                    printf("Data truncated\n");
+                }
+                t.length=sizeof(sendbuf)*20;
+                t.tx_buffer=sendbuf;
+                t.rx_buffer=recvbuf;
+    
+                    // gpio_set_level(GPIO_CS,0);
+                    //Wait for slave to be ready for next byte before sending
+                    ret=spi_device_transmit(handle, &t);
+                    printf("ReceivedbyMaster: %s\n", recvbuf);
+                    // memset(&t, 0, sizeof(t));
+            }   
+            while(strcmp("$$$",recvbuf) != 0);
+            printf("ackrecived == true\n");
+            
+            t.length=sizeof(sendbuf)*20;
+            t.tx_buffer=sendbuf;
+            t.rx_buffer=recvbuf;
+            sprintf(sendbuf,"$$$");
             ret=spi_device_transmit(handle, &t);
-            printf("ReceivedbyMaster: %s\n", recvbuf);
-            memset(&t, 0, sizeof(t));
-            ++n;
-            vTaskDelay(1000/portTICK_PERIOD_MS);
-            gpio_set_level(GPIO_CS,1);
+            ackRecived = true;
+        }
+        else
+        {
+            int res = snprintf(sendbuf, sizeof(sendbuf),
+                    "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
+            if(res >= sizeof(sendbuf)) 
+            {
+                printf("Data truncated\n");
+            }
+            t.length=sizeof(sendbuf)*20;
+            t.tx_buffer=sendbuf;
+            t.rx_buffer=recvbuf;
+            {
+                // gpio_set_level(GPIO_CS,0);
+                //Wait for slave to be ready for next byte before sending
+                ret=spi_device_transmit(handle, &t);
+                printf("ReceivedbyMaster: %s\n", recvbuf);
+                memset(&t, 0, sizeof(t));
+                ++n;
+                vTaskDelay(1000/portTICK_PERIOD_MS);
+                // gpio_set_level(GPIO_CS,1);
+            }
         }
     }
     //Never reached.
     ret=spi_bus_remove_device(handle);
     assert(ret==ESP_OK);
-}
+    }
 
 void app_main(void)
 {
