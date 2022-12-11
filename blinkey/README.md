@@ -1,32 +1,9 @@
-# _Sample project_
+# Blinking an LED with ESP-IDF
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+This code is written in C and uses the ESP-IDF framework to blink an LED connected to the ESP32 development board. It uses the `driver/gpio.h` header file to control the GPIO (General Purpose Input/Output) pins on the ESP32, which allows the code to turn the LED on and off.
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+The `app_main()` function is the entry point of the program, and it is executed when the ESP32 boots up. Inside this function, the LED pin is selected and its direction is set to output using the `gpio_pad_select_gpio()` and `gpio_set_direction()` functions.
 
+Next, the code enters an infinite loop where it alternates between turning the LED on and off. The `gpio_set_level()` function is used to set the level (i.e. the voltage) of the LED pin to either high (1) or low (0), which corresponds to turning the LED on or off. The `vTaskDelay()` function is used to add a delay between each iteration of the loop, which controls the blinking frequency of the LED.
 
-
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
-
-## Example folder contents
-
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+Additionally, the code also prints a message to the console using the `printf()` function each time the LED is turned on or off. This allows the user to see the status of the LED on the console.
