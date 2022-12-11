@@ -11,6 +11,6 @@ void app_main(void)
 TEST_CASE("Test 1", "Test for sprintf")
 {
     char output[5];
-    TEST_ASSERT_EQUAL(4, sprintf(output, "hey"));
+    TEST_ASSERT_EQUAL(3, sprintf(output, "hey"));
     TEST_ASSERT_EQUAL_STRING("hey", output);
 }

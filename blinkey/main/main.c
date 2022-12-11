@@ -14,9 +14,9 @@ void app_main(void)
     {
         gpio_set_level(LED_BUITIN,1);
         vTaskDelay(.10 / portTICK_PERIOD_MS);
-	printf("LedON\n");
+	    printf("LedON\n");
         gpio_set_level(LED_BUITIN,0);
-	printf("LedOFF\n");
+	    printf("LedOFF\n");
         vTaskDelay(10 / portTICK_PERIOD_MS);        
     }
 }
