@@ -1,4 +1,4 @@
- ###output:-
+ ### output:-
  ```
 I (511) wifi:wifi driver task: 3ffbfe54, prio:23, stack:6656, core=0
 I (511) system_api: Base MAC address is not set
@@ -32,7 +32,5 @@ Found 1 access points:
 ----------------------------------------------------------------
                            Segin |      11 |  -54 | WPA WPA2 PSK
 ----------------------------------------------------------------
-
-
 
  ```
