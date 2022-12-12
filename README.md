@@ -18,4 +18,4 @@ The following is a list of the examples contained in this repository:
 
 ## Contributions
 
-If you have an example that you would like to share with the community, we welcome pull requests! Please consider adding a brief `README.md` file to your example that explains what it does and how to run it and the output of any.
+If you have an example that you would like to share with the community, we welcome pull requests! Please consider adding a brief `README.md` file to your example that explains what it does and how to run it and the output.
