@@ -33,6 +33,7 @@ static char *getAuthModeName(wifi_auth_mode_t auth_mode)
 
 void app_main(void)
 {
+    /* inti the wifi */
     wifiInit();
 
     wifi_scan_config_t scan_config = {
@@ -41,11 +42,14 @@ void app_main(void)
         .channel = 0,
         .show_hidden = true
     };
-
+    /* start the scan  */
     esp_wifi_scan_start(&scan_config, true);
     wifi_ap_record_t wifi_records[MAX_APs];
     uint16_t maxRecods = MAX_APs;
+    /* get the scaned data */
     esp_wifi_scan_get_ap_records(&maxRecods, wifi_records);
+
+    /* just make a pretty table for the outputs */
     printf("Found %d access points:\n", maxRecods);
     printf("\n");
     printf("               SSID              | Channel | RSSI |   Auth Mode \n");
