@@ -1,6 +1,6 @@
 # ESP-IDF Examples
 
-This repository contains a collection of examples that showcase the features and capabilities of the Espressif IoT Development Framework (ESP-IDF). The examples in this repository demonstrate how to use the ESP-IDF to work with various peripherals, such as UART, SPI amd etc.
+This repository contains a collection of examples that showcase the features and capabilities of the Espressif IoT Development Framework (ESP-IDF). The examples in this repository demonstrate how to use the ESP-IDF to work with various peripherals, such as UART, SPI and etc.
 
 ## Getting Started
 
@@ -18,4 +18,4 @@ The following is a list of the examples contained in this repository:
 
 ## Contributions
 
-If you have an example that you would like to share with the community, we welcome pull requests! Please consider adding a brief `README.md` file to your example that explains what it does and how to run it.
+If you have an example that you would like to share with the community, we welcome pull requests! Please consider adding a brief `README.md` file to your example that explains what it does and how to run it and the output.
