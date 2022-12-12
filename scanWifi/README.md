@@ -1,32 +1,38 @@
-# _Sample project_
+ ###output:-
+ ```
+I (511) wifi:wifi driver task: 3ffbfe54, prio:23, stack:6656, core=0
+I (511) system_api: Base MAC address is not set
+I (511) system_api: read default base MAC address from EFUSE
+I (521) wifi:wifi firmware version: eeaa27d
+I (521) wifi:wifi certification version: v7.0
+I (521) wifi:config NVS flash: enabled
+I (521) wifi:config nano formating: disabled
+I (531) wifi:Init data frame dynamic rx buffer num: 32
+I (531) wifi:Init management frame dynamic rx buffer num: 32
+I (541) wifi:Init management short buffer num: 32
+I (541) wifi:Init dynamic tx buffer num: 32
+I (551) wifi:Init static rx buffer size: 1600
+I (551) wifi:Init static rx buffer num: 10
+I (551) wifi:Init dynamic rx buffer num: 32
+I (561) wifi_init: rx ba win: 6
+I (561) wifi_init: tcpip mbox: 32
+I (571) wifi_init: udp mbox: 6
+I (571) wifi_init: tcp mbox: 6
+I (571) wifi_init: tcp tx win: 5744
+I (581) wifi_init: tcp rx win: 5744
+I (581) wifi_init: tcp mss: 1440
+I (591) wifi_init: WiFi IRAM OP enabled
+I (591) wifi_init: WiFi RX IRAM OP enabled
+I (601) phy_init: phy_version 4670,719f9f6,Feb 18 2021,17:07:07
+I (701) wifi:mode : sta (0c:b8:15:f3:c9:50)
+I (711) wifi:enable tsf
+Found 1 access points:
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+               SSID              | Channel | RSSI |   Auth Mode 
+----------------------------------------------------------------
+                           Segin |      11 |  -54 | WPA WPA2 PSK
+----------------------------------------------------------------
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
 
 
-
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
-
-## Example folder contents
-
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+ ```
