@@ -3,6 +3,11 @@
 #define WIFI_TAG "[WIFI]"
 esp_netif_t *esp_netif;
 
+static EventGroupHandle_t wifi_events;
+static const int CONNECTED_GOT_IP = BIT0;
+static const int DISCONNECTED = BIT1;
+
+
 void event_handler(void *args, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     switch(event_id)
@@ -16,9 +21,11 @@ void event_handler(void *args, esp_event_base_t event_base, int32_t event_id, vo
             break;
         case SYSTEM_EVENT_STA_DISCONNECTED:
             ESP_LOGI(WIFI_TAG, "disconnected");
+            xEventGroupSetBits(wifi_events,DISCONNECTED);
             break;
         case IP_EVENT_STA_GOT_IP:
             ESP_LOGI(WIFI_TAG, "Got IP");
+            xEventGroupSetBits(wifi_events,CONNECTED_GOT_IP);
         default /* nothing to be default */:
             break;
     }
@@ -45,6 +52,7 @@ void wifi_init(void)
 
 esp_err_t wifi_connect_sta(const char *wifiname, const char *pass, int timeout)
 {
+    wifi_events = xEventGroupCreate();
     esp_netif = esp_netif_create_default_wifi_sta();
 
     wifi_config_t wifi_config;
@@ -56,7 +64,10 @@ esp_err_t wifi_connect_sta(const char *wifiname, const char *pass, int timeout)
     esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config);
     esp_wifi_start();
 
-    return ESP_OK;
+    EventBits_t result = xEventGroupWaitBits(wifi_events, CONNECTED_GOT_IP | DISCONNECTED, 
+                                                pdTRUE, pdFALSE, pdMS_TO_TICKS(timeout));
+
+    return (result == CONNECTED_GOT_IP) ? ESP_OK : ESP_FAIL;
 }
 
 void wifi_connect_ap(const char* wifiname, const char* pass)

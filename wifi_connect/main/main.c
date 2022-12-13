@@ -10,7 +10,7 @@ const char *password = "2003sejin";
 
 void wifi_connect(void *args)
 {
-    esp_err_t err = wifi_connect_sta(wifiName, password, 1000);
+    esp_err_t err = wifi_connect_sta(wifiName, password, 10000);
     if(err)
     {
         ESP_LOGE("WIFI CONNECT", "Failed to connect");

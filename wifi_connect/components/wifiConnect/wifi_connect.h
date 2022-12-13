@@ -8,6 +8,10 @@
 #include <esp_netif.h>
 #include <esp_wifi.h>
 #include <esp_log.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/event_groups.h>
+
 
 void wifi_init(void);
 esp_err_t wifi_connect_sta(const char* wifiname, const char* pass, int timeout);
