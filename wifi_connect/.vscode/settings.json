@@ -12,6 +12,8 @@
     "idf.toolsPath": "/home/bot/esp/esp-idf/tools",
     "files.associations": {
         "task.h": "c",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "condition_variable": "c",
+        "future": "c"
     }
 }
