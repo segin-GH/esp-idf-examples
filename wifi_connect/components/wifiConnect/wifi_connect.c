@@ -37,6 +37,14 @@ void event_handler(void *args, esp_event_base_t event_base, int32_t event_id, vo
             xEventGroupSetBits(wifi_events,CONNECTED_GOT_IP);
             break;
 
+        case WIFI_EVENT_AP_START:
+            ESP_LOGI(WIFI_TAG, "AP Enabled");
+            break;
+        
+        case WIFI_EVENT_AP_STOP:
+            ESP_LOGI(WIFI_TAG, "AP Disabled");
+            break;
+
         /* nothing to be default */
         default:
             break;
@@ -108,7 +116,26 @@ esp_err_t wifi_connect_sta(const char *wifiName, const char *password, const int
 
 void wifi_connect_ap(const char* wifiName, const char* password)
 {
-    //
+    esp_netif = esp_netif_create_default_wifi_ap();
+
+    //TODO need to refactor set wifi config
+    
+    /* set wifi config */
+    wifi_config_t wifi_config;
+    memset(&wifi_config, 0, sizeof(wifi_config_t));
+    strncpy((char *)wifi_config.ap.ssid, wifiName, sizeof(wifi_config.ap.ssid));
+    strncpy((char *)wifi_config.ap.password, password, sizeof(wifi_config.ap.password));
+    wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+    wifi_config.ap.max_connection = 4;
+    
+    /* set wifi mode to acces point */
+    esp_wifi_set_mode(WIFI_MODE_AP);
+
+    /* set the wifi configuration */
+    esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config);
+
+    /* start the wifi */
+    esp_wifi_start();
 }
 
 void wifi_disconnect(void)

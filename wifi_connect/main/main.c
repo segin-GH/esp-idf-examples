@@ -11,6 +11,13 @@ const char *password = "2003sejin";
 
 void wifi_connect(void *args)
 {
+    wifi_connect_ap("ESP32_HOTSPOT","password");
+    for(int i = 45; i > 0; --i)
+    {
+        printf("disconnecting ap %d\n", i);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
+    }
+
     esp_err_t err = wifi_connect_sta(wifiName, password, 10000);
     if(err)
     {
