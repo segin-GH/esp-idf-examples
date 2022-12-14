@@ -10,7 +10,6 @@ static EventGroupHandle_t wifi_events;
 static const int CONNECTED_GOT_IP = BIT0;
 static const int DISCONNECTED = BIT1;
 
-
 void event_handler(void *args, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     switch(event_id)
