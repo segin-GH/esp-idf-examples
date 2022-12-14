@@ -114,5 +114,9 @@ void wifi_connect_ap(const char* wifiName, const char* password)
 
 void wifi_disconnect(void)
 {
-    //
+    ESP_LOGI(WIFI_TAG, "**********DISCONNECTING*********");
+    esp_wifi_disconnect();
+    esp_wifi_stop();
+    ESP_LOGI(WIFI_TAG, "***********DISCONNECTING COMPLETE*********");
+
 }
