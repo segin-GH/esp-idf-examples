@@ -4,6 +4,7 @@
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <nvs_flash.h>
 
 const char *wifiName = "Segin";
 const char *password = "2003sejin";
