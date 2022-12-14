@@ -1,9 +1,5 @@
 #include "wifi_connect.h"
 
-/** @todo
- *  //TODO 
- */
-
 
 /* TAG for log */
 #define WIFI_TAG "[WIFI]"
