@@ -114,7 +114,7 @@ esp_err_t wifi_connect_sta(const char *wifiName, const char *password, const int
     return (result == CONNECTED_GOT_IP) ? ESP_OK : ESP_FAIL;
 }
 
-void wifi_connect_ap(const char* wifiName, const char* password)
+void wifi_connect_ap(const char* wifiname, const char* password)
 {
     esp_netif = esp_netif_create_default_wifi_ap();
 
