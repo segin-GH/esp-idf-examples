@@ -1,0 +1,4 @@
+build/
+Makefile/
+main/component.mk
+
