@@ -45,7 +45,6 @@ static esp_err_t on_toggle_led(httpd_req_t *req)
 
     httpd_resp_set_status(req, "204 NO CONTENT");
     httpd_resp_send(req, NULL, 0);
-    httpd_resp_sendstr(req, "<i><b> Hello this is ESP32 Server :) <b><i>");
     return ESP_OK;
 }
 
@@ -70,15 +69,13 @@ static void init_server()
         .handler = on_default_url
     };
     httpd_register_uri_handler(server, &default_url);
-    
+
     httpd_uri_t toggle_led_url = {
         .uri = "/api/toggle-led",
         .method = HTTP_POST,
         .handler = on_toggle_led
     };
     httpd_register_uri_handler(server, &toggle_led_url);
-
-
 }
 
 void app_main(void)
