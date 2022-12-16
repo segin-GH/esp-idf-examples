@@ -11,7 +11,7 @@ static const char *SERVER_TAG = "[SERVER]";
 static esp_err_t on_default_url(httpd_req_t *req)
 {
     ESP_LOGI(SERVER_TAG,"URL %s:", req->uri);
-    httpd_resp_sendstr(req, "<i><b>Hello this is ESP32 Server :) <b><i>");
+    httpd_resp_sendstr(req, "<i><b> Hello this is ESP32 Server :) <b><i>");
     return ESP_OK;
 }
 
