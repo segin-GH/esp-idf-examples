@@ -15,7 +15,7 @@ static esp_err_t on_default_url(httpd_req_t *req)
     return ESP_OK;
 }
 
-void start_mdns_service()
+static void start_mdns_service()
 {
     mdns_init();
     mdns_hostname_set("esp-server");
