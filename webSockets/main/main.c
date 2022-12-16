@@ -87,5 +87,3 @@ void app_main(void)
     start_mdns_service();
     init_server();
 }
-
-
