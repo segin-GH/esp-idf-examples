@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <wifi_connect.h>
+#include <ledtoggle.h>
 #include <nvs_flash.h>
 #include <esp_log.h>
 #include <esp_http_server.h>
@@ -8,19 +9,8 @@
 #include <driver/gpio.h>
 #include <cJSON.h>
 
-#define inbuilt_led 2
+
 static const char *SERVER_TAG = "[SERVER]";
-
-static void init_led(void)
-{
-    gpio_pad_select_gpio(inbuilt_led);
-    gpio_set_direction(inbuilt_led,GPIO_MODE_OUTPUT);
-}
-
-static void toggle_led(bool toggle)
-{
-    gpio_set_level(inbuilt_led, toggle);
-}
 
 /* event handler for server */
 static esp_err_t on_default_url(httpd_req_t *req)
@@ -85,7 +75,7 @@ void app_main(void)
 {
     nvs_flash_init();
     wifi_init();
-    init_led();
+    init_led_as_output(2);
     wifi_connect_sta("Segin","2003sejin",10000);
     start_mdns_service();
     init_server();
