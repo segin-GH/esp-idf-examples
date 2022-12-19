@@ -18,9 +18,9 @@ static void when_btn_pushed(void *args)
         cJSON_AddBoolToObject(payload, "btn_state", gpio_get_level(BTN));
         char *msg = cJSON_Print(payload);
         printf("msg: %s\n", msg);
-
+        send_ws_message(msg);
         cJSON_Delete(payload);
-        free(msg);
+       free(msg);
     }
 }
 

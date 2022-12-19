@@ -9,6 +9,7 @@
 #include <freertos/semphr.h>
 #include <freertos/task.h>
 #include <cJSON.h>
+#include <app_main.h>
 
 void init_btn_onboard();
 
