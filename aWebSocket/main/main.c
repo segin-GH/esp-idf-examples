@@ -76,6 +76,7 @@ void app_main(void)
 {
     nvs_flash_init();
     wifi_init();
+    init_btn_onboard();
     init_led_as_output(2);
     wifi_connect_sta("Segin","2003sejin",10000);
     start_mdns_service();
