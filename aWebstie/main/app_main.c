@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <driver/gpio.h>
 #include <cJSON.h>
-
+#include <esp_spiffs.h>
 
 static const char *SERVER_TAG = "[SERVER]";
 static httpd_handle_t server = NULL;
@@ -19,7 +19,37 @@ static httpd_handle_t server = NULL;
 static esp_err_t on_default_url(httpd_req_t *req)
 {
     ESP_LOGI(SERVER_TAG,"URL %s:", req->uri);
-    httpd_resp_sendstr(req, "<i><b> Hello this is ESP32 Server :) <b><i>");
+
+    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
+        .base_path = "/spiffs",
+        .partition_label = NULL,
+        .max_files = 5,
+        .format_if_mount_failed = true
+    };
+    esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
+    
+    char path[600];
+    if(strcmp(req->uri, "/") ==0 )
+    {
+        strcpy(path, "/spiffs/index.html");
+    }
+    // for another file
+
+    FILE *file = fopen(path, "r");
+    if(file == NULL)
+    {
+        httpd_resp_send_404(req);
+        esp_vfs_spiffs_unregister(NULL);
+        return ESP_OK;
+    }
+    char lineRead[256];
+    while(fgets(lineRead, sizeof(lineRead), file))
+    {
+        httpd_resp_sendstr_chunk(req, lineRead);
+    }
+    
+    httpd_resp_sendstr_chunk(req, NULL);
+    esp_vfs_spiffs_unregister(NULL);
     return ESP_OK;
 }
 
@@ -113,7 +143,7 @@ static void init_server()
     httpd_register_uri_handler(server, &default_url);
     
     httpd_uri_t toggle_led_url = {
-        .uri = "/api/toggle-led",
+        .uri = "/api/tog",
         .method = HTTP_POST,
         .handler = on_toggle_led
     };
