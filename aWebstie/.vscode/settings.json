@@ -12,6 +12,8 @@
     "idf.toolsPath": "/home/bot/esp/esp-idf/tools",
     "files.associations": {
         "pushbtn.h": "c",
-        "cjson.h": "c"
+        "cjson.h": "c",
+        "file.h": "c",
+        "esp_http_server.h": "c"
     }
 }
