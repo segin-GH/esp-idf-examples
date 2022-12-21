@@ -1,73 +1,26 @@
-<html>
-<head>
-<link rel="shortcut icon" href="hacklab.png" type="image/png" size="16x16">
-<header><title>Hacklab</title><header>	
-	<table width='100%' height='20%' bgcolor='fcd720' align='left'>
-	<tr><td colspan=2><img src="hacklab.png" width="170" height="80"></tr></td></table>
-	<link href="style.css" rel="stylesheet">
-</head>
-<body>
-  <div id='oldpage'>
-   <form name="LOGINFORM">
-<div class="container">
-  <div class="row">
-    <div class="col-25">
-      <label for="username">Username</label>
-    </div>
-    <div class="col-75">
-      <input type="text" id="uname" name="username" placeholder="Enter  Username..">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-25">
-      <label for="password">Password</label>
-    </div>
-    <div class="col-75">
-      <input type="password" id="password" name="password" placeholder="Enter Password..">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-25">
-      <label for="User_Type">User Type</label>
-    </div>
-    <div class="col-75">
-      <select id="User_Type" name="User_Type">
-        <option value="Admin">Admin</option>
-        <option value="Client">Client</option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-	  <div class="col-25">
-		  <lable>        </lable>
-	  </div>
-	  <div class="col-75">
-      <input type="submit" onclick="check_form(this.form)" value="LOGIN">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>HACKLAB</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="subContainer">
+        <div class="logo">hspl OTA</div>
+        <form>
+          <input type="file" name="" id="" />
+          <div class="progress" id="progress">
+            <div class="progress-bar" id="progress-bar">
+              Progress : <span id="progress-percentage">0%</span>
+            </div>
+          </div>
+          <input type="submit" value="Upload" class="uplaodButton" />
+        </form>
       </div>
-  </div>
-</div>
-  </form>
-  </div>
-  <iframe id='page2' src="" frameborder=0></iframe>
-  <script>
-function check_form(form)
-{
-  if(form.username.value=='HACKLAB' && form.password.value=='HACK@LAB' && form.User_Type.value=='Admin')
-  {    
-  document.getElementById('oldpage').remove();
-  document.getElementById('page2').src = "serverIndex.html";
-  }
-  else if((form.username.value=='q') || (form.username.value=='Q'))
-  {
-  document.getElementById('oldpage').remove();
-  document.getElementById('page2').src = "serverIndex.html";
-  }
-  else
-  {
-  alert("Username and Password dose not match");
-  }
-}
-</script>
-
-</body>
-</html> 
+    </div>
+  </body>
+</html>
