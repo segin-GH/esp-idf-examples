@@ -33,7 +33,24 @@ static esp_err_t on_default_url(httpd_req_t *req)
     {
         strcpy(path, "/spiffs/index.html");
     }
+    else
+    {
+        sprintf(path,"/spiffs%s",req->uri);
+    }
+    char *ext = strrchr(path,'.');
     // for another file
+    if(strcmp(ext, ".css") == 0)
+    {
+        httpd_resp_set_type(req, "text/css");
+    }
+    if(strcmp(ext, ".js") == 0)
+    {
+        httpd_resp_set_type(req, "text/javascript");
+    }
+    if(strcmp(ext, ".png") == 0)
+    {
+        httpd_resp_set_type(req, "image/png");
+    }
 
     FILE *file = fopen(path, "r");
     if(file == NULL)
@@ -132,16 +149,10 @@ static void start_mdns_service()
 static void init_server()
 {
     httpd_config_t serverConfig = HTTPD_DEFAULT_CONFIG();
-
+    serverConfig.uri_match_fn = httpd_uri_match_wildcard;
+    
     httpd_start(&server, &serverConfig);
 
-    httpd_uri_t default_url = {
-        .uri = "/",
-        .method = HTTP_GET,
-        .handler = on_default_url
-    };
-    httpd_register_uri_handler(server, &default_url);
-    
     httpd_uri_t toggle_led_url = {
         .uri = "/api/tog",
         .method = HTTP_POST,
@@ -156,6 +167,13 @@ static void init_server()
         .is_websocket = true
     };
     httpd_register_uri_handler(server, &web_socket_url);
+
+    httpd_uri_t default_url = {
+        .uri = "/*",
+        .method = HTTP_GET,
+        .handler = on_default_url
+    };
+    httpd_register_uri_handler(server, &default_url);
 }
 
 
