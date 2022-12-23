@@ -143,6 +143,7 @@ static void start_mdns_service()
     mdns_init();
     mdns_hostname_set("esp-server");
     mdns_instance_name_set("bla-bla-bla");
+    /* new addr will look something like this http://esp-server.local/ */
 }
 
 /* init our server */
