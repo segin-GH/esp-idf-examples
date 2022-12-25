@@ -10,6 +10,7 @@
 
 /* A macro for logging  */
 static const char *SERVER_TAG = "[SERVER]";
+static const char *OTA_TAG = "[OTA]";
 
 /* server handle */
 static httpd_handle_t server = NULL;
@@ -108,7 +109,8 @@ static void init_server()
 
 void init_ota(void)
 {
-    printf("invoking ota\n");
+
+    ESP_LOGI(OTA_TAG,"INVOKING OTA");
     nvs_flash_init();
     wifi_init();
     wifi_connect_sta("Segin", "2003sejin", 10000);
