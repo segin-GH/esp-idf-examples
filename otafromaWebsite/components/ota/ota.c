@@ -5,6 +5,10 @@
 #include <mdns.h>
 #include <esp_spiffs.h>
 #include <nvs_flash.h>
+#include <esp_ota_ops.h>
+#include "esp_app_format.h"
+#include "esp_flash_partitions.h"
+#include "esp_partition.h"
 #include "ota.h"
 #include "wifi_connect.h"
 
@@ -41,14 +45,14 @@ static esp_err_t on_default_url(httpd_req_t *req)
 
     /* determine the file extension */
     char *ext = strrchr(path,'.');
-    
+
     /* Set the MINE type based on the file extension */
     if(strcmp(ext, ".css") == 0)
         httpd_resp_set_type(req, "text/css");
 
     if(strcmp(ext, ".js") == 0)
         httpd_resp_set_type(req, "text/javascript");
-    
+
     if(strcmp(ext, ".png") == 0)
         httpd_resp_set_type(req, "image/png");
 
@@ -60,7 +64,7 @@ static esp_err_t on_default_url(httpd_req_t *req)
         esp_vfs_spiffs_unregister(NULL);
         return ESP_FAIL;
     }
-    
+
     /* Read the file in chunks and send it to client */
     char lineRead[256];
     while(fgets(lineRead, sizeof(lineRead), file))
@@ -74,6 +78,58 @@ static esp_err_t on_default_url(httpd_req_t *req)
     esp_vfs_spiffs_unregister(NULL);
     return ESP_OK;
 }
+
+/* OTA update handler function */
+static esp_err_t on_ota_update(httpd_req_t *req)
+{
+    /* config spiffs for file reading*/
+    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
+        .base_path = "/spiffs",
+        .partition_label = NULL,
+        .max_files = 5,
+        .format_if_mount_failed = true
+    };
+    esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
+    /* Check if the request is a POST request */
+    if (req->method != HTTP_POST) {
+        httpd_resp_send_err(req, HTTPD_405_METHOD_NOT_ALLOWED, "Method not allowed");
+        return ESP_FAIL;
+    }
+
+    /* Open a file for writing the firmware image */
+    FILE *fw_file = fopen("/spiffs/fw.bin", "w");
+    if (fw_file == NULL) {
+        ESP_LOGE(OTA_TAG, "Error opening file for writing");
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error writing firmware file");
+        return ESP_FAIL;
+    }
+
+    /* Read the firmware image data from the request body */
+    char buf[128];
+    int received = 0;
+    while (received < req->content_len) 
+    {
+        int ret = httpd_req_recv(req, buf, sizeof(buf));
+        if (ret <= 0)
+        {
+            ESP_LOGE(OTA_TAG, "Error receiving request body");
+            fclose(fw_file);
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error receiving request body");
+            return ESP_FAIL;
+        }
+        received += ret;
+        fwrite(buf, 1, ret, fw_file);
+    }
+
+    /* Close the firmware image file */
+    fclose(fw_file);
+
+    httpd_resp_sendstr(req, "File Received performing OTA");
+    ESP_LOGI(OTA_TAG, "File Received preforming OTA");
+    return ESP_OK;
+}
+
+
 
 /* function to start mDNS service */
 static void start_mdns_service()
@@ -91,7 +147,7 @@ static void init_server()
 {
     /* set server as default config */
     httpd_config_t serverConfig = HTTPD_DEFAULT_CONFIG();
-    
+
     /* Set the URI matching function to use wildcards */
     serverConfig.uri_match_fn = httpd_uri_match_wildcard;
 
@@ -105,6 +161,14 @@ static void init_server()
         .handler = on_default_url
     };
     httpd_register_uri_handler(server, &default_url);
+
+    /* Add a handler for OTA update requests */
+    httpd_uri_t ota_update_url = {
+        .uri = "/ota",
+        .method = HTTP_POST,
+        .handler = on_ota_update
+    };
+    httpd_register_uri_handler(server, &ota_update_url);
 }
 
 void init_ota(void)
