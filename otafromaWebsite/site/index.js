@@ -1,10 +1,9 @@
 const form = document.forms["otaForm"];
 const fileInput = document.getElementById("fileInput");
-const URL = "http://esp-server.local/update";
+const URL = "http://esp-server.local/ota";
 
 let file;
 
-console.log("my dear monu")
 fileInput.addEventListener("change", () => {
   file = fileInput.files[0];
 });
