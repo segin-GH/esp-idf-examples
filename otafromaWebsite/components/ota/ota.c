@@ -82,6 +82,11 @@ static esp_err_t on_default_url(httpd_req_t *req)
 /* OTA update handler function */
 static esp_err_t on_ota_update(httpd_req_t *req)
 {
+
+
+/*  ==================================================================== */
+ /* this is for debug only when using thunder client, postman */ 
+
     /* config spiffs for file reading*/
     esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
         .base_path = "/spiffs",
@@ -90,6 +95,11 @@ static esp_err_t on_ota_update(httpd_req_t *req)
         .format_if_mount_failed = true
     };
     esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
+
+ /* this is for debug only when using thunder client, postman */
+/* ==================================================================== */
+
+
     /* Check if the request is a POST request */
     if (req->method != HTTP_POST) {
         httpd_resp_send_err(req, HTTPD_405_METHOD_NOT_ALLOWED, "Method not allowed");
@@ -173,7 +183,6 @@ static void init_server()
 
 void init_ota(void)
 {
-
     ESP_LOGI(OTA_TAG,"INVOKING OTA");
     nvs_flash_init();
     wifi_init();
