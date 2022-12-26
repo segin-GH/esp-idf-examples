@@ -171,8 +171,8 @@ static esp_err_t on_ota_update(httpd_req_t *req)
 
     if( configured != running)
     {
-        // ESP_LOGE(OTA_TAG, "(This can happen if either the OTA boot data or 
-        //     preferred boot image become corrupted somehow.)");
+        ESP_LOGE(OTA_TAG,"This can happen if either the OTA boot\
+            data or preferred boot image become corrupted somehow.");
     }
     
     ESP_LOGI(OTA_TAG, "Running partition type %d subtype %d (offset 0x%08"PRIx32")",
