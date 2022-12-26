@@ -1,14 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <esp_log.h>
-#include <esp_http_server.h>
-#include <mdns.h>
-#include <esp_spiffs.h>
-#include <nvs_flash.h>
-#include <esp_ota_ops.h>
-#include "esp_app_format.h"
-#include "esp_flash_partitions.h"
-#include "esp_partition.h"
 #include "ota.h"
 #include "wifi_connect.h"
 
@@ -21,11 +10,23 @@ static const char *OTA_TAG = "[OTA]";
 static httpd_handle_t server = NULL;
 
 
+static void task__error(string exit_msg, string tag, esp_err_t err, bool reset)
+{
+    printf("EXIT MSG %s  TAG %s  ERR %s \n", exit_msg, tag, esp_err_to_name(err));
+    if(reset == false)
+        return;
+    else
+    {
+        ESP_LOGE(tag, "Restarting due to fatal error...");
+        esp_restart();
+    }
+}
+
+
 /* a function which handles fatale errors and restarts the chip */
 static void __attribute__((noreturn)) task_fatal_error(const char *exit_msg)
 {
     ESP_LOGE(OTA_TAG, "%s",exit_msg);
-    ESP_LOGE(OTA_TAG, "Restarting due to fatal error...");
     esp_restart();
 
     for(;;) { /* never get out of this loop */ }
@@ -282,6 +283,8 @@ static void init_server()
 
 void init_ota(void)
 {
+    TASK_ERROR_FATALE("nothing to exit", OTA_TAG, 0x101);
+    TASK_ERROR_NON_FATALE("exiting now", OTA_TAG, -1);
     ESP_LOGI(OTA_TAG,"INVOKING OTA");
     nvs_flash_init();
     wifi_init();
