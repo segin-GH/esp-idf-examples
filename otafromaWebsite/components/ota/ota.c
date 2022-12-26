@@ -96,11 +96,6 @@ static esp_err_t on_default_url(httpd_req_t *req)
 /* OTA update handler function */
 static esp_err_t on_ota_update(httpd_req_t *req)
 {
-
-
-/*  ==================================================================== */
- /* this is for debug only when using thunder client, postman */ 
-
     /* config spiffs for file reading*/
     esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
         .base_path = "/spiffs",
@@ -109,10 +104,6 @@ static esp_err_t on_ota_update(httpd_req_t *req)
         .format_if_mount_failed = true
     };
     esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
-
- /* this is for debug only when using thunder client, postman */
-/* ==================================================================== */
-
 
     /* Check if the request is a POST request */
     if (req->method != HTTP_POST) {
@@ -129,7 +120,7 @@ static esp_err_t on_ota_update(httpd_req_t *req)
     }
 
     /* Read the firmware image data from the request body */
-    char buf[128];
+    char buf[500];
     int received = 0;
     while (received < req->content_len) 
     {
@@ -156,6 +147,7 @@ static esp_err_t on_ota_update(httpd_req_t *req)
 
     return ESP_OK;
 }
+
 
 static void start_partition_handle(char *binFile)
 {
