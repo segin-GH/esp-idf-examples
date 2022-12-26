@@ -14,7 +14,7 @@
 
 /* A macro for logging  */
 static const char *SERVER_TAG = "[SERVER]";
-static const char *SPIFFS_OTA = "[OTA]";
+static const char *SPIFFS_OTA = "[SPIFFS OTA]";
 
 /* server handle */
 static httpd_handle_t server = NULL;
@@ -94,14 +94,16 @@ static esp_err_t on_spiffs_update(httpd_req_t *req)
     esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
 
     /* Check if the request is a POST request */
-    if (req->method != HTTP_POST) {
+    if (req->method != HTTP_POST) 
+    {
         httpd_resp_send_err(req, HTTPD_405_METHOD_NOT_ALLOWED, "Method not allowed");
         return ESP_FAIL;
     }
 
     /* Open a file for writing the firmware image */
     FILE *spiffs_file = fopen("/spiffs/spiffs.txt", "w");
-    if (spiffs_file == NULL) {
+    if (spiffs_file == NULL)
+    {
         ESP_LOGE(SPIFFS_OTA, "Error opening file for writing");
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error opening file for writing");
         return ESP_FAIL;
@@ -167,12 +169,12 @@ static void init_server()
     };
     httpd_register_uri_handler(server, &default_url);
 
-    httpd_uri_t ota_update_url = {
+    httpd_uri_t ota_spiffs_update_url = {
         .uri = "/spiffs",
         .method = HTTP_POST,
         .handler = on_spiffs_update 
     };
-    httpd_register_uri_handler(server, &ota_update_url);
+    httpd_register_uri_handler(server, &ota_spiffs_update_url);
 }
 
 void init_ota(void)
