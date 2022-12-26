@@ -1,7 +1,6 @@
 const form = document.forms["otaForm"];
 const fileInput = document.getElementById("fileInput");
-const URL = "http://esp-server.local/ota";
-
+const URL = "/ota";
 let file;
 
 fileInput.addEventListener("change", () => {
@@ -9,18 +8,28 @@ fileInput.addEventListener("change", () => {
 });
 
 const uploadFile = (file) => {
-  const fd = new FormData();
-  fd.append("otaFile", file);
-  console.log(fd);
   const xhr = new XMLHttpRequest();
-  xhr.open("POST", "URL");
-  xhr.upload.addEventListener("progress", ({ loaded, total }) => {
-    const fileLoaded = Math.floor((loaded / total) * 100);
-    const progress = document.getElementById("progress-percentage");
-    progress.innerHTML = `${fileLoaded}%`;
+  xhr.open("POST", URL);
+  xhr.setRequestHeader("Content-Type", "application/octet-stream");
+  xhr.upload.addEventListener("progress", (event) => {
+    const progress = Math.floor((event.loaded / event.total) * 100);
+    const progressElement = document.getElementById("progress-percentage");
+    progressElement.innerHTML = `${progress}%`;
   });
-  xhr.send(fd);
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      console.log(xhr.responseText);
+      window.alert(xhr.responseText);
+    } else {
+      console.error("Error uploading file!");
+      window.alert(xhr.responseText);
+    }
+  };
+  xhr.send(file);
+
+console.log(xhr.responseText);
 };
+
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
