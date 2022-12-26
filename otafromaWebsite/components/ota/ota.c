@@ -14,23 +14,10 @@
 
 /* A macro for logging  */
 static const char *SERVER_TAG = "[SERVER]";
-static const char *OTA_TAG = "[OTA]";
+static const char *SPIFFS_OTA = "[SPIFFS OTA]";
 
 /* server handle */
 static httpd_handle_t server = NULL;
-
-static void start_partition_handle(char *binFile);
-
-/* a function which handles fatale errors and restarts the chip */
-static void __attribute__((noreturn)) task_fatal_error(const char *exit_msg)
-{
-    ESP_LOGE(OTA_TAG, "%s",exit_msg);
-    ESP_LOGE(OTA_TAG, "Restarting due to fatal error...");
-    esp_restart();
-
-    for(;;) { /* never get out of this loop */ }
-}
-
 
 
 /* event handler for the default URL */
@@ -70,6 +57,7 @@ static esp_err_t on_default_url(httpd_req_t *req)
     if(strcmp(ext, ".png") == 0)
         httpd_resp_set_type(req, "image/png");
 
+    /* open the file for reading */
     FILE *file = fopen(path, "r");
     if(file == NULL)
     {
@@ -93,29 +81,31 @@ static esp_err_t on_default_url(httpd_req_t *req)
     return ESP_OK;
 }
 
-/* OTA update handler function */
-static esp_err_t on_ota_update(httpd_req_t *req)
+/* SPIFFS UPDATE handler function */
+static esp_err_t on_spiffs_update(httpd_req_t *req)
 {
     /* config spiffs for file reading*/
     esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
         .base_path = "/spiffs",
         .partition_label = NULL,
-        .max_files = 5,
+        .max_files = 1,
         .format_if_mount_failed = true
     };
     esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
 
     /* Check if the request is a POST request */
-    if (req->method != HTTP_POST) {
+    if (req->method != HTTP_POST) 
+    {
         httpd_resp_send_err(req, HTTPD_405_METHOD_NOT_ALLOWED, "Method not allowed");
         return ESP_FAIL;
     }
 
     /* Open a file for writing the firmware image */
-    FILE *fw_file = fopen("/spiffs/fw.bin", "w");
-    if (fw_file == NULL) {
-        ESP_LOGE(OTA_TAG, "Error opening file for writing");
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error writing firmware file");
+    FILE *spiffs_file = fopen("/spiffs/spiffs.txt", "w");
+    if (spiffs_file == NULL)
+    {
+        ESP_LOGE(SPIFFS_OTA, "Error opening file for writing");
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error opening file for writing");
         return ESP_FAIL;
     }
 
@@ -124,116 +114,29 @@ static esp_err_t on_ota_update(httpd_req_t *req)
     int received = 0;
     while (received < req->content_len) 
     {
+        /* receive data from http in chunks  */
         int ret = httpd_req_recv(req, buf, sizeof(buf));
         if (ret <= 0)
         {
-            ESP_LOGE(OTA_TAG, "Error receiving request body");
-            fclose(fw_file);
+            ESP_LOGE(SPIFFS_OTA, "Error receiving request body");
+            fclose(spiffs_file);
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error receiving request body");
             return ESP_FAIL;
         }
         received += ret;
-        fwrite(buf, 1, ret, fw_file);
+        /* write it into the file */
+        fwrite(buf, 1, ret, spiffs_file);
     }
 
-    /* Close the firmware image file */
-    fclose(fw_file);
-
-    httpd_resp_sendstr(req, "File Received performing OTA");
-    ESP_LOGI(OTA_TAG, "File Received preforming OTA");
+    /* Close the spiffs file */
+    fclose(spiffs_file);
     
+    /* send data to client saying received file  */
+    httpd_resp_sendstr(req, "File Received");
+    ESP_LOGI(SPIFFS_OTA, "File Received");
     
-    start_partition_handle("spiffs/fw.bin");
-
     return ESP_OK;
 }
-
-
-static void start_partition_handle(char *binFile)
-{
-    esp_err_t err;
-    
-    esp_ota_handle_t ota_handle = 0;
-    const esp_partition_t *update_partition = NULL;
-
-    ESP_LOGI(OTA_TAG, "Starting to handle partition");
-
-    const esp_partition_t *configured = esp_ota_get_boot_partition();
-    const esp_partition_t *running = esp_ota_get_running_partition();
-
-    if( configured != running)
-    {
-        // ESP_LOGE(OTA_TAG, "Configured OTA boot partition at offset 0x%08"PRIx32",
-        //     but running from offset 0x%08"PRIx32, configured->address, running->address);
-        
-        // ESP_LOGE(OTA_TAG, "(This can happen if either the OTA boot data or 
-        //     preferred boot image become corrupted somehow.)");
-    }
-    
-    ESP_LOGI(OTA_TAG, "Running partition type %d subtype %d (offset 0x%08"PRIx32")",
-            running->type, running->subtype, running->address);
-
-    update_partition = esp_ota_get_next_update_partition(NULL);
-    if(update_partition == NULL)
-        task_fatal_error("Error getting OTA update partition");
-
-    ESP_LOGI(OTA_TAG, "Writing to partition subtype %d at offset 0x%"PRIx32,
-             update_partition->subtype, update_partition->address);
-
-    err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &ota_handle);
-    if(err != ESP_OK)
-        task_fatal_error("Error starting OTA update");
-
-    FILE *fw_file = fopen("/spiffs/fw.bin","rb");
-    if(fw_file == NULL)
-    {
-        esp_ota_end(ota_handle);
-        task_fatal_error("Error opening firmware image file");
-    }
-
-    const size_t chunk_size = 1024;
-    uint8_t *chunk = pvPortMalloc(chunk_size);
-    if(chunk == NULL)
-    {
-        fclose(fw_file);
-        esp_ota_end(ota_handle);
-        task_fatal_error("Error allocating memory for firmware image chunk");
-    }
-    
-    size_t chunk_read;
-    while((chunk_read = fread(chunk, 1, chunk_size, fw_file)) > 0)
-    {
-         err = esp_ota_write(ota_handle, chunk, chunk_read); 
-         if(err != ESP_OK)
-         {
-            free(chunk);
-            fclose(fw_file);
-            esp_ota_end(ota_handle);
-            task_fatal_error("Error writing firmware image chunk to OTA partition");
-        }
-    }
-
-     /* Close the firmware image file and free the chunk buffer */
-    fclose(fw_file);
-    free(chunk);
-
-    /* Finalize the OTA update process */
-    err = esp_ota_end(ota_handle);
-    if(err != ESP_OK)
-        task_fatal_error("Error finalizing OTA update");
-
-    /* Set the OTA partition as the active partition */
-    err = esp_ota_set_boot_partition(update_partition);
-    if(err != ESP_OK)
-        task_fatal_error("Error setting OTA partition as active");
-
-    ESP_LOGI(OTA_TAG, "OTA update successfully");
-    ESP_LOGI(OTA_TAG, "Restarting in 2 seconds.....");
-    vTaskDelay(2000/portTICK_PERIOD_MS);
-    esp_restart();
-    // return ESP_OK;
-}
-
 
 /* function to start mDNS service */
 static void start_mdns_service()
@@ -266,18 +169,17 @@ static void init_server()
     };
     httpd_register_uri_handler(server, &default_url);
 
-    /* Add a handler for OTA update requests */
-    httpd_uri_t ota_update_url = {
-        .uri = "/ota",
+    httpd_uri_t ota_spiffs_update_url = {
+        .uri = "/spiffs",
         .method = HTTP_POST,
-        .handler = on_ota_update
+        .handler = on_spiffs_update 
     };
-    httpd_register_uri_handler(server, &ota_update_url);
+    httpd_register_uri_handler(server, &ota_spiffs_update_url);
 }
 
 void init_ota(void)
 {
-    ESP_LOGI(OTA_TAG,"INVOKING OTA");
+    ESP_LOGI("OTA","INVOKING OTA");
     nvs_flash_init();
     wifi_init();
     wifi_connect_sta("Segin", "2003sejin", 10000);
