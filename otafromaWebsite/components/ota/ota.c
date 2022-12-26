@@ -19,6 +19,20 @@ static const char *OTA_TAG = "[OTA]";
 /* server handle */
 static httpd_handle_t server = NULL;
 
+static void start_partition_handle(char *binFile);
+
+/* a function which handles fatale errors and restarts the chip */
+static void __attribute__((noreturn)) task_fatal_error(const char *exit_msg)
+{
+    ESP_LOGE(OTA_TAG, "%s",exit_msg);
+    ESP_LOGE(OTA_TAG, "Restarting due to fatal error...");
+    esp_restart();
+
+    for(;;) { /* never get out of this loop */ }
+}
+
+
+
 /* event handler for the default URL */
 static esp_err_t on_default_url(httpd_req_t *req)
 {
@@ -136,9 +150,97 @@ static esp_err_t on_ota_update(httpd_req_t *req)
 
     httpd_resp_sendstr(req, "File Received performing OTA");
     ESP_LOGI(OTA_TAG, "File Received preforming OTA");
+    
+    
+    start_partition_handle("spiffs/fw.bin");
+
     return ESP_OK;
 }
 
+static void start_partition_handle(char *binFile)
+{
+    esp_err_t err;
+    
+    esp_ota_handle_t ota_handle = 0;
+    const esp_partition_t *update_partition = NULL;
+
+    ESP_LOGI(OTA_TAG, "Starting to handle partition");
+
+    const esp_partition_t *configured = esp_ota_get_boot_partition();
+    const esp_partition_t *running = esp_ota_get_running_partition();
+
+    if( configured != running)
+    {
+        // ESP_LOGE(OTA_TAG, "Configured OTA boot partition at offset 0x%08"PRIx32",
+        //     but running from offset 0x%08"PRIx32, configured->address, running->address);
+        
+        // ESP_LOGE(OTA_TAG, "(This can happen if either the OTA boot data or 
+        //     preferred boot image become corrupted somehow.)");
+    }
+    
+    ESP_LOGI(OTA_TAG, "Running partition type %d subtype %d (offset 0x%08"PRIx32")",
+            running->type, running->subtype, running->address);
+
+    update_partition = esp_ota_get_next_update_partition(NULL);
+    if(update_partition == NULL)
+        task_fatal_error("Error getting OTA update partition");
+
+    ESP_LOGI(OTA_TAG, "Writing to partition subtype %d at offset 0x%"PRIx32,
+             update_partition->subtype, update_partition->address);
+
+    err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &ota_handle);
+    if(err != ESP_OK)
+        task_fatal_error("Error starting OTA update");
+
+    FILE *fw_file = fopen("/spiffs/fw.bin","rb");
+    if(fw_file == NULL)
+    {
+        esp_ota_end(ota_handle);
+        task_fatal_error("Error opening firmware image file");
+    }
+
+    const size_t chunk_size = 1024;
+    uint8_t *chunk = pvPortMalloc(chunk_size);
+    if(chunk == NULL)
+    {
+        fclose(fw_file);
+        esp_ota_end(ota_handle);
+        task_fatal_error("Error allocating memory for firmware image chunk");
+    }
+    
+    size_t chunk_read;
+    while((chunk_read = fread(chunk, 1, chunk_size, fw_file)) > 0)
+    {
+         err = esp_ota_write(ota_handle, chunk, chunk_read); 
+         if(err != ESP_OK)
+         {
+            free(chunk);
+            fclose(fw_file);
+            esp_ota_end(ota_handle);
+            task_fatal_error("Error writing firmware image chunk to OTA partition");
+        }
+    }
+
+     /* Close the firmware image file and free the chunk buffer */
+    fclose(fw_file);
+    free(chunk);
+
+    /* Finalize the OTA update process */
+    err = esp_ota_end(ota_handle);
+    if(err != ESP_OK)
+        task_fatal_error("Error finalizing OTA update");
+
+    /* Set the OTA partition as the active partition */
+    err = esp_ota_set_boot_partition(update_partition);
+    if(err != ESP_OK)
+        task_fatal_error("Error setting OTA partition as active");
+
+    ESP_LOGI(OTA_TAG, "OTA update successfully");
+    ESP_LOGI(OTA_TAG, "Restarting in 2 seconds.....");
+    vTaskDelay(2000/portTICK_PERIOD_MS);
+    esp_restart();
+    // return ESP_OK;
+}
 
 
 /* function to start mDNS service */
