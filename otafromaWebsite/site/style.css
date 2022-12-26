@@ -48,14 +48,20 @@
 }
 
 .progress {
-  margin: 30px 0;
+  margin: 15px 0;
   font-size: 1.25rem;
   font-weight: 600;
   color: #333;
 }
+.checkGroup {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 36px 0 25px 0;
+  width: 100%;
+}
 
 form {
-  height: 270px;
   display: flex;
   flex-direction: column;
   justify-content: center;
