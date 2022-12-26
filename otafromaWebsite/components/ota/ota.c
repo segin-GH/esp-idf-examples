@@ -15,10 +15,21 @@
 /* A macro for logging  */
 static const char *SERVER_TAG = "[SERVER]";
 static const char *SPIFFS_OTA = "[SPIFFS OTA]";
+static const char *OTA_TAG = "[OTA]";
 
 /* server handle */
 static httpd_handle_t server = NULL;
 
+
+/* a function which handles fatale errors and restarts the chip */
+static void __attribute__((noreturn)) task_fatal_error(const char *exit_msg)
+{
+    ESP_LOGE(OTA_TAG, "%s",exit_msg);
+    ESP_LOGE(OTA_TAG, "Restarting due to fatal error...");
+    esp_restart();
+
+    for(;;) { /* never get out of this loop */ }
+}
 
 /* event handler for the default URL */
 static esp_err_t on_default_url(httpd_req_t *req)
@@ -138,6 +149,88 @@ static esp_err_t on_spiffs_update(httpd_req_t *req)
     return ESP_OK;
 }
 
+
+/* OTA update handler function */
+static esp_err_t on_ota_update(httpd_req_t *req)
+{
+
+    /* Check if the request is a POST request */
+    if (req->method != HTTP_POST) {
+        httpd_resp_send_err(req, HTTPD_405_METHOD_NOT_ALLOWED, "Method not allowed");
+        return ESP_FAIL;
+    }
+    esp_err_t err;
+    
+    esp_ota_handle_t ota_handle = 0;
+    const esp_partition_t *update_partition = NULL;
+
+    ESP_LOGI(OTA_TAG, "Starting to handle partition");
+
+    const esp_partition_t *configured = esp_ota_get_boot_partition();
+    const esp_partition_t *running = esp_ota_get_running_partition();
+
+    if( configured != running)
+    {
+        // ESP_LOGE(OTA_TAG, "(This can happen if either the OTA boot data or 
+        //     preferred boot image become corrupted somehow.)");
+    }
+    
+    ESP_LOGI(OTA_TAG, "Running partition type %d subtype %d (offset 0x%08"PRIx32")",
+            running->type, running->subtype, running->address);
+
+    update_partition = esp_ota_get_next_update_partition(NULL);
+    if(update_partition == NULL)
+        task_fatal_error("Error getting OTA update partition");
+
+    ESP_LOGI(OTA_TAG, "Writing to partition subtype %d at offset 0x%"PRIx32,
+             update_partition->subtype, update_partition->address);
+
+    err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &ota_handle);
+    if(err != ESP_OK)
+        task_fatal_error("Error starting OTA update");
+
+    /* Read the firmware image data from the request body and write it to the OTA partition */
+
+    char buf[128];
+    int received = 0;
+    while(received < req->content_len)
+    {
+        int ret = httpd_req_recv(req, buf, sizeof(buf));
+        if (ret <= 0)
+        {
+            esp_ota_end(ota_handle);
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error receiving request body");
+            task_fatal_error("Error receiving request body");
+        }
+        received += ret;
+        err = esp_ota_write(ota_handle, (const void *)buf, ret);
+        if(err != ESP_OK)
+        {
+            esp_ota_end(ota_handle);
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Error writing to OTA partition");
+            task_fatal_error("Error writing to OTA partition");
+        }
+    }
+    
+    /* Finalize the OTA update process */
+    err = esp_ota_end(ota_handle);
+    if(err != ESP_OK)
+        task_fatal_error("Error finalizing OTA update");
+
+    /* Set the OTA partition as the active partition */
+    err = esp_ota_set_boot_partition(update_partition);
+    if(err != ESP_OK)
+        task_fatal_error("Error setting OTA partition as active");
+
+    ESP_LOGI(OTA_TAG, "OTA update successfully");
+    ESP_LOGI(OTA_TAG, "Restarting in 2 seconds.....");
+    vTaskDelay(2000/portTICK_PERIOD_MS);
+    esp_restart();
+
+    return ESP_OK;
+}
+
+
 /* function to start mDNS service */
 static void start_mdns_service()
 {
@@ -175,11 +268,21 @@ static void init_server()
         .handler = on_spiffs_update 
     };
     httpd_register_uri_handler(server, &ota_spiffs_update_url);
+
+
+
+    /* Add a handler for OTA update requests */
+    httpd_uri_t ota_update_url = {
+        .uri = "/ota",
+        .method = HTTP_POST,
+        .handler = on_ota_update
+    };
+    httpd_register_uri_handler(server, &ota_update_url);
 }
 
 void init_ota(void)
 {
-    ESP_LOGI("OTA","INVOKING OTA");
+    ESP_LOGI(OTA_TAG,"INVOKING OTA");
     nvs_flash_init();
     wifi_init();
     wifi_connect_sta("Segin", "2003sejin", 10000);
