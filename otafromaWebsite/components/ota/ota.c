@@ -283,8 +283,6 @@ static void init_server()
 
 void init_ota(void)
 {
-    TASK_ERROR_FATALE("nothing to exit", OTA_TAG, 0x101);
-    TASK_ERROR_NON_FATALE("exiting now", OTA_TAG, -1);
     ESP_LOGI(OTA_TAG,"INVOKING OTA");
     nvs_flash_init();
     wifi_init();
