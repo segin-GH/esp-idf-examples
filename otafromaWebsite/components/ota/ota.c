@@ -8,9 +8,9 @@
 #include "wifi_connect.h"
 
 /* A macro for logging  */
-static const char *SERVER_TAG = "[SERVER]";
-static const char *SPIFFS_OTA = "[SPIFFS OTA]";
-static const char *OTA_TAG = "[OTA]";
+static string SERVER_TAG = "[SERVER]";
+static string SPIFFS_OTA = "[SPIFFS OTA]";
+static string OTA_TAG = "[OTA]";
 
 /* server handle */
 static httpd_handle_t server = NULL;
