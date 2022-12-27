@@ -17,9 +17,8 @@
 extern "C" {
 #endif
 
-
+/* just a hack around, for (const char *) */
 typedef const char* string;
-#define NoReturn void __attribute__((noreturn));
 
 /* Function prototype */
 
@@ -28,7 +27,7 @@ typedef const char* string;
  * 
  * @param void nothing to pass as args
  * 
- * @return void nothing to return
+ * @return void nothing to
  */
 void init_ota(void);
 
@@ -40,9 +39,10 @@ void init_ota(void);
  * @param err used for knowing why this error happened pass in 0x101 prints out in string ESP_ERR_NO_MEM 
  * @param reset used for reseting the chip if true the chip gets reset
  **/
-NoReturn task_fatal_error( string exit_msg, string tag, esp_err_t err, bool reset);
+static void __attribute__((noreturn)) task_fatal_error( string exit_msg, string tag, esp_err_t err, bool reset);
 
-/* MACRO */
+
+/* MACROS */
 
 /**
  * @brief if this macro is called then the chip resets after printing the error msg.
