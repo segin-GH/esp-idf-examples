@@ -11,7 +11,24 @@
     <div class="container">
       <div class="sub-container">
         <div class="logo">hspl OTA</div>
+
         <form name="otaForm">
+          <div class="checkGroup">
+            <div class="">
+              <input
+                type="radio"
+                id="binary"
+                name="updateType"
+                value="binary"
+                checked
+              />
+              <label for="child">Binary</label><br />
+            </div>
+            <div class="">
+              <input type="radio" id="fs" name="updateType" value="fs" />
+              <label for="adult">Spiffs</label><br />
+            </div>
+          </div>
           <input type="file" id="fileInput" />
           <div class="progress" id="progress">
             <div class="progress-bar" id="progress-bar">
