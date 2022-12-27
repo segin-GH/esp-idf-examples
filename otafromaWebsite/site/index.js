@@ -33,7 +33,7 @@ const uploadFile = (file) => {
     formData = new FormData();
     // Append the file to the FormData object
     formData.append("textFile", file);
-    endpoint = "/fs";
+    endpoint = "/spiffs";
     contentType = "multipart/form-data";
   }
 
