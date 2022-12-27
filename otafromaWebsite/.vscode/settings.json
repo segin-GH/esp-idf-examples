@@ -16,6 +16,8 @@
         "file.h": "c",
         "esp_http_server.h": "c",
         "esp_ota_ops.h": "c",
-        "memory": "c"
+        "memory": "c",
+        "esp_log.h": "c",
+        "mdns.h": "c"
     }
 }
