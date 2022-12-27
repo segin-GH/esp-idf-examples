@@ -1,8 +1,8 @@
 
-/**
-    TODO do you need to implement httpd clean up ?
- **/
-
+// TODO make a end_ota()
+// TODO check version if same dont upload
+// TODO do you need to implement httpd clean up ?
+// TODO send more & descriptive msg to client ?
 
 #include "ota.h"
 #include "wifi_connect.h"
