@@ -18,6 +18,7 @@ static string OTA_TAG = "[OTA]";
 /* server handle */
 static httpd_handle_t server = NULL;
 
+static const char *mDNS_name = NULL;
 
 
 /* event handler for the default URL */
@@ -234,11 +235,18 @@ static void start_mdns_service()
     /* initialize mDNS */
     mdns_init();
     /* set host name */
-    mdns_hostname_set("esp-server");        /* new addr will be http://esp-server.local/ */
+    mdns_hostname_set(mDNS_name);        /* new addr will be http://esp-server.local/ */
     /* set instance name */
     mdns_instance_name_set("esp-server-hspl");
 }
 
+void set_mDNS_name(const char * name)
+{
+    if(name != NULL)
+        mDNS_name = name;
+    else
+        mDNS_name = "esp-server";
+}
 
 /* init server */
 static void init_server()

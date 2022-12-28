@@ -42,6 +42,17 @@ void init_ota(void);
 void __attribute__((noreturn)) task_fatal_error( string exit_msg, string tag, esp_err_t err, bool reset);
 
 
+/**
+ * @brief a function which sets mDNS name use this function if you want to
+ *        override the standard name of the mDNS (standard is http://esp-server.local/ )
+ *
+ * @param name the name that you want for your server
+ *             if you pass in null it will use the default mDNS name
+ *
+ */
+void set_mDNS_name(const char * name);
+
+
 /* MACROS */
 
 /**
