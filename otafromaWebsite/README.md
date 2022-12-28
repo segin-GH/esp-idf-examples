@@ -22,11 +22,31 @@ files that provide set of directives and instructions describing the project's s
 Below is short explanation of remaining files in the project folder.
 
 ```
+.
 ├── CMakeLists.txt
+├── components
+│   ├── ota
+│   │   ├── CMakeLists.txt
+│   │   ├── include
+│   │   │   └── ota.h
+│   │   └── ota.c
+│   └── wifiConnect
+│       ├── CMakeLists.txt
+│       ├── include
+│       │   └── wifi_connect.h
+│       └── wifi_connect.c
 ├── main
 │   ├── CMakeLists.txt
 │   └── main.c
-└── README.md                  This is the file you are currently reading
+├── partitions.csv
+├── README.md
+├── sdkconfig
+├── sdkconfig.old
+└── site
+    ├── index.html
+    ├── index.js
+    └── style.css
+    
 ```
 Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
 They are not used or needed when building with CMake and idf.py.
