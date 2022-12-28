@@ -39,7 +39,7 @@ void init_ota(void);
  * @param err used for knowing why this error happened pass in 0x101 prints out in string ESP_ERR_NO_MEM 
  * @param reset used for reseting the chip if true the chip gets reset
  **/
-static void __attribute__((noreturn)) task_fatal_error( string exit_msg, string tag, esp_err_t err, bool reset);
+void __attribute__((noreturn)) task_fatal_error( string exit_msg, string tag, esp_err_t err, bool reset);
 
 
 /* MACROS */

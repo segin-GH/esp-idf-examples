@@ -4,6 +4,8 @@
 // TODO check version if same dont upload
 // TODO do you need to implement httpd clean up ?
 // TODO send more & descriptive msg to client ?
+// TODO version control 
+
 
 #include "ota.h"
 #include "wifi_connect.h"
@@ -286,7 +288,7 @@ static void init_server()
 
 
 /* a function which handles fatale errors and restarts the chip */
-static void __attribute__((noreturn)) task_fatal_error( string exit_msg, string tag, esp_err_t err, bool reset)
+void __attribute__((noreturn)) task_fatal_error( string exit_msg, string tag, esp_err_t err, bool reset)
 {
     ESP_LOGE(tag, "%s", exit_msg);
     ESP_LOGE(tag, "The Reason for Error maybe %s",esp_err_to_name(err));
