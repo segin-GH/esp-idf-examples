@@ -1,5 +1,4 @@
 // TODO if you inti you should be able to destroy
-// TODO make a api call for mDNS
 // TODO make a end_ota()
 // TODO check version if same dont upload
 // TODO do you need to implement httpd clean up ?
