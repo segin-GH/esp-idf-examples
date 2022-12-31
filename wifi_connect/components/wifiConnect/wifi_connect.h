@@ -1,9 +1,10 @@
-#ifndef WIFI_CONNECT_H
-#define WIFI_CONNECT_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
 #include <esp_err.h>
 #include <esp_netif.h>
 #include <esp_wifi.h>
@@ -13,10 +14,26 @@
 #include <freertos/event_groups.h>
 
 
-void wifi_init(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct 
+{
+    char wifi_name[16];
+    char wifi_pass[16];
+    int k_timeout;
+
+}wifi_cred_t;
+
+
+esp_err_t wifi_init(void);
 esp_err_t wifi_connect_sta(const char* wifiname, const char* pass, int timeout);
-void wifi_connect_ap(const char* wifiname, const char* pass);
-void wifi_disconnect(void);
+esp_err_t wifi_connect_ap(const char* wifiname, const char* pass);
+esp_err_t wifi_disconnect_sta(wifi_cred_t *cred);
+esp_err_t deinit_wifi(void);
 
 
-#endif /* WIFI_CONNECT_H */
+#ifdef __cplusplus
+}
+#endif
