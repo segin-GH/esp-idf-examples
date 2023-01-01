@@ -2,9 +2,9 @@
 
 /** @todo
    
-   TODO impl deinit()  function
+*   TODO impl deinit()  function
    TODO impl  esp_event_handler_unregister in deinit
-   TODO a struct should be passed in for wifi name and password and kTimeout
+*   TODO a struct should be passed in for wifi name and password and kTimeout
    TODO change name to wifi -> wifi_connect
    TODO (wifi NVS flash) the drivers can be saved in a flash and when restarting dont need
         to reinit again and again
