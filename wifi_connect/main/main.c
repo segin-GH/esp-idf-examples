@@ -26,7 +26,7 @@ void wifi_connect(void *args)
         vTaskDelay(1000/portTICK_PERIOD_MS);
     } */
 
-    esp_err_t err = wifi_connect_sta(wifiName, password, 10000);
+    esp_err_t err = wifi_connect_sta(&wifi_cred);
     if(err)
     {
         ESP_LOGE("WIFI CONNECT", "Failed to connect");

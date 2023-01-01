@@ -2,8 +2,6 @@
 
 /** @todo
    
-*   TODO impl deinit()  function
-   TODO impl  esp_event_handler_unregister in deinit
 *   TODO a struct should be passed in for wifi name and password and kTimeout
    TODO change name to wifi -> wifi_connect
    TODO (wifi NVS flash) the drivers can be saved in a flash and when restarting dont need
@@ -101,7 +99,7 @@ esp_err_t wifi_init(void)
     return ESP_OK;
 }
 
-esp_err_t wifi_connect_sta(const char *wifiName, const char *password, const int K_timeOut)
+esp_err_t wifi_connect_sta(wifi_cred_t *cred)
 {
     /* create an event group */
     wifi_events = xEventGroupCreate();
@@ -123,8 +121,8 @@ esp_err_t wifi_connect_sta(const char *wifiName, const char *password, const int
     /* set wifi config */
     wifi_config_t wifi_config;
     memset(&wifi_config, 0, sizeof(wifi_config_t));
-    strncpy((char *)wifi_config.sta.ssid, wifiName, sizeof(wifi_config.sta.ssid));
-    strncpy((char *)wifi_config.sta.password, password, sizeof(wifi_config.sta.password));
+    strncpy((char *)wifi_config.sta.ssid, cred -> wifi_name, sizeof(wifi_config.sta.ssid));
+    strncpy((char *)wifi_config.sta.password, cred -> wifi_pass, sizeof(wifi_config.sta.password));
 
     /* set wifi mode to station */
     esp_wifi_set_mode(WIFI_MODE_STA);
@@ -137,8 +135,7 @@ esp_err_t wifi_connect_sta(const char *wifiName, const char *password, const int
 
     /* wait for the CONNECTED_GOT_IP or DISCONNECTED */
     EventBits_t result = xEventGroupWaitBits(
-        wifi_events, CONNECTED_GOT_IP, pdTRUE, pdFALSE,
-        pdMS_TO_TICKS(K_timeOut));
+        wifi_events, CONNECTED_GOT_IP, pdTRUE, pdFALSE, pdMS_TO_TICKS(cred -> k_timeout));
 
     /* return ESP_OK if the CONNECTED_GOT_IP event was received, ESP_FAIL otherwise */
     if(result == CONNECTED_GOT_IP)
@@ -146,8 +143,7 @@ esp_err_t wifi_connect_sta(const char *wifiName, const char *password, const int
         USER_DISCONNECTED = false;
         return ESP_OK;
     }
-    else
-        return  ESP_FAIL;
+    return  ESP_FAIL;
 
 }
 
@@ -180,29 +176,26 @@ esp_err_t wifi_connect_ap(const char* wifiname, const char* password)
 
 esp_err_t wifi_disconnect_sta(wifi_cred_t *cred)
 {
-    esp_err_t err;
     USER_DISCONNECTED = true;
 
-    err = esp_wifi_disconnect();
+    esp_wifi_disconnect();
+
     EventBits_t result = xEventGroupWaitBits(
-        wifi_events, DISCONNECTED, pdTRUE, pdFALSE,
-        pdMS_TO_TICKS(cred -> k_timeout));
+        wifi_events, DISCONNECTED, pdTRUE, pdFALSE, pdMS_TO_TICKS(cred -> k_timeout));
     
         if(result == DISCONNECTED)
         {
             USER_DISCONNECTED = true;
             return ESP_OK;
         }
-        else
-            return ESP_FAIL;
-
+    
+    return ESP_FAIL;
 }
 
 esp_err_t deinit_wifi(void)
 {
     EventBits_t result = xEventGroupWaitBits(
-        wifi_events, DISCONNECTED, pdTRUE, pdFALSE,
-        portMAX_DELAY);
+        wifi_events, DISCONNECTED, pdTRUE, pdFALSE, portMAX_DELAY);
     
     ESP_LOGI(WIFI_TAG, "DE-INITIALIZING WIFI ....");
     esp_wifi_stop();

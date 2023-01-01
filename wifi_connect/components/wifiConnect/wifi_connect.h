@@ -28,7 +28,7 @@ typedef struct
 
 
 esp_err_t wifi_init(void);
-esp_err_t wifi_connect_sta(const char* wifiname, const char* pass, int timeout);
+esp_err_t wifi_connect_sta(wifi_cred_t *cred);
 esp_err_t wifi_connect_ap(const char* wifiname, const char* pass);
 esp_err_t wifi_disconnect_sta(wifi_cred_t *cred);
 esp_err_t deinit_wifi(void);
