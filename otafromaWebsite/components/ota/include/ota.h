@@ -56,7 +56,7 @@ void set_mDNS_name(const char * name);
 /**
  * @brief set 
  */
-void set_spiffs_path(string full_path);
+void set_spiffs_path(char *full_path);
 
 /* MACROS */
 

@@ -9,6 +9,8 @@
 #include "ota.h"
 #include "wifi_connect.h"
 
+/* #define DEBUG */
+
 /* A macro for logging  */
 static string SERVER_TAG = "[SERVER]";
 static string SPIFFS_OTA = "[SPIFFS OTA]";
@@ -30,13 +32,13 @@ static esp_err_t on_default_url(httpd_req_t *req)
     ESP_LOGI(SERVER_TAG, "URL %s: ", req->uri);
 
     /* config spiffs for file reading*/
-    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
+    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config_web = {
         .base_path = "/spiffs",
         .partition_label = NULL,
         .max_files = 5,
         .format_if_mount_failed = true
     };
-    err = esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
+    err = esp_vfs_spiffs_register(&esp_vfs_spiffs_config_web);
     if(err != ESP_OK)
         TASK_ERROR_FATALE("Unable to register spiffs", SERVER_TAG, err);
 
@@ -89,7 +91,7 @@ static esp_err_t on_default_url(httpd_req_t *req)
     return ESP_OK;
 }
 
-void set_spiffs_path(string full_path)
+void set_spiffs_path(char *full_path)
 {
     strcpy(spiff_setings_txt_path, full_path);
     // TASK_ERROR_NON_FATALE("spiffs path that set bu user is NULL?", SPIFFS_OTA, ESP_FAIL);
@@ -98,17 +100,6 @@ void set_spiffs_path(string full_path)
 /* SPIFFS UPDATE handler function */
 static esp_err_t on_spiffs_update(httpd_req_t *req)
 {
-    esp_err_t err;
-    /* config spiffs for file reading*/
-    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
-        .base_path = "/spiffs",
-        .partition_label = NULL,
-        .max_files = 1,
-        .format_if_mount_failed = true
-    };
-    err = esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
-    if(err != ESP_OK)
-        TASK_ERROR_FATALE("Unable to register spiffs", SPIFFS_OTA, err);
     
     /* Check if the request is a POST request */
     if (req->method != HTTP_POST) 
@@ -123,7 +114,7 @@ static esp_err_t on_spiffs_update(httpd_req_t *req)
     }
 
     /* Open a file for writing the firmware image */
-    FILE *spiffs_file = fopen(spiff_setings_txt_path, "w");
+    FILE *spiffs_file = fopen(spiff_setings_txt_path, "wb");
     if (spiffs_file == NULL)
     {
         ESP_LOGE(SPIFFS_OTA, "Error opening file for writing");
@@ -155,6 +146,24 @@ static esp_err_t on_spiffs_update(httpd_req_t *req)
     /* send data to client saying received file  */
     httpd_resp_sendstr(req, "File Received");
     ESP_LOGI(SPIFFS_OTA, "File Received");
+
+#ifdef DEBUG
+
+    FILE *file = fopen(spiff_setings_txt_path, "r");
+    if(file ==NULL)
+    {
+        ESP_LOGE("PRINT FILE","could not open file");
+    }
+    else 
+    {
+        char line[256];
+        while(fgets(line, sizeof(line), file) != NULL)
+        {
+            printf(line);
+        }
+        fclose(file);
+    }
+#endif /* DEBUG */
     
     return ESP_OK;
 }
