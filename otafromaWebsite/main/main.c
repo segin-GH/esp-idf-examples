@@ -15,6 +15,7 @@ void app_main(void)
     nvs_flash_init();
     wifi_init();
     wifi_connect_sta(&wifi_cred);
+    set_spiffs_path("/spiffs/setings.txt");
     set_mDNS_name(NULL); // new addr will be http://pdb-esp.local/
     init_ota();
 }
