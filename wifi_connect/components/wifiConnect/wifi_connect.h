@@ -18,19 +18,67 @@
 extern "C" {
 #endif
 
+/**
+ * @brief WiFi credentials structure
+ * 
+ * @param wifi_name name for your wifi
+ * 
+ * @param wifi_pass password for your wifi
+ * 
+ * @param k_timeout timeout value for wifi connection or disconnection (in ms) 
+ */
 typedef struct 
 {
     char wifi_name[16];
     char wifi_pass[16];
     int k_timeout;
 
-}wifi_cred_t;
+} wifi_cred_t;
 
 
+/**
+ * @brief Initialize WiFi 
+ *
+ * @return ESP_OK if successful, ESP_FAIL otherwise
+ */
 esp_err_t wifi_init(void);
+
+
+/**
+ * @brief Connect to WiFi network in station mode
+ *
+ * @param[in] cred WiFi credentials
+ *
+ * @return ESP_OK if successful, ESP_FAIL otherwise
+ */
 esp_err_t wifi_connect_sta(wifi_cred_t *cred);
-esp_err_t wifi_connect_ap(const char* wifiname, const char* pass);
+
+
+/**
+ * @brief Connect to WiFi network in access point mode
+ *
+ * @param[in] cred WiFi credentials
+ *
+ * @return ESP_OK if successful, ESP_FAIL otherwise
+ */
+esp_err_t wifi_connect_ap(wifi_cred_t *cred);
+
+
+/**
+ * @brief Disconnect from WiFi network in station mode
+ *
+ * @param[in] cred WiFi credentials
+ *
+ * @return ESP_OK if successful, ESP_FAIL otherwise
+ */
 esp_err_t wifi_disconnect_sta(wifi_cred_t *cred);
+
+
+/**
+ * @brief Deinitialize WiFi
+ *
+ * @return ESP_OK if successful, ESP_FAIL otherwise
+ */
 esp_err_t deinit_wifi(void);
 
 

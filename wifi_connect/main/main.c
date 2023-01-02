@@ -17,35 +17,44 @@ wifi_cred_t wifi_cred = {
     .k_timeout = 10000,
 };
 
+wifi_cred_t hotspot_cred = {
+
+    .wifi_name = "ESP32 HOTSPOT",
+    .wifi_pass = "password",
+    .k_timeout = 10000,
+};
+
 void wifi_connect(void *args)
 {
-/*     wifi_connect_ap("ESP32_HOTSPOT","password");
-    for(int i = 45; i > 0; --i)
-    {
-        printf("disconnecting ap %d\n", i);
-        vTaskDelay(1000/portTICK_PERIOD_MS);
-    } */
+    esp_err_t err;
 
-    esp_err_t err = wifi_connect_sta(&wifi_cred);
+    // err = wifi_connect_ap(&hotspot_cred);
+    // for(int i = 45; i > 0; --i)
+    // {
+    //     printf("disconnecting ap %d\n", i);
+    //     vTaskDelay(1000/portTICK_PERIOD_MS);
+    // }
+
+    err = wifi_connect_sta(&wifi_cred);
     if(err)
     {
         ESP_LOGE("WIFI CONNECT", "Failed to connect");
         vTaskDelete(NULL);
     }
+    
     for(int i = 5; i > 0; --i) 
     {
         printf("Disconnecting in %i second.\n",i);
         vTaskDelay(1000/portTICK_PERIOD_MS);
     }
+    
     err = wifi_disconnect_sta(& wifi_cred);
+
     if(err == ESP_OK)
-    {
         deinit_wifi();
 
-    }
-
-    
-    vTaskDelay(10000/portTICK_PERIOD_MS); 
+    vTaskDelay(100/portTICK_PERIOD_MS); 
+    printf("Deleting the task");
     vTaskDelete(NULL);
 }
 
