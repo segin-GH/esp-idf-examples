@@ -98,17 +98,6 @@ void set_spiffs_path(string full_path)
 /* SPIFFS UPDATE handler function */
 static esp_err_t on_spiffs_update(httpd_req_t *req)
 {
-    esp_err_t err;
-    /* config spiffs for file reading*/
-    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
-        .base_path = "/spiffs",
-        .partition_label = NULL,
-        .max_files = 1,
-        .format_if_mount_failed = true
-    };
-    err = esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
-    if(err != ESP_OK)
-        TASK_ERROR_FATALE("Unable to register spiffs", SPIFFS_OTA, err);
     
     /* Check if the request is a POST request */
     if (req->method != HTTP_POST) 
