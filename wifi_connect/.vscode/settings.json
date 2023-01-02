@@ -14,6 +14,9 @@
         "task.h": "c",
         "cstring": "cpp",
         "condition_variable": "c",
-        "future": "c"
+        "future": "c",
+        "wifi_connect.h": "c",
+        "esp_event.h": "c",
+        "esp_wifi.h": "c"
     }
 }
