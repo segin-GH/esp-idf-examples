@@ -30,13 +30,13 @@ static esp_err_t on_default_url(httpd_req_t *req)
     ESP_LOGI(SERVER_TAG, "URL %s: ", req->uri);
 
     /* config spiffs for file reading*/
-    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config = {
+    esp_vfs_spiffs_conf_t esp_vfs_spiffs_config_web = {
         .base_path = "/spiffs",
         .partition_label = NULL,
         .max_files = 5,
         .format_if_mount_failed = true
     };
-    err = esp_vfs_spiffs_register(&esp_vfs_spiffs_config);
+    err = esp_vfs_spiffs_register(&esp_vfs_spiffs_config_web);
     if(err != ESP_OK)
         TASK_ERROR_FATALE("Unable to register spiffs", SERVER_TAG, err);
 
