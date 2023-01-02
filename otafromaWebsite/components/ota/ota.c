@@ -17,7 +17,8 @@ static string OTA_TAG = "[OTA]";
 /* server handle */
 static httpd_handle_t server = NULL;
 
-static const char *mDNS_name = NULL;
+static string mDNS_name = NULL;
+static char spiff_setings_txt_path[100] = {0};
 
 
 /* event handler for the default URL */
@@ -88,6 +89,11 @@ static esp_err_t on_default_url(httpd_req_t *req)
     return ESP_OK;
 }
 
+void set_spiffs_path(string full_path)
+{
+    strcpy(spiff_setings_txt_path, full_path);
+    // TASK_ERROR_NON_FATALE("spiffs path that set bu user is NULL?", SPIFFS_OTA, ESP_FAIL);
+}
 
 /* SPIFFS UPDATE handler function */
 static esp_err_t on_spiffs_update(httpd_req_t *req)
@@ -110,9 +116,14 @@ static esp_err_t on_spiffs_update(httpd_req_t *req)
         httpd_resp_send_err(req, HTTPD_405_METHOD_NOT_ALLOWED, "Method not allowed");
         TASK_ERROR_FATALE("Method not allowed", SERVER_TAG, ESP_FAIL);
     }
+    if(spiff_setings_txt_path[0] == 0)
+    {
+        TASK_ERROR_NON_FATALE("Spiffs path does not exist's", SPIFFS_OTA, ESP_FAIL);
+        return ESP_FAIL;
+    }
 
     /* Open a file for writing the firmware image */
-    FILE *spiffs_file = fopen("/spiffs/spiffs.txt", "w");
+    FILE *spiffs_file = fopen(spiff_setings_txt_path, "w");
     if (spiffs_file == NULL)
     {
         ESP_LOGE(SPIFFS_OTA, "Error opening file for writing");
@@ -147,6 +158,7 @@ static esp_err_t on_spiffs_update(httpd_req_t *req)
     
     return ESP_OK;
 }
+
 
 
 /* OTA update handler function */

@@ -53,6 +53,11 @@ void __attribute__((noreturn)) task_fatal_error( string exit_msg, string tag, es
 void set_mDNS_name(const char * name);
 
 
+/**
+ * @brief set 
+ */
+void set_spiffs_path(string full_path);
+
 /* MACROS */
 
 /**
@@ -63,8 +68,8 @@ void set_mDNS_name(const char * name);
  * @param err used for knowing why the error happened,
  *            eg:- if passed in 0x101, then it prints out a string ESP_ERR_NO_MEM 
  * 
- * @param reset used for reseting the chip if true the chip gets reset,
- *              always true in this case
+ * @attention  if this api is called then the chip gets reset after loging the error.
+ *
  **/
 #define TASK_ERROR_FATALE(exit_msg, tag, err)\
             task_fatal_error(exit_msg, tag, err, true);
@@ -77,8 +82,8 @@ void set_mDNS_name(const char * name);
  * @param err used for knowing why the error happened.
  *            eg:- if passed in 0x101, then it prints out a string ESP_ERR_NO_MEM 
  * 
- * @param reset used for reseting the chip if true the chip gets reset,
- *              always false in this case.
+ * @attention  if this api is called then chip doesnot get reset after loging the error.
+ *
  **/
 #define TASK_ERROR_NON_FATALE(exit_msg, tag, err)\
             task_fatal_error(exit_msg, tag, err, false);
