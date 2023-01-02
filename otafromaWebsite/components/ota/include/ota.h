@@ -68,7 +68,7 @@ void set_spiffs_path(string full_path);
  * @param err used for knowing why the error happened,
  *            eg:- if passed in 0x101, then it prints out a string ESP_ERR_NO_MEM 
  * 
- * @attention  if this api is called then the chip gets reset after loging the error.
+ * @attention  if this api is called then the chip gets reset after logging the error.
  *
  **/
 #define TASK_ERROR_FATALE(exit_msg, tag, err)\
@@ -82,7 +82,7 @@ void set_spiffs_path(string full_path);
  * @param err used for knowing why the error happened.
  *            eg:- if passed in 0x101, then it prints out a string ESP_ERR_NO_MEM 
  * 
- * @attention  if this api is called then chip doesnot get reset after loging the error.
+ * @attention  if this api is called then chip does not get reset after logging the error.
  *
  **/
 #define TASK_ERROR_NON_FATALE(exit_msg, tag, err)\
