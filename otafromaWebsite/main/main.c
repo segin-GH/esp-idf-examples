@@ -32,8 +32,8 @@ void app_main(void)
 
     wifi_connect_sta(&wifi_cred);
 
-    // set_mDNS_name(NULL);         /* <-- new addr will be http://esp-server.local/ */
-    set_mDNS_name("pdb-esp");      /* <--new addr will be http://pdb-esp.local/ */
+    // set_mDNS_name(NULL);        /* <-- addr will be http://esp-server.local/ */
+    set_mDNS_name("pdb-esp");      /* <--  addr will be http://pdb-esp.local/ */
 
     init_ota();
 }
