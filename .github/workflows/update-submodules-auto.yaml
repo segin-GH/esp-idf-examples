@@ -15,11 +15,11 @@ jobs:
           path: repo1
       - name: Update submodule
         run: |
-          cd repo1
+          cd esp-idf
           git submodule update --remote
       - name: Commit and push changes
         run: |
-          cd repo1
+          cd esp-idf
           git config --global user.email "segin.bytes@gmail.com"
           git config --global user.name "segin-GH"
           git add .
