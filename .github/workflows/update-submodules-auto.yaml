@@ -1,13 +1,25 @@
+name: Update esp-idf
 on:
   push:
     paths:
-      - '**'
+      - 'esp-idf_cpp/**'
 jobs:
-  update_submodules:
+  update_repo1:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true
-      - name: Update submodules
-        run: git submodule update --recursive --remote
+          repository: segin-GH/esp-idf
+          path: repo1
+      - name: Update submodule
+        run: |
+          cd repo1
+          git submodule update --remote
+      - name: Commit and push changes
+        run: |
+          cd repo1
+          git config --global user.email "segin.bytes@gmail.com"
+          git config --global user.name "segin-GH"
+          git add .
+          git commit -m "Updated submodule"
+          git push origin master
