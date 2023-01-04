@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - 'esp-idf_cpp/**'
+  workflow_dispatch:
+
 jobs:
   update_repo1:
     runs-on: ubuntu-latest
