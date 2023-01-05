@@ -12,10 +12,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: segin-GH/esp-idf
-          path: repo1
+          path: cd esp-idf
       - name: Update submodule
         run: |
-          cd esp-idf
+          cd esp-idf_cpp
           git submodule update --remote
       - name: Commit and push changes
         run: |
