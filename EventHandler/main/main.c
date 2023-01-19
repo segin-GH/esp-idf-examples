@@ -63,7 +63,7 @@ void app_main()
     // Post an event to the loop
 
     // Unregister the event handler
-    // esp_event_handler_unregister_with(loop_handle, MY_EVENT_BASE, MY_EVENT_ID, run_on_event);
+    // esp_event_handler_unregister_with(loop_handle, MY_EVENT_BASE, ESP_EVENT_ANY_ID, run_on_event);
 
         xTaskCreatePinnedToCore(
         listenToHTTPs,
