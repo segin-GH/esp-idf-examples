@@ -1,0 +1,9 @@
+If you need to switch between tasks based on specific events, using an event loop can be a good solution. The event loop can wait for events to occur and then trigger the appropriate task to run based on the event. This allows for more flexibility and can make your code more modular and easier to maintain.
+
+On the other hand, if the switching between tasks is based on a fixed schedule or a specific condition, using a timer or a simple if statement in the main loop may be sufficient.
+
+If you have multiple tasks that need to communicate with each other, event loop can be a good solution. The event loop can handle communication between tasks and can ensure that the tasks are synchronized and that the communication is done in a thread-safe manner.
+
+In any case, it's important to design your application with efficiency in mind. Make sure that the event loop is not consuming too much CPU resources and that the callback functions are lightweight and do not block, as this may cause the event loop to become unresponsive and affect the performance of other tasks.
+
+If you are unsure, you can try implementing your application both ways and compare the performance and ease of maintenance.
