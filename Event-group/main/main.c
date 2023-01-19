@@ -18,7 +18,7 @@ void listenToHTTPs (void *parms)
     }
 }
 
-void listenToBluetooh (void *parms)
+void listenToBluetooth (void *parms)
 {
     for(;;)
     {
@@ -33,7 +33,7 @@ void Task1 (void *parms)
     for(;;)
     {
         xEventGroupWaitBits(evtgrp, gotHTTP | gotBLE, true, true, portMAX_DELAY);
-        printf("recived HTTP and BLE\n");
+        printf("received HTTP and BLE\n");
     }
 }
 
@@ -43,7 +43,7 @@ void app_main (void)
 
     xTaskCreatePinnedToCore(
         listenToHTTPs,
-        "listenToHTPPs",
+        "listenToHTTPs",
         2048,
         NULL,
         2,
@@ -52,8 +52,8 @@ void app_main (void)
     );
 
     xTaskCreatePinnedToCore(
-        listenToBluetooh,
-        "listenToBluetooh",
+        listenToBluetooth,
+        "listenToBluetooth",
         2048,
         NULL,
         2,
