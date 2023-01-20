@@ -11,7 +11,6 @@ void listenForHTTP()
     for(;;)
     {
         printf("recived https message\n");
-        xSemaphoreGive(binsemaph);        
         vTaskDelay(5000/portTICK_PERIOD_MS);
         printf(" processed \n");
     }
@@ -50,4 +49,6 @@ void app_main(void)
         NULL,
         APP_CPU_NUM
     );
+    
+    xSemaphoreGive(binsemaph);        
 }
