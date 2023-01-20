@@ -32,7 +32,7 @@ void Task1 (void *parms)
 {
     for(;;)
     {
-        xEventGroupWaitBits(evtgrp, gotHTTP | gotBLE, true, true, portMAX_DELAY);
+        xEventGroupWaitBits(evtgrp, gotHTTP &&  gotBLE, true, true, portMAX_DELAY);
         printf("received HTTP and BLE\n");
     }
 }
