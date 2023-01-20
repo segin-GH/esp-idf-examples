@@ -12,7 +12,6 @@ void listenToHTTPs (void *parms)
 {
     for(;;)
     {
-        xEventGroupSetBits(evtgrp,gotHTTP);
         printf("got HTTPS\n");
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
@@ -32,7 +31,7 @@ void Task1 (void *parms)
 {
     for(;;)
     {
-        xEventGroupWaitBits(evtgrp, gotHTTP && gotBLE, true, true, portMAX_DELAY);
+        xEventGroupWaitBits(evtgrp, gotHTTP , false, true, portMAX_DELAY);
         printf("received HTTP and BLE\n");
     }
 }
@@ -70,4 +69,6 @@ void app_main (void)
         NULL,
         APP_CPU_NUM
     );
+
+    xEventGroupSetBits(evtgrp,gotHTTP);
 }
