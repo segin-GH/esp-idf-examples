@@ -60,8 +60,6 @@ void app_main()
     // Register an event handler
     esp_event_handler_register_with(loop_handle, MY_EVENT_BASE, ESP_EVENT_ANY_ID, run_on_event, NULL);
 
-    // Post an event to the loop
-
     // Unregister the event handler
     // esp_event_handler_unregister_with(loop_handle, MY_EVENT_BASE, ESP_EVENT_ANY_ID, run_on_event);
 
