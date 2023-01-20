@@ -6,7 +6,7 @@
 #define MY_EVENT_ID 1
 #define MY_EVENT_BLE 2
 
-esp_event_loop_handle_t loop_handle;
+sp_event_loop_handle_t loop_handle;
 
 void listenToHTTPs (void *parms)
 {
