@@ -1,0 +1,43 @@
+CMake Error at /home/bot/esp/esp-idf-v5.0/tools/cmake/project.cmake:342 (__project):
+  The CMAKE_C_COMPILER:
+
+    /home/bot/esp/esp-idf/tools/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc
+
+  is not a full path to an existing compiler tool.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CC" or the CMake cache entry CMAKE_C_COMPILER to the full path to
+  the compiler, or to the compiler name if it is in the PATH.
+Call Stack (most recent call first):
+  CMakeLists.txt:8 (project)
+
+
+CMake Error at /home/bot/esp/esp-idf-v5.0/tools/cmake/project.cmake:342 (__project):
+  The CMAKE_CXX_COMPILER:
+
+    /home/bot/esp/esp-idf/tools/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-g++
+
+  is not a full path to an existing compiler tool.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CXX" or the CMake cache entry CMAKE_CXX_COMPILER to the full path
+  to the compiler, or to the compiler name if it is in the PATH.
+Call Stack (most recent call first):
+  CMakeLists.txt:8 (project)
+
+
+CMake Error at /home/bot/esp/esp-idf-v5.0/tools/cmake/project.cmake:342 (__project):
+  The CMAKE_ASM_COMPILER:
+
+    /home/bot/esp/esp-idf/tools/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc
+
+  is not a full path to an existing compiler tool.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "ASM" or the CMake cache entry CMAKE_ASM_COMPILER to the full path
+  to the compiler, or to the compiler name if it is in the PATH.
+Call Stack (most recent call first):
+  CMakeLists.txt:8 (project)
+
+
+ninja: error: rebuilding 'build.ninja': subcommand failed

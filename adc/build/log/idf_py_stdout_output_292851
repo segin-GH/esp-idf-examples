@@ -1,0 +1,5 @@
+[0/1] Re-running CMake...
+-- Configuring incomplete, errors occurred!
+See also "/home/bot/code/esp-idf/adc/build/CMakeFiles/CMakeOutput.log".
+FAILED: build.ninja 
+/home/bot/esp/esp-idf/tools/tools/cmake/3.23.1/bin/cmake --regenerate-during-build -S/home/bot/code/esp-idf/adc -B/home/bot/code/esp-idf/adc/build
