@@ -5,14 +5,14 @@
 #include <freertos/event_groups.h>
 
 EventGroupHandle_t eventGrp;
-int BIT = 0b0000;
+int BIT = 0b0001;
 
 void listenToHTTPs (void *parms)
 {
     for(;;)
     {
-        xEventGroupSetBits(eventGrp, /*  */);
-        printf("got HTTPS\n");
+        xEventGroupSetBits(eventGrp, 0b0001);
+        printf("set HTTPS BIT\n");
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
 }
@@ -21,8 +21,8 @@ void listenToBluetooth (void *parms)
 {
     for(;;)
     {
-        xEventGroupSetBits(eventGrp, /*  */);
-        printf("got BLE\n");
+        xEventGroupSetBits(eventGrp, 0b0010);
+        printf("set BLE BIT\n");
         vTaskDelay(5000/portTICK_PERIOD_MS);
     }
 }
@@ -31,8 +31,15 @@ void Task1 (void *parms)
 {
     for(;;)
     {
-        xEventGroupWaitBits(eventGrp, /*  */ , false, true, portMAX_DELAY);
-        printf("received HTTP and BLE\n");
+        int rtn = xEventGroupWaitBits(eventGrp, 0b0001 | 0b0010, true, true, portMAX_DELAY);
+        rtn = rtn & 0b0001;
+        rtn = 1 << 2;
+        if (rtn == 0b0011)
+        {
+            printf("Return of EventGroup %i.\n",rtn);
+            printf("received HTTP and BLE\n");
+        }
+
     }
 }
 
