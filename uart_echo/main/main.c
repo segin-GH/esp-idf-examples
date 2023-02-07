@@ -48,6 +48,7 @@ void exChangeUartData(void *parms)
     while(true)
     {   
         uart_write_bytes(UART_NUM_2,data,5);
+        /* in uart read bytes try to give the exact number of data is going to be snd */
         uart_read_bytes(UART_NUM_1,recMesg, Buf_size,20/portTICK_RATE_MS);
         printf("recived mesg: %s %i\n",recMesg,count);
         count++;
