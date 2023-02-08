@@ -23,7 +23,8 @@ void listenToBluetooth (void *parms)
     for(;;)
     {
         printf("got BLE\n");
-        esp_event_post_to(loop_handle, MY_EVENT_BASE, MY_EVENT_BLE, NULL, 0, portMAX_DELAY);
+        char data[] = "DATA 4 BLE"
+        esp_event_post_to(loop_handle, MY_EVENT_BASE, MY_EVENT_BLE, data, 0, portMAX_DELAY);
         vTaskDelay(4000/portTICK_PERIOD_MS);
     }
 }
@@ -35,8 +36,9 @@ void run_on_event(void* handler_arg, esp_event_base_t base, int32_t id, void* ev
     {
         case MY_EVENT_ID:
             printf("event triggered after got https cmd %d\n", id);
+            printf("%s\n", (char*)event_data);
             break;
-        
+
         case MY_EVENT_BLE:
             printf("event triggered after got BLE cmd %d\n", id);
             break;
