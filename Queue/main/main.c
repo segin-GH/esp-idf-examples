@@ -3,6 +3,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/semphr.h>
+#include <freertos/queue.h>
 
 static const int Queue_len = 5;
 xQueueHandle queue;
@@ -10,12 +11,12 @@ xQueueHandle queue;
 void listenFromHTPPS(void *parms)
 {
     int count = 0;
-    
+
     for(;;)
     {
         count++;
         printf("recived http message\n");
-        long ok = xQueueSend(queue, &count, 1000/portTICK_PERIOD_MS);
+        long ok = xQueueSend(queue, &count, 5000/portTICK_PERIOD_MS);
         if(ok)
         {
             printf("added message to queue\n");
@@ -24,8 +25,7 @@ void listenFromHTPPS(void *parms)
         {
             printf("unable add to queue\n");
         }
-        
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(10000/portTICK_PERIOD_MS);
     }
 }
 
@@ -34,11 +34,14 @@ void task1(void *parms)
     int rxint;
     for(;;)
     {
-        if(xQueueReceive(queue, &rxint, 5000/portTICK_PERIOD_MS))
+        if(xQueueReceive(queue, &rxint, 1000/portTICK_PERIOD_MS))
         {
-            printf("%d\n",rxint);
+            printf("%d queue received \n",rxint);
         }
-        printf("doing something with https\n");
+        else
+        {
+            printf("Did not get queue in 1sec \n");
+        }
     }
 } 
 
