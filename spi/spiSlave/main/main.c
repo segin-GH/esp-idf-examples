@@ -25,7 +25,7 @@
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
-#define GPIO_CS 21
+#define GPIO_CS 27
 #define Buffersize 128
 #define RCV_HOST HSPI_HOST
 
@@ -76,6 +76,7 @@ void sendDataThroughSPI(void *args)
      {
         //Clear receive buffer, set send buffer to something sane
         memset(recvbuf, 0, sizeof(sendbuf));
+        // printf("in while loop\n");
         if(xQueueReceive(queue,&sendbuf,5000/portTICK_PERIOD_MS))
         {
             sprintf(sendbuf, "This is the receiver %i",n);

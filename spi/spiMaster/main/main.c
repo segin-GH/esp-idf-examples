@@ -22,11 +22,10 @@
 #include "driver/gpio.h"
 #include "esp_intr_alloc.h"
 
-#define GPIO_HANDSHAKE 14
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
-#define GPIO_CS 21
+#define GPIO_CS 15
 
 #define SENDER_HOST HSPI_HOST
 
@@ -48,7 +47,7 @@ void app_main(void)
         .command_bits = 0,
         .address_bits = 0,
         .dummy_bits = 0,
-        .clock_speed_hz = 5000000,
+        .clock_speed_hz = 6000000,
         .duty_cycle_pos = 128,        //50% duty cycle
         .mode = 0,
         .spics_io_num = -1,
@@ -86,7 +85,7 @@ void app_main(void)
     	memset(&t, 0, sizeof(t));
         n++;
       	vTaskDelay(1000/portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_CS,1);       
+        // gpio_set_level(GPIO_CS,1);       
     }
 
     //Never reached.
