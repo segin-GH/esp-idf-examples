@@ -3,7 +3,7 @@
  * @author segin
  */
 
-/** @todo implemnt a isr for chip select */
+/**  @test implemnt a isr for chip select */
 
 #include <stdbool.h>
 #include <stdio.h>
