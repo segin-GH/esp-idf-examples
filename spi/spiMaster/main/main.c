@@ -66,7 +66,7 @@ void app_main(void)
     assert(ret == ESP_OK);
     ret = spi_bus_add_device(SENDER_HOST, &devcfg, &handle);
     assert(ret == ESP_OK);
-    
+
     while(true)
     {
         int res = snprintf(sendbuf, sizeof(sendbuf),

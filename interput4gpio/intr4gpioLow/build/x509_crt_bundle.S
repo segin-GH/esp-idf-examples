@@ -1,4 +1,4 @@
-/* * Data converted from /home/bot/code/esp-idf/intr4gpioLow/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /home/bot/code/esp-idf/interput4gpio/intr4gpioLow/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded
