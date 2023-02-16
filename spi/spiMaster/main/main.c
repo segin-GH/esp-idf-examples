@@ -31,6 +31,8 @@
 
 void app_main(void)
 {
+    gpio_pad_select_gpio(15);
+    gpio_set_direction(15, GPIO_MODE_OUTPUT);
     esp_err_t ret;
     spi_device_handle_t handle;
 
@@ -47,14 +49,13 @@ void app_main(void)
         .command_bits = 0,
         .address_bits = 0,
         .dummy_bits = 0,
-        .clock_speed_hz = 6000000,
+        .clock_speed_hz = 5000000,
         .duty_cycle_pos = 128,        //50% duty cycle
         .mode = 0,
         .spics_io_num = -1,
         .cs_ena_posttrans = 3,        //Keep the CS low 3 cycles after transaction, to stop slave from missing the last bit when CS has less propagation delay than CLK
         .queue_size = 6
     };
-    gpio_set_direction(GPIO_CS,GPIO_MODE_OUTPUT);
     int n = 0;
     char sendbuf[130] = {0};
     char recvbuf[130] = {0};
@@ -67,7 +68,9 @@ void app_main(void)
     ret = spi_bus_add_device(SENDER_HOST, &devcfg, &handle);
     assert(ret == ESP_OK);
 
-    while(true)
+    gpio_set_level(15,0);
+
+    for(int i = 0; i < 100; ++i )
     {
         int res = snprintf(sendbuf, sizeof(sendbuf),
                 "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
@@ -79,13 +82,18 @@ void app_main(void)
         t.tx_buffer=sendbuf;
         t.rx_buffer=recvbuf;
         //Wait for slave to be ready for next byte before sending
-        gpio_set_level(GPIO_CS,0);       
         ret=spi_device_transmit(handle, &t);
         printf("ReceivedbyMaster: %s\n", recvbuf);
     	memset(&t, 0, sizeof(t));
         n++;
-      	vTaskDelay(1000/portTICK_PERIOD_MS);
-        // gpio_set_level(GPIO_CS,1);       
+      	vTaskDelay(500/portTICK_PERIOD_MS);
+    }
+    
+    gpio_set_level(2,1);
+
+    while(true)
+    {
+        vTaskDelete(NULL);
     }
 
     //Never reached.

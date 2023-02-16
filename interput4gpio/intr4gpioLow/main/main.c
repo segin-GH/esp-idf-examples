@@ -36,8 +36,8 @@ void when_switch_is_pushed(void *args)
 
 void app_main(void)
 {
-    gpio_set_direction(switchPin,GPIO_MODE_INPUT);
-    gpio_set_direction(ledPin,GPIO_MODE_INPUT);
+    gpio_set_direction(ledPin,GPIO_MODE_OUTPUT);
+    gpio_set_direction(switchPin,GPIO_MODE_INPUT)
     gpio_pullup_en(switchPin);
     gpio_set_intr_type(switchPin,GPIO_INTR_NEGEDGE);
 
