@@ -3,7 +3,7 @@
  * @author segin
  */
 
-/**  @test implemnt a isr for chip select */
+/**  @test implementation a isr for chip select */
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -90,7 +90,7 @@ void sendDataThroughSPI(void *args)
     {
         // Clear receive buffer, set send buffer to something sane
         memset(recvbuf, 0, sizeof(sendbuf));
-        // printf("in while loop %i \n ", intr_trig);
+        printf("in while loop %i \n ", intr_trig);
         if(masterSelectedMe == pdTRUE)
         {
             if (xQueueReceive(queue, &sendbuf, 5000 / portTICK_PERIOD_MS))

@@ -25,7 +25,7 @@
 #define GPIO_MOSI 23
 #define GPIO_MISO 19
 #define GPIO_SCLK 18
-#define GPIO_CS 15
+#define GPIO_CS 27
 
 #define SENDER_HOST HSPI_HOST
 
