@@ -94,8 +94,8 @@ esp_err_t send_ws_message(char *msg)
 static void start_mdns_service()
 {
     mdns_init();
-    mdns_hostname_set("esp-server");
-    mdns_instance_name_set("bla-bla-bla");
+    mdns_hostname_set("esp");
+    mdns_instance_name_set("esp-server");
 }
 
 /* init our server */
@@ -118,7 +118,6 @@ static void init_server()
         .handler = on_toggle_led
     };
     httpd_register_uri_handler(server, &toggle_led_url);
-    
     httpd_uri_t web_socket_url = {
         .uri = "/ws",
         .method = HTTP_GET,
@@ -135,8 +134,8 @@ void app_main(void)
     wifi_init();
     init_btn_onboard();
     init_led_as_output(2);
-    wifi_connect_sta("HACKLAB_2G","HACK@LAB",10000);
     start_mdns_service();
+    wifi_connect_sta("HACKLAB_2G","HACK@LAB",10000);
     init_server();
 }
 

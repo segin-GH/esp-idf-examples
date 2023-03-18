@@ -12,5 +12,8 @@
     ],
     "idf.port": "/dev/ttyUSB0",
     "idf.pythonBinPath": "/home/bot/.espressif/python_env/idf4.4_py3.10_env/bin/python",
-    "idf.toolsPath": "/home/bot/.espressif"
+    "idf.toolsPath": "/home/bot/.espressif",
+    "files.associations": {
+        "wifi_connect.h": "c"
+    }
 }
