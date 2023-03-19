@@ -9,6 +9,9 @@
 #include <driver/gpio.h>
 #include <cJSON.h>
 
+#define uart_two_txd 17
+#define uart_two_rxd 16
+
 static const char *SERVER_TAG = "[SERVER]";
 static httpd_handle_t server = NULL;
 
@@ -48,8 +51,12 @@ static esp_err_t print_banner_handler(httpd_req_t *req)
     httpd_req_recv(req, buffer, req->content_len);
     printf("%s \n", buffer);
 
+    uart_write_bytes(UART_NUM_2, buffer, 5);
+
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     httpd_resp_set_status(req, "204 NO CONTENT");
     httpd_resp_send(req, NULL, 0);
+
     return ESP_OK;
 }
 
@@ -85,4 +92,37 @@ void app_main(void)
     start_mdns_service();
     wifi_connect_sta("HACKLAB_2G", "HACK@LAB", 10000);
     init_server();
+
+    uart_config_t uart_one_config = {
+        .baud_rate = 115200,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+    };
+
+    uart_config_t uart_two_config = {
+        .baud_rate = 115200,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+    };
+
+    uart_param_config(UART_NUM_1, &uart_one_config);
+    uart_param_config(UART_NUM_2, &uart_two_config);
+
+    uart_set_pin(UART_NUM_1, uart_one_txd, uart_one_rxd, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+    uart_set_pin(UART_NUM_2, uart_two_txd, uart_two_rxd, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+
+    uart_driver_install(UART_NUM_1, Buf_size * 2, 0, 0, NULL, 0);
+    uart_driver_install(UART_NUM_2, Buf_size * 2, 0, 0, NULL, 0);
 }
+
+char *data = "ping";
+char recMesg[4];
+memset(recMesg, 0, sizeof(recMesg));
+
+uart_write_bytes(UART_NUM_2, data, 5);
+/* in uart read bytes try to give the exact number of data is going to be snd */
+vTaskDelay(100 / portTICK_PERIOD_MS);
