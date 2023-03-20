@@ -5,21 +5,20 @@
 #include <freertos/task.h>
 #include <freertos/semphr.h>
 
-
 xSemaphoreHandle mutexBus;
 
 void writeToBus(char *data)
 {
- printf(data);   
+    printf(data);
 }
 
 void task1(void *parms)
 {
-    for(;;)
+    for (;;)
     {
         printf("readingTemp \n");
 
-        if(xSemaphoreTake(mutexBus,1000/portTICK_PERIOD_MS))
+        if (xSemaphoreTake(mutexBus, 1000 / portTICK_PERIOD_MS))
         {
             writeToBus("temp is 125\n");
             xSemaphoreGive(mutexBus);
@@ -29,17 +28,17 @@ void task1(void *parms)
             printf("write to bus timed out for temp \n");
         }
 
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 
 void task2(void *parms)
 {
-    for(;;)
+    for (;;)
     {
         printf("readingHum\n");
-        
-        if(xSemaphoreTake(mutexBus,1000/portTICK_PERIOD_MS))
+
+        if (xSemaphoreTake(mutexBus, 1000 / portTICK_PERIOD_MS))
         {
             writeToBus("humidity is 30\n");
             xSemaphoreGive(mutexBus);
@@ -49,13 +48,12 @@ void task2(void *parms)
             printf("write to bus timed out for humuidity \n");
         }
 
-        vTaskDelay(2000/portTICK_PERIOD_MS);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
 void app_main(void)
 {
     mutexBus = xSemaphoreCreateMutex();
-
 
     xTaskCreatePinnedToCore(
         task1,
@@ -64,8 +62,7 @@ void app_main(void)
         NULL,
         1,
         NULL,
-        APP_CPU_NUM
-    );
+        APP_CPU_NUM);
 
     xTaskCreatePinnedToCore(
         task2,
@@ -74,6 +71,5 @@ void app_main(void)
         NULL,
         1,
         NULL,
-        APP_CPU_NUM
-    );
+        APP_CPU_NUM);
 }
