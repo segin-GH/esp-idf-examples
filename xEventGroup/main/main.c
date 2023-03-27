@@ -31,13 +31,13 @@ void Task1 (void *parms)
 {
     for(;;)
     {
-        int rtn = xEventGroupWaitBits(eventGrp, 0b0001 | 0b0010, true, true, portMAX_DELAY);
-        rtn = rtn & 0b0001;
-        rtn = 1 << 2;
-        if (rtn == 0b0011)
+        int rtn = xEventGroupWaitBits(eventGrp, 0b0001 , true, false, portMAX_DELAY);
+        // rtn = rtn & 0b0001;
+        // rtn = 1 << 2;
+        // if (rtn == 0b0011)
         {
             printf("Return of EventGroup %i.\n",rtn);
-            printf("received HTTP and BLE\n");
+            // printf("received HTTP and BLE\n");
         }
 
     }
