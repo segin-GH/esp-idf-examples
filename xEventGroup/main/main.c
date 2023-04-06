@@ -7,65 +7,66 @@
 EventGroupHandle_t eventGrp;
 int BIT = 0b0001;
 
-void listenToHTTPs (void *parms)
+void listenToHTTPs(void *parms)
 {
-    for(;;)
+    for (;;)
     {
         xEventGroupSetBits(eventGrp, 0b0001);
         printf("set HTTPS BIT\n");
-        vTaskDelay(2000/portTICK_PERIOD_MS);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
 
-void listenToBluetooth (void *parms)
+void listenToBluetooth(void *parms)
 {
-    for(;;)
+    for (;;)
     {
         xEventGroupSetBits(eventGrp, 0b0010);
         printf("set BLE BIT\n");
-        vTaskDelay(5000/portTICK_PERIOD_MS);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }
 
-void Task1 (void *parms)
+void Task1(void *parms)
 {
-    for(;;)
+    for (;;)
     {
-        int rtn = xEventGroupWaitBits(eventGrp, 0b0001 , true, false, portMAX_DELAY);
+        int rtn = xEventGroupWaitBits(eventGrp, 0b0010, false, false, portMAX_DELAY);
         // rtn = rtn & 0b0001;
         // rtn = 1 << 2;
-        // if (rtn == 0b0011)
+        if (rtn == 0b0010)
         {
-            printf("Return of EventGroup %i.\n",rtn);
+            printf("Return of EventGroup %i.\n", rtn);
+            vTaskDelay(pdMS_TO_TICKS(100));
             // printf("received HTTP and BLE\n");
         }
-
     }
 }
 
-void app_main (void)
+void app_main(void)
 {
     eventGrp = xEventGroupCreate();
 
-    xTaskCreatePinnedToCore(
-        listenToHTTPs,
-        "listenToHTTPs",
-        2048,
-        NULL,
-        2,
-        NULL,
-        APP_CPU_NUM
-    );
+    xEventGroupSetBits(eventGrp, 0b0010);
+    // xTaskCreatePinnedToCore(
+    //     listenToHTTPs,
+    //     "listenToHTTPs",
+    //     2048,
+    //     NULL,
+    //     2,
+    //     NULL,
+    //     APP_CPU_NUM
+    // );
 
-    xTaskCreatePinnedToCore(
-        listenToBluetooth,
-        "listenToBluetooth",
-        2048,
-        NULL,
-        2,
-        NULL,
-        APP_CPU_NUM
-    );
+    // xTaskCreatePinnedToCore(
+    //     listenToBluetooth,
+    //     "listenToBluetooth",
+    //     2048,
+    //     NULL,
+    //     2,
+    //     NULL,
+    //     APP_CPU_NUM
+    // );
 
     xTaskCreatePinnedToCore(
         Task1,
@@ -74,7 +75,14 @@ void app_main (void)
         NULL,
         2,
         NULL,
-        APP_CPU_NUM
-    );
+        APP_CPU_NUM);
 
+    for (;;)
+    {
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        xEventGroupClearBits(eventGrp, 0b0010);
+
+        vTaskDelay(pdMS_TO_TICKS(500));
+        xEventGroupSetBits(eventGrp, 0b0010);
+    }
 }
