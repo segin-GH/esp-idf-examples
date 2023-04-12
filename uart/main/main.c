@@ -10,27 +10,24 @@
 
 void app_main(void)
 {
-  uart_config_t uart_config = {
-    .baud_rate = 9600,
-    .data_bits = UART_DATA_8_BITS,
-    .parity = UART_PARITY_DISABLE,
-    .stop_bits = UART_STOP_BITS_1,
-    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
-  };
-  uart_param_config(UART_NUM_1 ,&uart_config);
-  uart_set_pin(UART_NUM_1,TXD_PIN,RXD_PIN,UART_PIN_NO_CHANGE,UART_PIN_NO_CHANGE);
-  uart_driver_install(UART_NUM_1,RX_BUF_SIZE,0,0,NULL,0);
+    uart_config_t uart_config = {
+        .baud_rate = 9600,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
+    uart_param_config(UART_NUM_1, &uart_config);
+    uart_set_pin(UART_NUM_1, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+    uart_driver_install(UART_NUM_1, RX_BUF_SIZE, 0, 0, NULL, 0);
 
-  char message[] = "ping";
-  printf("sending: %s\n", message);
-  uart_write_bytes(UART_NUM_1,message, sizeof(message));
+    char message[] = "ping";
+    printf("sending: %s\n", message);
+    uart_write_bytes(UART_NUM_1, message, sizeof(message));
 
-  char incoming_message[RX_BUF_SIZE];
-  memset(incoming_message, 0 , sizeof(incoming_message));
-  uart_read_bytes(UART_NUM_1,(uint8_t *) incoming_message,RX_BUF_SIZE,pdMS_TO_TICKS(500));
-  printf("received: %s\n",incoming_message);
-  
-
+    char incoming_message[RX_BUF_SIZE];
+    memset(incoming_message, 0, sizeof(incoming_message));
+    uart_read_bytes(UART_NUM_1, (uint8_t *)incoming_message, RX_BUF_SIZE, pdMS_TO_TICKS(500));
+    printf("received: %s\n", incoming_message);
 }
 
 /*
@@ -61,7 +58,7 @@ static void echo_task()
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
-        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,    
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
         .rx_flow_ctrl_thresh = 122,
     };
     //Configure UART1 parameters
@@ -69,7 +66,7 @@ static void echo_task()
 
     //Set UART1 pins(TX: IO4, RX: I05)
     uart_set_pin(uart_num, ECHO_TEST_TXD, ECHO_TEST_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-    
+
     //Install UART driver (we don't need an event queue here)
     //In this example we don't even use a buffer for sending data.
     uart_driver_install(uart_num, BUF_SIZE * 2, 0, 0, NULL, 0);
@@ -93,7 +90,7 @@ void app_main()
 
 */
 
-/* 
+/*
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -140,7 +137,7 @@ static void echo_task()
 
     uart_set_pin(uart_num0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
     uart_set_pin(uart_num1, ECHO_TEST_TXD, ECHO_TEST_RXD, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-    
+
     //Install UART driver (we don't need an event queue here)
     //In this example we don't even use a buffer for sending data.
     uart_driver_install(uart_num0, BUF_SIZE * 2, 0, 0, NULL, 0);
@@ -162,7 +159,3 @@ void app_main()
     xTaskCreate(echo_task, "uart_echo_task", 1024, NULL, 10, NULL);
 }
 */
-
-
-
-
