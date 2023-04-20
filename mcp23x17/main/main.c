@@ -5,7 +5,6 @@
 #include <driver/gpio.h>
 #include <string.h>
 
-// static void IRAM_ATTR intr_handler(void *arg) { printf("Interrupt!\n"); }
 
 void test(void *pvParameters)
 {
