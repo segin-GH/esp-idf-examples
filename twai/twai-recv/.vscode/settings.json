@@ -11,9 +11,5 @@
         "target/esp32.cfg"
     ],
     "idf.pythonBinPath": "/home/yui/.espressif/python_env/idf4.4_py3.10_env/bin/python",
-    "idf.toolsPath": "/home/yui/.espressif",
-    "files.associations": {
-        "system_error": "c",
-        "*.ipp": "c"
-    }
+    "idf.toolsPath": "/home/yui/.espressif"
 }
