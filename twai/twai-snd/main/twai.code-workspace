@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../twai-recv"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"system_error": "c",
+			"*.ipp": "c"
+		}
+	}
+}
