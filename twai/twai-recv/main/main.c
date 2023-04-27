@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include "esp_log.h"
 #include "esp_system.h"
 #include "driver/twai.h"
@@ -27,7 +30,7 @@ void app_main()
 {
     // Configure TWAI module
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_PIN, RX_PIN, TWAI_MODE_NORMAL);
-    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
+    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS ();
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
     ESP_ERROR_CHECK(twai_driver_install(&g_config, &t_config, &f_config));
