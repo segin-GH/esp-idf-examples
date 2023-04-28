@@ -7,14 +7,14 @@
 
 #define TAG "twai"
 
-#define TX_PIN GPIO_NUM_4
-#define RX_PIN GPIO_NUM_5
+#define TX_PIN GPIO_NUM_5
+#define RX_PIN GPIO_NUM_4
 
 void app_main()
 {
     // Configure TWAI module
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_PIN, RX_PIN, TWAI_MODE_NORMAL);
-    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_250KBITS();
+    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
     // Install TWAI driver
@@ -41,7 +41,7 @@ void app_main()
 
         // Prepare and send message
         twai_message_t message;
-        message.identifier = 0xAAAA;
+        message.identifier = 0x0005;
         message.extd = 1;
         message.data_length_code = 8;
 
@@ -59,7 +59,7 @@ void app_main()
             printf("Message queued for transmission\n");
         else
             printf("Failed to queue message for transmission\n");
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 
     ESP_ERROR_CHECK(twai_stop());
