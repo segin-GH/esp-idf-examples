@@ -30,7 +30,7 @@ void app_main()
 {
     // Configure TWAI module
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_PIN, RX_PIN, TWAI_MODE_NORMAL);
-    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS ();
+    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
     ESP_ERROR_CHECK(twai_driver_install(&g_config, &t_config, &f_config));
@@ -38,10 +38,4 @@ void app_main()
 
     // Create task for receiving messages
     xTaskCreate(twai_receive_task, "twai_receive_task", 4096, NULL, 10, NULL);
-
-    // Wait indefinitely
-    while (1)
-    {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
 }

@@ -41,7 +41,7 @@ void app_main()
 
         // Prepare and send message
         twai_message_t message;
-        message.identifier = 0x0005;
+        message.identifier = 0x05;
         message.extd = 1;
         message.data_length_code = 8;
 
