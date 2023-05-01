@@ -23,7 +23,6 @@ void twai_receive_task(void *pvParameters)
 
         for (int i = 0; i < message.data_length_code; i++)
             printf("Data byte %d = 0x%02x\n", i, message.data[i]);
-        
     }
 }
 
