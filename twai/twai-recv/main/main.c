@@ -12,17 +12,18 @@
 
 void twai_receive_task(void *pvParameters)
 {
-    for(;;)
+    for (;;)
     {
         // Wait for a message to be received
         twai_message_t message;
-        if (twai_receive(&message, pdMS_TO_TICKS(1000)) == ESP_OK)
-        {
-            ESP_LOGI(TAG, "Received message: ID=0x%08x, DLC=%d, data=0x%02x%02x%02x%02x%02x%02x%02x%02x",
-                     message.identifier, message.data_length_code,
-                     message.data[0], message.data[1], message.data[2], message.data[3],
-                     message.data[4], message.data[5], message.data[6], message.data[7]);
-        }
+        if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
+            continue;
+
+        printf("ID = 0x%02x\n", message.identifier);
+
+        for (int i = 0; i < message.data_length_code; i++)
+            printf("Data byte %d = 0x%02x\n", i, message.data[i]);
+        
     }
 }
 

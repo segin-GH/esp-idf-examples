@@ -41,7 +41,7 @@ void app_main()
 
         // Prepare and send message
         twai_message_t message;
-        message.identifier = 0x05;
+        message.identifier = 0x900;
         message.extd = 1;
         message.data_length_code = 8;
 
@@ -59,7 +59,7 @@ void app_main()
             printf("Message queued for transmission\n");
         else
             printf("Failed to queue message for transmission\n");
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 
     ESP_ERROR_CHECK(twai_stop());
