@@ -12,7 +12,7 @@
 
 void twai_receive_task(void *pvParameters)
 {
-    while (1)
+    for(;;)
     {
         // Wait for a message to be received
         twai_message_t message;
