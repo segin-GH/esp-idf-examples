@@ -184,7 +184,7 @@ void app_main(void)
     wifi_init();
     init_btn_onboard();
     init_led_as_output(2);
-    wifi_connect_sta("Segin","2003sejin",10000);
+    wifi_connect_sta("HACKLAB_2G","HACK@LAB",10000);
     start_mdns_service();
     init_server();
 }
