@@ -1,4 +1,4 @@
-/* * Data converted from /home/yui/code/esp-idf/blinkey/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /home/yui/code/esp-idf-examples/blinkey/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded

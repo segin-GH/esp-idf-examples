@@ -1,13 +1,13 @@
 # Target labels
  bootloader
 # Source files and their labels
-/home/yui/code/esp-idf/blinkey/build/CMakeFiles/bootloader
-/home/yui/code/esp-idf/blinkey/build/CMakeFiles/bootloader.rule
-/home/yui/code/esp-idf/blinkey/build/CMakeFiles/bootloader-complete.rule
-/home/yui/code/esp-idf/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
-/home/yui/code/esp-idf/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
-/home/yui/code/esp-idf/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
-/home/yui/code/esp-idf/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
-/home/yui/code/esp-idf/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
-/home/yui/code/esp-idf/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
-/home/yui/code/esp-idf/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+/home/yui/code/esp-idf-examples/blinkey/build/CMakeFiles/bootloader
+/home/yui/code/esp-idf-examples/blinkey/build/CMakeFiles/bootloader.rule
+/home/yui/code/esp-idf-examples/blinkey/build/CMakeFiles/bootloader-complete.rule
+/home/yui/code/esp-idf-examples/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/home/yui/code/esp-idf-examples/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/home/yui/code/esp-idf-examples/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/home/yui/code/esp-idf-examples/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/home/yui/code/esp-idf-examples/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/home/yui/code/esp-idf-examples/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/home/yui/code/esp-idf-examples/blinkey/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule

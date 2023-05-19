@@ -1,4 +1,4 @@
-# Install script for directory: /home/yui/code/esp-idf/blinkey/main
+# Install script for directory: /home/yui/code/esp-idf-examples/blinkey/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
