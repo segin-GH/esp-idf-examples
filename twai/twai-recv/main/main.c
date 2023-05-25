@@ -30,11 +30,27 @@ void app_main()
 {
     // Configure TWAI module
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_PIN, RX_PIN, TWAI_MODE_NORMAL);
-    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();
+    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_250KBITS();
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
-    ESP_ERROR_CHECK(twai_driver_install(&g_config, &t_config, &f_config));
-    ESP_ERROR_CHECK(twai_start());
+    if (twai_driver_install(&g_config, &t_config, &f_config) == ESP_OK)
+    {
+        printf("Driver installed\n");
+    }
+    else
+    {
+        printf("Failed to install driver\n");
+        return;
+    }
+    if (twai_start() == ESP_OK)
+    {
+        printf("Driver started\n");
+    }
+    else
+    {
+        printf("Failed to start driver\n");
+        return;
+    }
 
     // Create task for receiving messages
     xTaskCreate(twai_receive_task, "twai_receive_task", 4096, NULL, 10, NULL);
