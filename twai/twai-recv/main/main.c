@@ -7,8 +7,8 @@
 
 #define TAG "twai"
 
-#define TX_PIN GPIO_NUM_27
-#define RX_PIN GPIO_NUM_14
+#define TX_PIN GPIO_NUM_5
+#define RX_PIN GPIO_NUM_4
 
 void twai_receive_task(void *pvParameters)
 {
