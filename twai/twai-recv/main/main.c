@@ -102,5 +102,20 @@ void app_main()
     }
 
     // Create task for receiving messages
-    xTaskCreate(twai_receive_task, "twai_receive_task", 4096, NULL, 10, NULL);
+    xTaskCreatePinnedToCore(
+        twai_receive_task,
+        "twai_receive_task",
+        4096,
+        NULL,
+        10,
+        NULL);
+
+    xTaskCreatePinnedToCore(
+        twai_send_task,
+        "twai_send_task",
+        5000,
+        NULL,
+        10,
+        NULL,
+        APP_CPU_NUM);
 }
