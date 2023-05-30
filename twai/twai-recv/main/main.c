@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include "esp_log.h"
 #include "esp_system.h"
 #include "driver/twai.h"
-
+#include "stdbool.h"
 #define TAG "twai"
 
 // #define TX_PIN GPIO_NUM_5
@@ -15,7 +16,16 @@
 
 void twai_receive_task(void *pvParameters)
 {
+    typedef union
+    {
+        uint32_t num;
+        uint8_t bytes[2];
+    } Cas_uid;
+
+    Cas_uid uid;
     uint16_t casnode_list[4];
+    uint8_t num_of_cas_counter = 0;
+    bool add_cas_to_list = true;
     for (;;)
     {
         // Wait for a message to be received
@@ -35,7 +45,31 @@ void twai_receive_task(void *pvParameters)
 
         if (message.identifier == 0x399)
         {
-
+            memset(&uid, 0, sizeof(uid));
+            uid.bytes[0] = message.data[0];
+            uid.bytes[1] = message.data[1];
+            printf("DEVICE ID: %i\n", uid.num);
+            for (int i = 0; i < 4; i++)
+            {
+                if (casnode_list[i] == uid.num)
+                {
+                    printf("Device already exists ignoring\n");
+                    add_cas_to_list = false;
+                    break;
+                }
+                add_cas_to_list = true;
+            }
+            if (add_cas_to_list)
+            {
+                printf("Got a new device in bus appending to list\n");
+                casnode_list[num_of_cas_counter] = uid.num;
+                ++num_of_cas_counter;
+                printf("Current List [");
+                for (int i = 0; i < 4; i++)
+                    printf("%i, ", casnode_list[i]);
+                printf("]\n");
+                add_cas_to_list = true;
+            }
         }
     }
 }
