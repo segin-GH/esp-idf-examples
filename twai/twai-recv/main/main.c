@@ -32,11 +32,6 @@ void twai_receive_task(void *pvParameters)
                 printf("%d0x%02x", i, message.data[i]);
         }
         printf("]\n");
-
-        if (message.identifier == 0x399)
-        {
-
-        }
     }
 }
 
