@@ -74,6 +74,11 @@ void twai_receive_task(void *pvParameters)
     }
 }
 
+void twai_send_task(void *parms)
+{
+    //
+}
+
 void app_main()
 {
     // Configure TWAI module
