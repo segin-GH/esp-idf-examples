@@ -7,11 +7,15 @@
 
 #define TAG "twai"
 
-#define TX_PIN GPIO_NUM_5
-#define RX_PIN GPIO_NUM_4
+// #define TX_PIN GPIO_NUM_5
+// #define RX_PIN GPIO_NUM_4
+
+#define TX_PIN GPIO_NUM_27
+#define RX_PIN GPIO_NUM_14
 
 void twai_receive_task(void *pvParameters)
 {
+    uint16_t casnode_list[4];
     for (;;)
     {
         // Wait for a message to be received
@@ -19,10 +23,20 @@ void twai_receive_task(void *pvParameters)
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
             continue;
 
-        printf("ID = 0x%02x\n", message.identifier);
+        printf("[0x%02x][", message.identifier);
+        int i = 0;
+        for (i = 0; i < message.data_length_code; i++)
+        {
+            printf("0x%02x, ", message.data[i]);
+            if (i == 7)
+                printf("%d0x%02x", i, message.data[i]);
+        }
+        printf("]\n");
 
-        for (int i = 0; i < message.data_length_code; i++)
-            printf("Data byte %d = 0x%02x\n", i, message.data[i]);
+        if (message.identifier == 0x399)
+        {
+
+        }
     }
 }
 
@@ -32,11 +46,11 @@ void app_main()
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_PIN, RX_PIN, TWAI_MODE_NORMAL);
     twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
-    
+
     if (twai_driver_install(&g_config, &t_config, &f_config) == ESP_OK)
     {
         printf("Driver installed\n");
-        printf("Driver BAUDRATE 125K\n");
+        printf("Driver BAUDRATE 125k\n");
     }
     else
     {
