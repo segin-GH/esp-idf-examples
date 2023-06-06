@@ -1,3 +1,9 @@
+/* TODO Track src id of each casnode with ttl(time to live) */
+/* TODO implement Time to live for each node */
+/* TODO use a struct rather than a 2d array */
+/* TODO Check if the cas sum is correct*/
+/* TODO gen a crc */
+
 #include <stdio.h>
 #include <string.h>
 #include <freertos/FreeRTOS.h>
@@ -18,6 +24,25 @@
 
 xQueueHandle sndQueue;
 static uint8_t queueLen = 5;
+
+typedef union
+{
+    uint32_t num;
+    uint8_t bytes[2];
+} Cas_uid;
+Cas_uid uid;
+
+typedef union
+{
+    uint32_t num;
+    uint8_t bytes[3];
+} Cas_sum;
+Cas_sum cas_sum;
+
+uint16_t casnode_list[4];
+uint8_t num_of_cas_counter = 0;
+bool add_cas_to_list = true;
+uint8_t cas_src_id = 30;
 
 void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
 {
@@ -51,27 +76,37 @@ void print_can_msg_in_cool_16t(uint16_t array[], int num_of_element)
     printf("]\n");
 }
 
-void twai_receive_task(void *pvParameters)
+void gen_can_msg_for_ack(uint8_t cas_num, Cas_uid cas_uid, Cas_sum cas_sum, uint8_t src_id)
 {
-    typedef union
-    {
-        uint32_t num;
-        uint8_t bytes[2];
-    } Cas_uid;
-    Cas_uid uid;
-
-    typedef union
-    {
-        uint32_t num;
-        uint8_t bytes[3];
-    } Cas_sum;
-    Cas_sum cas_sum;
 
     uint16_t can_message_array[9] = {0};
-    uint16_t casnode_list[4];
-    uint8_t num_of_cas_counter = 0;
-    bool add_cas_to_list = true;
-    uint8_t cas_src_id = 30;
+
+    printf("Sending ack to CAS of %i \n", casnode_list[cas_num]);
+    can_message_array[0] = 0x112;
+    can_message_array[1] = cas_uid.bytes[0];
+    can_message_array[2] = cas_uid.bytes[1];
+    can_message_array[3] = cas_sum.bytes[0];
+    can_message_array[4] = cas_sum.bytes[1];
+    can_message_array[5] = cas_sum.bytes[2];
+    can_message_array[6] = num_of_cas_counter;
+    can_message_array[7] = (src_id + cas_num);
+    can_message_array[8] = 1;
+    xQueueSend(sndQueue, can_message_array, portMAX_DELAY);
+}
+
+uint32_t sum_device_id_list(int total_num_of_cas)
+{
+    uint32_t sum = 0;
+    for (int i = 0; i < total_num_of_cas; i++)
+    {
+        printf("%i, ", casnode_list[i]);
+        sum += casnode_list[i];
+    }
+    return sum;
+}
+
+void twai_receive_task(void *pvParameters)
+{
     for (;;)
     {
         // Wait for a message to be received
@@ -88,10 +123,12 @@ void twai_receive_task(void *pvParameters)
             uid.bytes[0] = message.data[0];
             uid.bytes[1] = message.data[1];
             printf("DEVICE ID: %i\n", uid.num);
-            for (int i = 0; i < 4; i++)
+            for (int j = 0; i < 4; i++)
             {
                 if (casnode_list[i] == uid.num)
                 {
+                    // cas_sum.num = sum_device_id_list(4);
+                    gen_can_msg_for_ack(num_of_cas_counter, uid, cas_sum, cas_src_id + j);
                     printf("Device already exists ignoring\n");
                     add_cas_to_list = false;
                     break;
@@ -104,33 +141,15 @@ void twai_receive_task(void *pvParameters)
                 casnode_list[num_of_cas_counter] = uid.num;
                 ++num_of_cas_counter;
                 printf("Current List [");
-                uint32_t sum = 0;
-
+                // uint32_t sum = 0;
                 for (int i = 0; i < 4; i++)
                 {
                     printf("%i, ", casnode_list[i]);
-                    sum += casnode_list[i];
+                    // sum += casnode_list[i];
                 }
                 printf("]\n");
-                cas_sum.num = sum;
-
-                for (int i = (num_of_cas_counter - 1); i < 4; i++)
-                {
-                    if (casnode_list[i] > 0)
-                    {
-                        printf("Sending ack to CAS of %i \n", casnode_list[i]);
-                        can_message_array[0] = 0x112;
-                        can_message_array[1] = uid.bytes[0];
-                        can_message_array[2] = uid.bytes[1];
-                        can_message_array[3] = cas_sum.bytes[0];
-                        can_message_array[4] = cas_sum.bytes[1];
-                        can_message_array[5] = cas_sum.bytes[2];
-                        can_message_array[6] = num_of_cas_counter;
-                        can_message_array[7] = (cas_src_id + i);
-                        can_message_array[8] = 1;
-                        xQueueSend(sndQueue, can_message_array, portMAX_DELAY);
-                    }
-                }
+                // cas_sum.num = sum_device_id_list(4);
+                gen_can_msg_for_ack(num_of_cas_counter, uid, cas_sum, cas_src_id);
                 add_cas_to_list = true;
             }
         }
