@@ -14,10 +14,6 @@
 #include "stdbool.h"
 #include <freertos/queue.h>
 
-#define TAG "twai"
-
-// #define TX_PIN GPIO_NUM_5
-// #define RX_PIN GPIO_NUM_4
 
 #define TX_PIN GPIO_NUM_27
 #define RX_PIN GPIO_NUM_14
@@ -33,7 +29,6 @@ uint8_t num_of_cas_counter = 0;
 bool add_cas_to_list = true;
 uint8_t default_src_id = 30;
 
-/* this is where each device data will be stored */
 typedef struct
 {
     uint16_t cas_uid;
