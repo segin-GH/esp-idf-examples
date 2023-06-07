@@ -159,7 +159,6 @@ void twai_receive_task(void *pvParameters)
             {
                 printf("Got a new device in bus appending to list\n");
                 // casnode_list[num_of_cas_counter] = uid.num;
-                printf("num of cas :: %i\n", num_of_cas_counter);
                 cas_id_array[num_of_cas_counter].cas_uid = uid.num;
                 cas_id_array[num_of_cas_counter].src_id = (default_src_id + num_of_cas_counter);
                 printf("Current List [");
@@ -174,7 +173,6 @@ void twai_receive_task(void *pvParameters)
                 gen_can_msg_for_ack(cas_id_array[num_of_cas_counter].cas_uid, cas_sum, cas_id_array[num_of_cas_counter].src_id);
                 add_cas_to_list = true;
                 ++num_of_cas_counter;
-                printf("Total num of CAS :: %i\n", num_of_cas_counter);
 
                 if(num_of_cas_counter > 16)
                     num_of_cas_counter = 0;
