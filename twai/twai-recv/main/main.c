@@ -31,14 +31,13 @@ static uint8_t twaiSndQueueLen = 5;
 uint16_t casnode_list[4];
 uint8_t num_of_cas_counter = 0;
 bool add_cas_to_list = true;
-uint8_t cas_src_id = 30;
-
+uint8_t default_src_id = 30;
 
 /* this is where each device data will be stored */
 typedef struct
 {
-    uint16_t cas_uid; 
-    uint8_t src_id; 
+    uint16_t cas_uid;
+    uint8_t src_id;
     uint8_t time_to_live;
 } Cas_id_t;
 
@@ -90,12 +89,15 @@ void print_can_msg_in_cool_16t(uint16_t array[], int num_of_element)
     printf("]\n");
 }
 
-void gen_can_msg_for_ack(uint8_t cas_num, Cas_uid cas_uid, Cas_sum cas_sum, uint8_t src_id)
+void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
 {
 
     uint16_t can_message_array[9] = {0};
 
-    printf("Sending ack to CAS of %i \n", casnode_list[cas_num]);
+    Cas_uid cas_uid;
+    cas_uid.num = uid;
+
+    printf("Sending ack to CAS of %i \n", uid);
     can_message_array[0] = 0x112;
     can_message_array[1] = cas_uid.bytes[0];
     can_message_array[2] = cas_uid.bytes[1];
@@ -103,7 +105,7 @@ void gen_can_msg_for_ack(uint8_t cas_num, Cas_uid cas_uid, Cas_sum cas_sum, uint
     can_message_array[4] = cas_sum.bytes[1];
     can_message_array[5] = cas_sum.bytes[2];
     can_message_array[6] = num_of_cas_counter;
-    can_message_array[7] = (src_id + cas_num);
+    can_message_array[7] = src_id;
     can_message_array[8] = 1;
     xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
 }
@@ -137,14 +139,16 @@ void twai_receive_task(void *pvParameters)
             uid.bytes[0] = message.data[0];
             uid.bytes[1] = message.data[1];
             printf("DEVICE ID: %i\n", uid.num);
-            for (int i = 0; i < 4; i++)
+            
+            for (int i = 0; i < MAX_NUM_CAS; i++)
             {
                 // if (casnode_list[i] == uid.num)
 
                 if (cas_id_array[i].cas_uid == uid.num)
                 {
                     // cas_sum.num = sum_device_id_list(4);
-                    gen_can_msg_for_ack(num_of_cas_counter, uid, cas_sum, cas_src_id);
+
+                    gen_can_msg_for_ack(cas_id_array[i].cas_uid, cas_sum, cas_id_array[i].src_id);
                     printf("Device already exists ignoring\n");
                     add_cas_to_list = false;
                     break;
@@ -155,8 +159,9 @@ void twai_receive_task(void *pvParameters)
             {
                 printf("Got a new device in bus appending to list\n");
                 // casnode_list[num_of_cas_counter] = uid.num;
+                printf("num of cas :: %i\n", num_of_cas_counter);
                 cas_id_array[num_of_cas_counter].cas_uid = uid.num;
-                ++num_of_cas_counter;
+                cas_id_array[num_of_cas_counter].src_id = (default_src_id + num_of_cas_counter);
                 printf("Current List [");
                 // uint32_t sum = 0;
                 for (int i = 0; i < MAX_NUM_CAS; i++)
@@ -166,8 +171,13 @@ void twai_receive_task(void *pvParameters)
                 }
                 printf("]\n");
                 // cas_sum.num = sum_device_id_list(4);
-                gen_can_msg_for_ack(num_of_cas_counter, uid, cas_sum, cas_src_id);
+                gen_can_msg_for_ack(cas_id_array[num_of_cas_counter].cas_uid, cas_sum, cas_id_array[num_of_cas_counter].src_id);
                 add_cas_to_list = true;
+                ++num_of_cas_counter;
+                printf("Total num of CAS :: %i\n", num_of_cas_counter);
+
+                if(num_of_cas_counter > 16)
+                    num_of_cas_counter = 0;
             }
         }
     }
