@@ -22,8 +22,27 @@
 #define TX_PIN GPIO_NUM_27
 #define RX_PIN GPIO_NUM_14
 
-xQueueHandle sndQueue;
-static uint8_t queueLen = 5;
+/* TODO should it be 16 or 15 ? */
+#define MAX_NUM_CAS 16
+
+xQueueHandle twaiSndQueue;
+static uint8_t twaiSndQueueLen = 5;
+
+uint16_t casnode_list[4];
+uint8_t num_of_cas_counter = 0;
+bool add_cas_to_list = true;
+uint8_t cas_src_id = 30;
+
+
+/* this is where each device data will be stored */
+typedef struct
+{
+    uint16_t cas_uid; 
+    uint8_t src_id; 
+    uint8_t time_to_live;
+} Cas_id_t;
+
+Cas_id_t cas_id_array[MAX_NUM_CAS];
 
 typedef union
 {
@@ -38,11 +57,6 @@ typedef union
     uint8_t bytes[3];
 } Cas_sum;
 Cas_sum cas_sum;
-
-uint16_t casnode_list[4];
-uint8_t num_of_cas_counter = 0;
-bool add_cas_to_list = true;
-uint8_t cas_src_id = 30;
 
 void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
 {
@@ -91,7 +105,7 @@ void gen_can_msg_for_ack(uint8_t cas_num, Cas_uid cas_uid, Cas_sum cas_sum, uint
     can_message_array[6] = num_of_cas_counter;
     can_message_array[7] = (src_id + cas_num);
     can_message_array[8] = 1;
-    xQueueSend(sndQueue, can_message_array, portMAX_DELAY);
+    xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
 }
 
 uint32_t sum_device_id_list(int total_num_of_cas)
@@ -123,12 +137,14 @@ void twai_receive_task(void *pvParameters)
             uid.bytes[0] = message.data[0];
             uid.bytes[1] = message.data[1];
             printf("DEVICE ID: %i\n", uid.num);
-            for (int j = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                if (casnode_list[i] == uid.num)
+                // if (casnode_list[i] == uid.num)
+
+                if (cas_id_array[i].cas_uid == uid.num)
                 {
                     // cas_sum.num = sum_device_id_list(4);
-                    gen_can_msg_for_ack(num_of_cas_counter, uid, cas_sum, cas_src_id + j);
+                    gen_can_msg_for_ack(num_of_cas_counter, uid, cas_sum, cas_src_id);
                     printf("Device already exists ignoring\n");
                     add_cas_to_list = false;
                     break;
@@ -138,13 +154,14 @@ void twai_receive_task(void *pvParameters)
             if (add_cas_to_list)
             {
                 printf("Got a new device in bus appending to list\n");
-                casnode_list[num_of_cas_counter] = uid.num;
+                // casnode_list[num_of_cas_counter] = uid.num;
+                cas_id_array[num_of_cas_counter].cas_uid = uid.num;
                 ++num_of_cas_counter;
                 printf("Current List [");
                 // uint32_t sum = 0;
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < MAX_NUM_CAS; i++)
                 {
-                    printf("%i, ", casnode_list[i]);
+                    printf("%i, ", cas_id_array[i].cas_uid);
                     // sum += casnode_list[i];
                 }
                 printf("]\n");
@@ -162,7 +179,7 @@ void twai_send_task(void *parms)
     uint16_t recvDataArray[9] = {0};
     for (;;)
     {
-        xQueueReceive(sndQueue, recvDataArray, portMAX_DELAY);
+        xQueueReceive(twaiSndQueue, recvDataArray, portMAX_DELAY);
         print_can_msg_in_cool_16t(recvDataArray, 9);
         msg.identifier = recvDataArray[0];
         msg.extd = 1;
@@ -188,7 +205,7 @@ void twai_send_task(void *parms)
 
 void app_main()
 {
-    sndQueue = xQueueCreate(queueLen, sizeof(uint16_t) * 10);
+    twaiSndQueue = xQueueCreate(twaiSndQueueLen, sizeof(uint16_t) * 10);
     // Configure TWAI module
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_PIN, RX_PIN, TWAI_MODE_NORMAL);
     twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();
