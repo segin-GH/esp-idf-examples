@@ -8,11 +8,11 @@
 #include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <freertos/queue.h>
 #include "esp_log.h"
 #include "esp_system.h"
 #include "driver/twai.h"
 #include "stdbool.h"
-#include <freertos/queue.h>
 
 #define TX_PIN GPIO_NUM_27
 #define RX_PIN GPIO_NUM_14
