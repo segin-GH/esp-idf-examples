@@ -110,29 +110,40 @@ uint32_t sum_device_id_list(int total_num_of_cas)
     uint32_t sum = 0;
 
     for (int i = 0; i < MAX_NUM_CAS; i++)
-        if ((cas_id_array[i].time_to_live) < 120)
+
+        if ((cas_id_array[i].time_to_live) < 6)
+        {
+            printf("summing %i Bcz time-to-live is < 6 = %i \n",
+                   cas_id_array[i].cas_uid, cas_id_array[i].time_to_live);
             sum += cas_id_array[i].cas_uid;
+        }
+        else
+            printf("Not summing %i Bcz time-to-live is > 6 =  %i \n",
+                   cas_id_array[i].cas_uid, cas_id_array[i].time_to_live);
+
+    printf("Total Sum %i\n", sum);
     return sum;
 }
 
 void update_time_to_live()
 {
     for (int i = 0; i < MAX_NUM_CAS; i++)
-        cas_id_array[i].time_to_live = cas_id_array[i].time_to_live + 10;
+        cas_id_array[i].time_to_live = cas_id_array[i].time_to_live + 1;
 }
 
 void twai_receive_task(void *pvParameters)
 {
     TickType_t prevTime = xTaskGetTickCount();
-
     for (;;)
     {
-
-        TickType_t curTime = xTaskGetTickCount();
-        if (curTime - prevTime >= TIMEOUT_MS)
+        uint32_t elapsed_time = xTaskGetTickCount() - prevTime;
+        if(elapsed_time >= TIMEOUT_MS / portTICK_PERIOD_MS)
+        {
+            printf("Updated ttl\n");
             update_time_to_live();
+            prevTime = xTaskGetTickCount();
+        }
 
-        // Wait for a message to be received
         twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
             continue;
@@ -146,12 +157,16 @@ void twai_receive_task(void *pvParameters)
             uid.bytes[1] = message.data[1];
             printf("DEVICE ID: %i\n", uid.num);
 
+            /* loop through the list to check if the id is same as the received id */
             for (int i = 0; i < MAX_NUM_CAS; i++)
             {
                 if (cas_id_array[i].cas_uid == uid.num)
                 {
+                    // printf("Same Device Found %i , with ttl %i\n",
+                    //        cas_id_array[i].cas_uid, cas_id_array[i].time_to_live);
                     cas_id_array[i].time_to_live = 0;
                     cas_sum.num = sum_device_id_list(MAX_NUM_CAS);
+                    /* TODO update the num of cas */
                     gen_can_msg_for_ack(cas_id_array[i].cas_uid, cas_sum, cas_id_array[i].src_id);
                     printf("Device already exists ignoring\n");
                     add_cas_to_list = false;
