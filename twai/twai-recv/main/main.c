@@ -14,12 +14,12 @@
 #include "stdbool.h"
 #include <freertos/queue.h>
 
-
 #define TX_PIN GPIO_NUM_27
 #define RX_PIN GPIO_NUM_14
 
 /* TODO should it be 16 or 15 ? */
 #define MAX_NUM_CAS 16
+#define TIMEOUT_MS 10000
 
 xQueueHandle twaiSndQueue;
 static uint8_t twaiSndQueueLen = 5;
@@ -33,7 +33,7 @@ typedef struct
 {
     uint16_t cas_uid;
     uint8_t src_id;
-    uint8_t time_to_live;
+    uint16_t time_to_live;
 } Cas_id_t;
 
 Cas_id_t cas_id_array[MAX_NUM_CAS];
@@ -108,18 +108,30 @@ void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
 uint32_t sum_device_id_list(int total_num_of_cas)
 {
     uint32_t sum = 0;
-    for (int i = 0; i < total_num_of_cas; i++)
-    {
-        printf("%i, ", casnode_list[i]);
-        sum += casnode_list[i];
-    }
+
+    for (int i = 0; i < MAX_NUM_CAS; i++)
+        if ((cas_id_array[i].time_to_live) < 120)
+            sum += cas_id_array[i].cas_uid;
     return sum;
+}
+
+void update_time_to_live()
+{
+    for (int i = 0; i < MAX_NUM_CAS; i++)
+        cas_id_array[i].time_to_live = cas_id_array[i].time_to_live + 10;
 }
 
 void twai_receive_task(void *pvParameters)
 {
+    TickType_t prevTime = xTaskGetTickCount();
+
     for (;;)
     {
+
+        TickType_t curTime = xTaskGetTickCount();
+        if (curTime - prevTime >= TIMEOUT_MS)
+            update_time_to_live();
+
         // Wait for a message to be received
         twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
@@ -127,22 +139,19 @@ void twai_receive_task(void *pvParameters)
 
         printf("[0x%02x]", message.identifier);
         print_can_msg_in_cool_8t(message.data, 8);
-
         if (message.identifier == 0x399)
         {
             memset(&uid, 0, sizeof(uid));
             uid.bytes[0] = message.data[0];
             uid.bytes[1] = message.data[1];
             printf("DEVICE ID: %i\n", uid.num);
-            
+
             for (int i = 0; i < MAX_NUM_CAS; i++)
             {
-                // if (casnode_list[i] == uid.num)
-
                 if (cas_id_array[i].cas_uid == uid.num)
                 {
-                    // cas_sum.num = sum_device_id_list(4);
-
+                    cas_id_array[i].time_to_live = 0;
+                    cas_sum.num = sum_device_id_list(MAX_NUM_CAS);
                     gen_can_msg_for_ack(cas_id_array[i].cas_uid, cas_sum, cas_id_array[i].src_id);
                     printf("Device already exists ignoring\n");
                     add_cas_to_list = false;
@@ -153,23 +162,21 @@ void twai_receive_task(void *pvParameters)
             if (add_cas_to_list)
             {
                 printf("Got a new device in bus appending to list\n");
-                // casnode_list[num_of_cas_counter] = uid.num;
                 cas_id_array[num_of_cas_counter].cas_uid = uid.num;
                 cas_id_array[num_of_cas_counter].src_id = (default_src_id + num_of_cas_counter);
+
+                /* Print the curent list of cas nodes available */
                 printf("Current List [");
-                // uint32_t sum = 0;
                 for (int i = 0; i < MAX_NUM_CAS; i++)
-                {
                     printf("%i, ", cas_id_array[i].cas_uid);
-                    // sum += casnode_list[i];
-                }
                 printf("]\n");
-                // cas_sum.num = sum_device_id_list(4);
+
+                /* Sum the devices id and gen a ack msg */
+                cas_sum.num = sum_device_id_list(MAX_NUM_CAS);
                 gen_can_msg_for_ack(cas_id_array[num_of_cas_counter].cas_uid, cas_sum, cas_id_array[num_of_cas_counter].src_id);
-                add_cas_to_list = true;
                 ++num_of_cas_counter;
 
-                if(num_of_cas_counter > 16)
+                if (num_of_cas_counter > 16)
                     num_of_cas_counter = 0;
             }
         }
