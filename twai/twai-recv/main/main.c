@@ -1,8 +1,3 @@
-/* TODO Track src id of each casnode with ttl(time to live) */
-/* TODO implement Time to live for each node */
-/* TODO use a struct rather than a 2d array */
-/* TODO Check if the cas sum is correct*/
-/* TODO gen a crc */
 
 #include <stdio.h>
 #include <string.h>
@@ -17,14 +12,12 @@
 #define TX_PIN GPIO_NUM_27
 #define RX_PIN GPIO_NUM_14
 
-/* TODO should it be 16 or 15 ? */
 #define MAX_NUM_CAS 16
 #define TIMEOUT_MS 10000
 
 xQueueHandle twaiSndQueue;
 static uint8_t twaiSndQueueLen = 5;
 
-uint16_t casnode_list[4];
 uint8_t num_of_cas_counter = 0;
 bool add_cas_to_list = true;
 uint8_t default_src_id = 30;
@@ -86,9 +79,7 @@ void print_can_msg_in_cool_16t(uint16_t array[], int num_of_element)
 
 void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
 {
-
     uint16_t can_message_array[9] = {0};
-
     Cas_uid cas_uid;
     cas_uid.num = uid;
 
@@ -110,9 +101,9 @@ uint32_t sum_device_id_list(int total_num_of_cas)
     uint32_t sum = 0;
 
     for (int i = 0; i < MAX_NUM_CAS; i++)
-
         if ((cas_id_array[i].time_to_live) < 6)
         {
+            /* TODO add a counter for num of cas*/
             printf("summing %i Bcz time-to-live is < 6 = %i \n",
                    cas_id_array[i].cas_uid, cas_id_array[i].time_to_live);
             sum += cas_id_array[i].cas_uid;
@@ -121,14 +112,13 @@ uint32_t sum_device_id_list(int total_num_of_cas)
             printf("Not summing %i Bcz time-to-live is > 6 =  %i \n",
                    cas_id_array[i].cas_uid, cas_id_array[i].time_to_live);
 
-    printf("Total Sum %i\n", sum);
     return sum;
 }
 
 void update_time_to_live()
 {
     for (int i = 0; i < MAX_NUM_CAS; i++)
-        cas_id_array[i].time_to_live = cas_id_array[i].time_to_live + 1;
+        cas_id_array[i].time_to_live++;
 }
 
 void twai_receive_task(void *pvParameters)
@@ -137,7 +127,7 @@ void twai_receive_task(void *pvParameters)
     for (;;)
     {
         uint32_t elapsed_time = xTaskGetTickCount() - prevTime;
-        if(elapsed_time >= TIMEOUT_MS / portTICK_PERIOD_MS)
+        if (elapsed_time >= TIMEOUT_MS / portTICK_PERIOD_MS)
         {
             printf("Updated ttl\n");
             update_time_to_live();
