@@ -9,19 +9,26 @@
 #include "driver/twai.h"
 #include "stdbool.h"
 
+/* CAN PINS */
 #define TX_PIN GPIO_NUM_27
 #define RX_PIN GPIO_NUM_14
 
 #define MAX_NUM_CAS 16
-#define TIMEOUT_MS 10000
+#define TTLTIMEOUT_MS 10000
 
 xQueueHandle twaiSndQueue;
 static uint8_t twaiSndQueueLen = 5;
 
-uint8_t num_of_cas_counter = 0;
-bool add_cas_to_list = true;
+/** @note
+    ittr_for_num_of_cas;
+    is used to keep track of which position of cas_id_array should be
+    used to add new device.
+*/
+uint8_t ittr_for_num_of_cas = 0;
+uint8_t num_of_cas_alive = 0;
 uint8_t default_src_id = 30;
 
+/* Stores uid, src id, ttl value */
 typedef struct
 {
     uint16_t cas_uid;
@@ -90,7 +97,7 @@ void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
     can_message_array[3] = cas_sum.bytes[0];
     can_message_array[4] = cas_sum.bytes[1];
     can_message_array[5] = cas_sum.bytes[2];
-    can_message_array[6] = num_of_cas_counter;
+    can_message_array[6] = num_of_cas_alive;
     can_message_array[7] = src_id;
     can_message_array[8] = 1;
     xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
@@ -107,11 +114,11 @@ uint32_t sum_device_id_list(int total_num_of_cas)
             printf("summing %i Bcz time-to-live is < 6 = %i \n",
                    cas_id_array[i].cas_uid, cas_id_array[i].time_to_live);
             sum += cas_id_array[i].cas_uid;
+            --num_of_cas_alive;
         }
         else
             printf("Not summing %i Bcz time-to-live is > 6 =  %i \n",
                    cas_id_array[i].cas_uid, cas_id_array[i].time_to_live);
-
     return sum;
 }
 
@@ -123,11 +130,12 @@ void update_time_to_live()
 
 void twai_receive_task(void *pvParameters)
 {
+    bool add_cas_to_list = true;
     TickType_t prevTime = xTaskGetTickCount();
     for (;;)
     {
         uint32_t elapsed_time = xTaskGetTickCount() - prevTime;
-        if (elapsed_time >= TIMEOUT_MS / portTICK_PERIOD_MS)
+        if (elapsed_time >= TTLTIMEOUT_MS / portTICK_PERIOD_MS)
         {
             printf("Updated ttl\n");
             update_time_to_live();
@@ -167,8 +175,8 @@ void twai_receive_task(void *pvParameters)
             if (add_cas_to_list)
             {
                 printf("Got a new device in bus appending to list\n");
-                cas_id_array[num_of_cas_counter].cas_uid = uid.num;
-                cas_id_array[num_of_cas_counter].src_id = (default_src_id + num_of_cas_counter);
+                cas_id_array[ittr_for_num_of_cas].cas_uid = uid.num;
+                cas_id_array[ittr_for_num_of_cas].src_id = (default_src_id + ittr_for_num_of_cas);
 
                 /* Print the curent list of cas nodes available */
                 printf("Current List [");
@@ -178,11 +186,12 @@ void twai_receive_task(void *pvParameters)
 
                 /* Sum the devices id and gen a ack msg */
                 cas_sum.num = sum_device_id_list(MAX_NUM_CAS);
-                gen_can_msg_for_ack(cas_id_array[num_of_cas_counter].cas_uid, cas_sum, cas_id_array[num_of_cas_counter].src_id);
-                ++num_of_cas_counter;
+                gen_can_msg_for_ack(cas_id_array[ittr_for_num_of_cas].cas_uid, cas_sum, cas_id_array[ittr_for_num_of_cas].src_id);
+                ++ittr_for_num_of_cas;
+                ++num_of_cas_alive;
 
-                if (num_of_cas_counter > 16)
-                    num_of_cas_counter = 0;
+                if (ittr_for_num_of_cas > 16)
+                    ittr_for_num_of_cas = 0;
             }
         }
     }
