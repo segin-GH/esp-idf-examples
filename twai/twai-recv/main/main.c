@@ -163,16 +163,16 @@ void twai_receive_task(void *pvParameters)
         if (elapsed_time >= 9000 / portTICK_PERIOD_MS)
         {
 
-            for (int i = 0; i < MAX_NUM_CAS; i++)
-            {
-                if (cas_id_array[i].cas_uid == 65533)
-                {
-                    printf("***** TRIG OTA for 65533 ****\n");
-                    gen_can_msg(cas_id_array[i].cas_uid, cas_id_array[i].src_id);
-                }
-            }
-            prevTime = xTaskGetTickCount();
-        }
+        //     for (int i = 0; i < MAX_NUM_CAS; i++)
+        //     {
+        //         if (cas_id_array[i].cas_uid == 65533)
+        //         {
+        //             printf("***** TRIG OTA for 65533 ****\n");
+        //             gen_can_msg(cas_id_array[i].cas_uid, cas_id_array[i].src_id);
+        //         }
+        //     }
+        //     prevTime = xTaskGetTickCount();
+        // }
 
         twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
