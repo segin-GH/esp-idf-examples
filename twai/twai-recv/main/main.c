@@ -26,7 +26,7 @@ static uint8_t twaiSndQueueLen = 5;
 */
 uint8_t ittr_for_num_of_cas = 0;
 uint8_t num_of_cas_alive = 0;
-uint8_t default_src_id = 30;
+uint8_t default_src_id = 10;
 
 /* Stores uid, src id, ttl value */
 typedef struct
@@ -90,7 +90,7 @@ void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
     Cas_uid cas_uid;
     cas_uid.num = uid;
 
-    printf("Sending ack to CAS of %i \n", uid);
+    printf("Sending ack to CAS of %i with src id %i \n", uid, src_id);
     can_message_array[0] = 0x112;
     can_message_array[1] = cas_uid.bytes[0];
     can_message_array[2] = cas_uid.bytes[1];
@@ -103,6 +103,24 @@ void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
     xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
 }
 
+void gen_can_msg(uint16_t uid, uint8_t src_id)
+{
+    uint16_t can_message_array[9] = {0};
+    // Cas_uid cas_uid;
+    // cas_uid.num = uid;
+
+    printf("Sending ack to CAS of %i with src id %i \n", uid, src_id);
+    can_message_array[0] = 0x300;
+    can_message_array[1] = src_id;
+    // can_message_array[2] = cas_uid.bytes[1];
+    // // can_message_array[3] = cas_sum.bytes[0];
+    // // can_message_array[4] = cas_sum.bytes[1];
+    // // can_message_array[5] = cas_sum.bytes[2];
+    // // can_message_array[6] = num_of_cas_alive;
+    // can_message_array[7] = src_id;
+    // can_message_array[8] = 1;
+    xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
+}
 uint32_t sum_device_id_list(int total_num_of_cas)
 {
     uint32_t sum = 0;
@@ -142,6 +160,20 @@ void twai_receive_task(void *pvParameters)
             prevTime = xTaskGetTickCount();
         }
 
+        if (elapsed_time >= 9000 / portTICK_PERIOD_MS)
+        {
+
+            for (int i = 0; i < MAX_NUM_CAS; i++)
+            {
+                if (cas_id_array[i].cas_uid == 65533)
+                {
+                    printf("***** TRIG OTA for 65533 ****\n");
+                    gen_can_msg(cas_id_array[i].cas_uid, cas_id_array[i].src_id);
+                }
+            }
+            prevTime = xTaskGetTickCount();
+        }
+
         twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
             continue;
@@ -154,6 +186,9 @@ void twai_receive_task(void *pvParameters)
             uid.bytes[0] = message.data[0];
             uid.bytes[1] = message.data[1];
             printf("DEVICE ID: %i\n", uid.num);
+
+            if (uid.num < 1000 || uid.num > 65535)
+                continue;
 
             /* loop through the list to check if the id is same as the received id */
             for (int i = 0; i < MAX_NUM_CAS; i++)
