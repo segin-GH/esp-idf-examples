@@ -160,8 +160,8 @@ void twai_receive_task(void *pvParameters)
             prevTime = xTaskGetTickCount();
         }
 
-        if (elapsed_time >= 9000 / portTICK_PERIOD_MS)
-        {
+        // if (elapsed_time >= 9000 / portTICK_PERIOD_MS)
+        // {
 
         //     for (int i = 0; i < MAX_NUM_CAS; i++)
         //     {
