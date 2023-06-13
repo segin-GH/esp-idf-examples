@@ -110,7 +110,7 @@ void gen_can_msg(uint16_t uid, uint8_t src_id)
     // cas_uid.num = uid;
 
     printf("Sending ack to CAS of %i with src id %i \n", uid, src_id);
-    can_message_array[0] = 0x300;
+    can_message_array[0] = 0x410;
     can_message_array[1] = src_id;
     // can_message_array[2] = cas_uid.bytes[1];
     // // can_message_array[3] = cas_sum.bytes[0];
@@ -148,6 +148,7 @@ void update_time_to_live()
 
 void twai_receive_task(void *pvParameters)
 {
+    // uint16_t sndDataArray[9] = {0};
     bool add_cas_to_list = true;
     TickType_t prevTime = xTaskGetTickCount();
     for (;;)
@@ -162,15 +163,8 @@ void twai_receive_task(void *pvParameters)
 
         // if (elapsed_time >= 9000 / portTICK_PERIOD_MS)
         // {
-
-        //     for (int i = 0; i < MAX_NUM_CAS; i++)
-        //     {
-        //         if (cas_id_array[i].cas_uid == 65533)
-        //         {
-        //             printf("***** TRIG OTA for 65533 ****\n");
-        //             gen_can_msg(cas_id_array[i].cas_uid, cas_id_array[i].src_id);
-        //         }
-        //     }
+        //     printf("***** Just Send a RND MSG ****\n");
+        //     gen_can_msg(cas_id_array[0].cas_uid, cas_id_array[0].src_id);
         //     prevTime = xTaskGetTickCount();
         // }
 
