@@ -103,7 +103,6 @@ void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
     xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
 }
 
-}
 uint32_t sum_device_id_list(int total_num_of_cas)
 {
     uint32_t sum = 0;
