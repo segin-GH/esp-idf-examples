@@ -168,7 +168,7 @@ void twai_receive_task(void *pvParameters)
         //     prevTime = xTaskGetTickCount();
         // }
 
-        twai_message_t message;
+                twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
             continue;
 
