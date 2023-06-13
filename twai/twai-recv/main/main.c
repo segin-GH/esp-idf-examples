@@ -120,6 +120,7 @@ void gen_can_msg(uint16_t uid, uint8_t src_id)
     // can_message_array[7] = src_id;
     // can_message_array[8] = 1;
     xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
+
 }
 uint32_t sum_device_id_list(int total_num_of_cas)
 {
