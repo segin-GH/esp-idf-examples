@@ -103,24 +103,6 @@ void gen_can_msg_for_ack(uint16_t uid, Cas_sum cas_sum, uint8_t src_id)
     xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
 }
 
-void gen_can_msg(uint16_t uid, uint8_t src_id)
-{
-    uint16_t can_message_array[9] = {0};
-    // Cas_uid cas_uid;
-    // cas_uid.num = uid;
-
-    printf("Sending ack to CAS of %i with src id %i \n", uid, src_id);
-    can_message_array[0] = 0x410;
-    can_message_array[1] = src_id;
-    // can_message_array[2] = cas_uid.bytes[1];
-    // // can_message_array[3] = cas_sum.bytes[0];
-    // // can_message_array[4] = cas_sum.bytes[1];
-    // // can_message_array[5] = cas_sum.bytes[2];
-    // // can_message_array[6] = num_of_cas_alive;
-    // can_message_array[7] = src_id;
-    // can_message_array[8] = 1;
-    xQueueSend(twaiSndQueue, can_message_array, portMAX_DELAY);
-
 }
 uint32_t sum_device_id_list(int total_num_of_cas)
 {
@@ -169,7 +151,7 @@ void twai_receive_task(void *pvParameters)
         //     prevTime = xTaskGetTickCount();
         // }
 
-                twai_message_t message;
+        twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
             continue;
 
