@@ -10,8 +10,8 @@
 #include "stdbool.h"
 
 /* CAN PINS */
-#define TX_PIN GPIO_NUM_27
-#define RX_PIN GPIO_NUM_14
+#define TX_PIN GPIO_NUM_5
+#define RX_PIN GPIO_NUM_4
 
 #define MAX_NUM_CAS 16
 #define TTLTIMEOUT_MS 10000

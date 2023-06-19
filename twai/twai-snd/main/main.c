@@ -7,8 +7,8 @@
 
 #define TAG "twai"
 
-#define TX_PIN GPIO_NUM_5
-#define RX_PIN GPIO_NUM_4
+#define TX_PIN GPIO_NUM_4
+#define RX_PIN GPIO_NUM_5
 
 void app_main()
 {
@@ -36,12 +36,14 @@ void app_main()
         printf("Failed to start driver\n");
         return;
     }
+
+    int id = 0;
     for (;;)
     {
 
         // Prepare and send message
         twai_message_t message;
-        message.identifier = 0x11;
+        message.identifier = id++;
         message.extd = 1;
         message.data_length_code = 8;
 
@@ -60,6 +62,8 @@ void app_main()
         else
             printf("Failed to queue message for transmission\n");
         vTaskDelay(10 / portTICK_PERIOD_MS);
+        if(id == 255)
+            id = 0;
     }
 
     ESP_ERROR_CHECK(twai_stop());
