@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <freertos/FreeRTOS.h>
@@ -29,27 +28,9 @@ void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
     printf("]\n");
 }
 
-void print_can_msg_in_cool_16t(uint16_t array[], int num_of_element)
-{
-    int i = 0;
-    printf("[");
-    for (i = 0; i < num_of_element; i++)
-    {
-        if (i == (num_of_element - 1))
-        {
-            printf("0x%02x", array[i]);
-            break;
-        }
-        printf("0x%02x, ", array[i]);
-    }
-    printf("]\n");
-}
 
 void twai_receive_task(void *pvParameters)
 {
-    // uint16_t sndDataArray[9] = {0};
-    bool add_cas_to_list = true;
-    TickType_t prevTime = xTaskGetTickCount();
     for (;;)
     {
 
