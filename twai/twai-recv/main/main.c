@@ -9,8 +9,8 @@
 #include "stdbool.h"
 
 /* CAN PINS */
-#define TX_PIN GPIO_NUM_5
-#define RX_PIN GPIO_NUM_4
+#define TX_PIN GPIO_NUM_4
+#define RX_PIN GPIO_NUM_5
 
 void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
 {

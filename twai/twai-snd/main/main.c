@@ -61,7 +61,7 @@ void app_main()
             printf("Message queued for transmission\n");
         else
             printf("Failed to queue message for transmission\n");
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
         if(id == 255)
             id = 0;
     }

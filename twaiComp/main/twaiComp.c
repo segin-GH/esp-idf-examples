@@ -3,50 +3,63 @@
 #include "freertos/task.h"
 #include "can.h"
 
-void send_task(void *pvParameter)
-{
-    while (1)
-    {
-        // Send message
-        can_message_t message;
-        message.identifier = 0x123;
-        message.data_length_code = 8;
-        message.data[0] = 0x11;
-        message.data[1] = 0x22;
-        message.data[2] = 0x33;
-        message.data[3] = 0x44;
-        message.data[4] = 0x55;
-        message.data[5] = 0x66;
-        message.data[6] = 0x77;
-        message.data[7] = 0x88;
-        can_transmit(&message, pdMS_TO_TICKS(1000));
+#define TAG "main"
 
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+static void can_handle(void *args, esp_event_base_t base, int32_t event_id, void *event_data)
+{
+    can_message_t *can_rx_message = (can_message_t *)event_data;
+    switch (event_id)
+    {
+    case RECEIVED_CAN_MESSAGE:
+        printf("[0x%02x]", can_rx_message->identifier);
+        print_can_msg_in_cool_8t(can_rx_message->data, 8);
+        break;
+
+    default:
+        ESP_LOGW(TAG, "Unhandled CAN event");
+        break;
     }
 }
 
+void send_can_message_in_main(void *pvParms)
+{
+    for (;;)
+    {
+        can_message_t can_tx_message;
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        can_tx_message.identifier = 0x20;
+        can_tx_message.data_length_code = 8;
+        can_tx_message.extd = 1;
+        can_tx_message.data[0] = 0x11;
+        can_tx_message.data[1] = 0x22;
+        can_tx_message.data[2] = 0x33;
+        can_tx_message.data[3] = 0x44;
+        can_tx_message.data[4] = 0x55;
+        can_tx_message.data[5] = 0x66;
+        can_tx_message.data[6] = 0x77;
+        can_tx_message.data[7] = 0x88;
+
+        if (can_transmit(&can_tx_message, portMAX_DELAY) == ESP_OK)
+            ESP_LOGI(TAG, "Message queued for transmission");
+        else
+            ESP_LOGE(TAG, "Failed to queue message for transmission");
+    }
+}
 
 void app_main(void)
 {
-    can_init(4, 5, pdMS_TO_TICKS(1000));
+    can_init(4, 5, pdMS_TO_TICKS(100));
 
-    // Create task to send msg
-    // xTaskCreatePinnedToCore(
-    //     send_task,
-    //     "send_task",
-    //     2048,
-    //     NULL,
-    //     5,
-    //     NULL,
-    //     APP_CPU_NUM);
+    can_register_can_handler(can_handle, NULL);
 
-    // Create task to receive msg
+    /* Create a task to send can messages */
+
     xTaskCreatePinnedToCore(
-        receive_task,
-        "receive_task",
+        send_can_message_in_main,
+        "send_can_message",
         2048,
         NULL,
-        5,
+        1,
         NULL,
         APP_CPU_NUM);
 }
