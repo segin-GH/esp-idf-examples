@@ -53,7 +53,6 @@ void app_main(void)
     can_register_can_handler(can_handle, NULL);
 
     /* Create a task to send can messages */
-
     xTaskCreatePinnedToCore(
         send_can_message_in_main,
         "send_can_message",

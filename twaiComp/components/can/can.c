@@ -8,6 +8,7 @@ static uint8_t can_tx_queue_timeout = 0;
 
 esp_event_loop_handle_t can_receive_event_loop;
 
+/* use if you want to print received can msgs */
 void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
 {
     int i = 0;
@@ -24,6 +25,7 @@ void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
     printf("]\n");
 }
 
+/* Task that sends the can msg */
 static void send_can_message(void *pvParms)
 {
     can_message_t can_tx_message;
@@ -37,6 +39,7 @@ static void send_can_message(void *pvParms)
     }
 }
 
+/* Task that receives can msg */
 static void can_receive_task(void *pvParms)
 {
     for (;;)
@@ -45,6 +48,7 @@ static void can_receive_task(void *pvParms)
         if (twai_receive(&can_rx_message, pdMS_TO_TICKS(1000)) != ESP_OK)
             continue;
 
+        /* Creates a event in the event handler */
         esp_event_post_to(
             can_receive_event_loop,
             CAN_EVENT,
