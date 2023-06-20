@@ -19,47 +19,26 @@ void send_task(void *pvParameter)
         message.data[5] = 0x66;
         message.data[6] = 0x77;
         message.data[7] = 0x88;
-        message.flags = CAN_MSG_FLAG_EXTD;
-        can_transmit(&message, 1000 / portTICK_PERIOD_MS);
+        can_transmit(&message, pdMS_TO_TICKS(1000));
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 
-void receive_task(void *pvParameter)
-{
-    while (1)
-    {
-        // Receive message
-        can_message_t message;
-        if (can_receive(&message, 1000 / portTICK_PERIOD_MS) == ESP_OK)
-        {
-            printf("Message received\n");
-            printf("  ID: 0x%08x\n", message.identifier);
-            printf("  DLC: %d\n", message.data_length_code);
-            printf("  Data:");
-            for (int i = 0; i < message.data_length_code; i++)
-            {
-                printf(" 0x%02x", message.data[i]);
-            }
-            printf("\n");
-        }
-    }
-}
 
 void app_main(void)
 {
-    can_init(4, 5);
+    can_init(4, 5, pdMS_TO_TICKS(1000));
 
     // Create task to send msg
-    xTaskCreatePinnedToCore(
-        send_task,
-        "send_task",
-        2048,
-        NULL,
-        5,
-        NULL,
-        APP_CPU_NUM);
+    // xTaskCreatePinnedToCore(
+    //     send_task,
+    //     "send_task",
+    //     2048,
+    //     NULL,
+    //     5,
+    //     NULL,
+    //     APP_CPU_NUM);
 
     // Create task to receive msg
     xTaskCreatePinnedToCore(
