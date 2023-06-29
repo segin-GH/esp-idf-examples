@@ -3,20 +3,20 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-uint8_t LED_BUITIN = 25;
+// blink a second led on LED_GPIO_2
+#define LED_GPIO 25
 
 void app_main(void)
 {
-    gpio_pad_select_gpio(LED_BUITIN);
-    gpio_set_direction(LED_BUITIN, GPIO_MODE_OUTPUT);
+    // blink an led on LED_GPIO
+    gpio_pad_select_gpio(LED_GPIO);
+    gpio_set_direction(LED_GPIO, GPIO_MODE_OUTPUT);
 
-    while (true)
+    while (1)
     {
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        gpio_set_level(LED_BUITIN, 1);
-        printf("LedON\n");
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        gpio_set_level(LED_BUITIN, 0);
-        printf("LedOFF\n");
+        gpio_set_level(LED_GPIO, 1);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        gpio_set_level(LED_GPIO, 0);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
