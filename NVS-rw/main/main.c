@@ -1,37 +1,74 @@
-#include <stdio.h>
-#include <string.h>
-#include <esp_log.h>
-#include <nvs.h>
-#include <nvs_flash.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <esp_system.h>
+#include "nvs_flash.h"
+#include "nvs.h"
+#include "cJSON.h"
 
-#define TAG "NVS"
+#define MAX_JSON_SIZE 1024
 
-void app_main(void)
+void app_main()
 {
-    ESP_ERROR_CHECK(nvs_flash_init());
-    nvs_handle nvshandle;
-    ESP_ERROR_CHECK(nvs_open("store",NVS_READWRITE, &nvshandle));
-    int32_t val = 0;
-    esp_err_t result = nvs_get_i32(nvshandle,"val",&val);
-    switch(result)
+    // Initialize NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
-        case ESP_ERR_NVS_NOT_FOUND:
-            ESP_LOGE(TAG, "Value not sest yet");
-            break;
-
-        case ESP_OK:
-            ESP_LOGI(TAG, "value is %d",val);
-            break;
-        default:
-            ESP_LOGI(TAG, "ERROR (%s) opening NVS handle! \n", esp_err_to_name(result));
-            break;
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
     }
-    val++;
-    ESP_ERROR_CHECK(nvs_set_i32(nvshandle,"val",val));
-    ESP_ERROR_CHECK(nvs_commit(nvshandle));
-    nvs_close(nvshandle);   
-    
+    ESP_ERROR_CHECK(ret);
+
+    // Open
+    nvs_handle_t my_handle;
+    ret = nvs_open("storage", NVS_READWRITE, &my_handle);
+    if (ret != ESP_OK)
+    {
+        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(ret));
+        return;
+    }
+
+    // Write
+    const char *key = "IMPSTA";
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddStringToObject(root, "key", "NOIMPACT");
+    char json_string[MAX_JSON_SIZE];
+    snprintf(json_string, MAX_JSON_SIZE, "%s", cJSON_Print(root));
+
+    ret = nvs_set_str(my_handle, key, json_string);
+    printf((ret != ESP_OK) ? "Failed to write!\n" : "Set Done\n");
+
+    // Commit written value.
+    ret = nvs_commit(my_handle);
+    printf((ret != ESP_OK) ? "Failed to commit!\n" : "Commit Done\n");
+
+    // Close
+    nvs_close(my_handle);
+
+    // Reopen for reading
+    ret = nvs_open("storage", NVS_READONLY, &my_handle);
+    if (ret != ESP_OK)
+    {
+        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(ret));
+        return;
+    }
+    else
+    {
+        printf("Done\n");
+    }
+
+    // Read
+    size_t required_size = MAX_JSON_SIZE;
+    ret = nvs_get_str(my_handle, key, json_string, &required_size);
+    if (ret != ESP_OK && ret != ESP_ERR_NVS_NOT_FOUND)
+        return;
+
+    // Parse JSON value
+    cJSON *parsed_json = cJSON_Parse(json_string);
+    char *read_key = cJSON_GetObjectItem(parsed_json, "key")->valuestring;
+
+    printf("Key: %s\n", read_key);
+
+    // Don't forget to free up the resources
+    cJSON_Delete(root);
+    cJSON_Delete(parsed_json);
+
+    // Close
+    nvs_close(my_handle);
 }
