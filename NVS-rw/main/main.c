@@ -1,14 +1,3 @@
-/* Non-Volatile Storage (NVS) Read and Write a Value - Example
-
-   For other examples please check:
-   https://github.com/espressif/esp-idf/tree/master/examples
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
 #include <stdio.h>
 #include <inttypes.h>
 #include "freertos/FreeRTOS.h"
@@ -66,10 +55,6 @@ void app_main(void)
         err = nvs_set_i32(my_handle, "restart_counter", restart_counter);
         printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
 
-        // Commit written value.
-        // After setting any values, nvs_commit() must be called to ensure changes are written
-        // to flash storage. Implementations may write to storage at other times,
-        // but this is not guaranteed.
         printf("Committing updates in NVS ... ");
         err = nvs_commit(my_handle);
         printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
