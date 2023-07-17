@@ -1,186 +1,155 @@
-/* Non-Volatile Storage (NVS) Read and Write a Blob - Example
-
-   For other examples please check:
-   https://github.com/espressif/esp-idf/tree/master/examples
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
 #include <stdio.h>
-#include <inttypes.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_system.h"
+#include <string.h>
 #include "nvs_flash.h"
 #include "nvs.h"
-#include "driver/gpio.h"
+#include "cJSON.h"
 
-#define STORAGE_NAMESPACE "storage"
+#define NVS_NAMESPACE "storage"
 
-#define BOOT_MODE_PIN GPIO_NUM_0
-
-esp_err_t save_restart_counter(void)
+esp_err_t save_cjson_to_nvs()
 {
     nvs_handle_t my_handle;
     esp_err_t err;
 
     // Open
-    err = nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) return err;
-
-    // Read
-    int32_t restart_counter = 0; // value will default to 0, if not set yet in NVS
-    err = nvs_get_i32(my_handle, "restart_conter", &restart_counter);
-    if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND) return err;
-
-    // Write
-    restart_counter++;
-    err = nvs_set_i32(my_handle, "restart_conter", restart_counter);
-    if (err != ESP_OK) return err;
-
-    // Commit written value.
-    // After setting any values, nvs_commit() must be called to ensure changes are written
-    // to flash storage. Implementations may write to storage at other times,
-    // but this is not guaranteed.
-    err = nvs_commit(my_handle);
-    if (err != ESP_OK) return err;
-
-    // Close
-    nvs_close(my_handle);
-    return ESP_OK;
-}
-
-/* Save new run time value in NVS
-   by first reading a table of previously saved values
-   and then adding the new value at the end of the table.
-   Return an error if anything goes wrong
-   during this process.
- */
-esp_err_t save_run_time(void)
-{
-    nvs_handle_t my_handle;
-    esp_err_t err;
-
-    // Open
-    err = nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) return err;
-
-    // Read the size of memory space required for blob
-    size_t required_size = 0;  // value will default to 0, if not set yet in NVS
-    err = nvs_get_blob(my_handle, "run_time", NULL, &required_size);
-    if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND) return err;
-
-    // Read previously saved blob if available
-    uint32_t* run_time = malloc(required_size + sizeof(uint32_t));
-    if (required_size > 0) {
-        err = nvs_get_blob(my_handle, "run_time", run_time, &required_size);
-        if (err != ESP_OK) {
-            free(run_time);
-            return err;
-        }
+    err = nvs_open(NVS_NAMESPACE, NVS_READWRITE, &my_handle);
+    if (err != ESP_OK)
+    {
+        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
+        return err;
     }
 
-    // Write value including previously saved blob if available
-    required_size += sizeof(uint32_t);
-    run_time[required_size / sizeof(uint32_t) - 1] = xTaskGetTickCount() * portTICK_PERIOD_MS;
-    err = nvs_set_blob(my_handle, "run_time", run_time, required_size);
-    free(run_time);
+    // Create cJSON object
+    cJSON *pdb_settings_json = cJSON_CreateObject();
+    if (pdb_settings_json == NULL)
+    {
+        printf("Failed to create json object\n");
+        return ESP_FAIL;
+    }
 
-    if (err != ESP_OK) return err;
+    cJSON_AddItemToObject(pdb_settings_json, "NAM", cJSON_CreateString("PDB.ZORO"));
+    cJSON_AddItemToObject(pdb_settings_json, "VER", cJSON_CreateString("1.0.0"));
+    cJSON_AddItemToObject(pdb_settings_json, "ID", cJSON_CreateString("1234567890"));
+    cJSON_AddItemToObject(pdb_settings_json, "KEY", cJSON_CreateNumber(12));
+
+    char *stringified_json = cJSON_Print(pdb_settings_json);
+    if (stringified_json == NULL)
+    {
+        printf("Failed to stringify json\n");
+        cJSON_Delete(pdb_settings_json);
+        return ESP_FAIL;
+    }
+
+    // Write
+    err = nvs_set_blob(my_handle, "my_json", stringified_json, strlen(stringified_json) + 1);
+    if (err != ESP_OK)
+    {
+        printf("Error (%s) writing!\n", esp_err_to_name(err));
+    }
 
     // Commit
     err = nvs_commit(my_handle);
-    if (err != ESP_OK) return err;
-
-    // Close
-    nvs_close(my_handle);
-    return ESP_OK;
-}
-
-/* Read from NVS and print restart counter
-   and the table with run times.
-   Return an error if anything goes wrong
-   during this process.
- */
-esp_err_t print_what_saved(void)
-{
-    nvs_handle_t my_handle;
-    esp_err_t err;
-
-    // Open
-    err = nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) return err;
-
-    // Read restart counter
-    int32_t restart_counter = 0; // value will default to 0, if not set yet in NVS
-    err = nvs_get_i32(my_handle, "restart_conter", &restart_counter);
-    if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND) return err;
-    printf("Restart counter = %" PRIu32 "\n", restart_counter);
-
-    // Read run time blob
-    size_t required_size = 0;  // value will default to 0, if not set yet in NVS
-    // obtain required memory space to store blob being read from NVS
-    err = nvs_get_blob(my_handle, "run_time", NULL, &required_size);
-    if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND) return err;
-    printf("Run time:\n");
-    if (required_size == 0) {
-        printf("Nothing saved yet!\n");
-    } else {
-        uint32_t* run_time = malloc(required_size);
-        err = nvs_get_blob(my_handle, "run_time", run_time, &required_size);
-        if (err != ESP_OK) {
-            free(run_time);
-            return err;
-        }
-        for (int i = 0; i < required_size / sizeof(uint32_t); i++) {
-            printf("%d: %" PRIu32 "\n", i + 1, run_time[i]);
-        }
-        free(run_time);
+    if (err != ESP_OK)
+    {
+        printf("Error (%s) committing!\n", esp_err_to_name(err));
     }
 
     // Close
     nvs_close(my_handle);
+    free(stringified_json);
+    cJSON_Delete(pdb_settings_json);
+    return err;
+}
+
+esp_err_t read_cjson_from_nvs()
+{
+    nvs_handle_t my_handle;
+    esp_err_t err;
+    size_t required_size = 0;
+
+    // Open
+    err = nvs_open(NVS_NAMESPACE, NVS_READONLY, &my_handle);
+    if (err != ESP_OK)
+    {
+        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
+        return err;
+    }
+
+    // Obtain the length of the string that needs to be stored
+    err = nvs_get_blob(my_handle, "my_json", NULL, &required_size);
+    if (err != ESP_OK)
+    {
+        printf("Failed to get the required size\n");
+        nvs_close(my_handle);
+        return err;
+    }
+
+    // Allocate the memory
+    char *stored_stringified_json = malloc(required_size);
+    if (stored_stringified_json == NULL)
+    {
+        printf("Failed to allocate memory\n");
+        nvs_close(my_handle);
+        return ESP_FAIL;
+    }
+
+    // Read
+    err = nvs_get_blob(my_handle, "my_json", stored_stringified_json, &required_size);
+    if (err != ESP_OK)
+    {
+        printf("Error (%s) reading!\n", esp_err_to_name(err));
+        free(stored_stringified_json);
+        nvs_close(my_handle);
+        return err;
+    }
+
+    cJSON *pdb_settings_json = cJSON_Parse(stored_stringified_json);
+    if (pdb_settings_json == NULL)
+    {
+        printf("Failed to parse json\n");
+        free(stored_stringified_json);
+        nvs_close(my_handle);
+        return ESP_FAIL;
+    }
+
+    char *output_string = cJSON_Print(pdb_settings_json);
+    printf("%s\n", output_string);
+
+    // Close and free allocated memories
+    nvs_close(my_handle);
+    free(output_string);
+    free(stored_stringified_json);
+    cJSON_Delete(pdb_settings_json);
+
     return ESP_OK;
 }
 
-
-void app_main(void)
+void app_main()
 {
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    esp_err_t err;
+
+    // Initialize NVS
+    err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
         // NVS partition was truncated and needs to be erased
         // Retry nvs_flash_init
         ESP_ERROR_CHECK(nvs_flash_erase());
         err = nvs_flash_init();
     }
-    ESP_ERROR_CHECK( err );
+    ESP_ERROR_CHECK(err);
 
-    err = print_what_saved();
-    if (err != ESP_OK) printf("Error (%s) reading data from NVS!\n", esp_err_to_name(err));
+    err = save_cjson_to_nvs();
+    if (err != ESP_OK)
+    {
+        printf("Failed to save json to nvs\n");
+        return;
+    }
 
-    err = save_restart_counter();
-    if (err != ESP_OK) printf("Error (%s) saving restart counter to NVS!\n", esp_err_to_name(err));
-
-    gpio_reset_pin(BOOT_MODE_PIN);
-    gpio_set_direction(BOOT_MODE_PIN, GPIO_MODE_INPUT);
-
-    /* Read the status of GPIO0. If GPIO0 is LOW for longer than 1000 ms,
-       then save module's run time and restart it
-     */
-    while (1) {
-        if (gpio_get_level(BOOT_MODE_PIN) == 0) {
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
-            if(gpio_get_level(BOOT_MODE_PIN) == 0) {
-                err = save_run_time();
-                if (err != ESP_OK) printf("Error (%s) saving run time blob to NVS!\n", esp_err_to_name(err));
-                printf("Restarting...\n");
-                fflush(stdout);
-                esp_restart();
-            }
-        }
-        vTaskDelay(200 / portTICK_PERIOD_MS);
+    err = read_cjson_from_nvs();
+    if (err != ESP_OK)
+    {
+        printf("Failed to read json from nvs\n");
+        return;
     }
 }
