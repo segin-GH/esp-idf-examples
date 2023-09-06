@@ -12,13 +12,7 @@ The examples in this repository demonstrate various functionalities and features
 
 Here's a list of examples currently available in this repository:
 
-- `wifi`: A simple example that demonstrates how to connect to a Wi-Fi network using the ESP-IDF Wi-Fi APIs.
-- `bluetooth`: An example that demonstrates how to use the ESP-IDF Bluetooth APIs to create a simple Bluetooth Low Energy (BLE) peripheral device.
-- `spi`: An example that demonstrates how to use the ESP-IDF SPI driver to communicate with an SPI slave device.
-- `i2c`: An example that demonstrates how to use the ESP-IDF I2C driver to communicate with an I2C slave device.
-- `adc`: An example that demonstrates how to use the ESP-IDF ADC driver to read analog values from an analog-to-digital converter (ADC) connected to an ESP32 microcontroller.
-- `ledc`: An example that demonstrates how to use the ESP-IDF LEDC driver to control the brightness of an LED using pulse width modulation (PWM).
-- `http_server`: An example that demonstrates how to create a simple HTTP server using the ESP-IDF TCP/IP stack.
+- **A LOT**
 
 Each example has its own README file that provides detailed instructions on how to build and run the example.
 
