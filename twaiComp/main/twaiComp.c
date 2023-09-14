@@ -52,10 +52,10 @@ void send_can_message_in_main(void *pvParms)
         for (int i = 0; i < 1000; i++)
         {
             vTaskDelay(pdMS_TO_TICKS(30));
-            
             uint8_t data[8] = {0x12, 0x00, 0xE0, 0x90, 0x43, 0x00, 0xBE, 0xA3};
             generate_can_message(0x10, data, 8);
 
+            vTaskDelay(pdMS_TO_TICKS(30));
             uint8_t data_2[8] = {0x12, 0x00, 0xF0, 0x23, 0x44, 0x00, 0x58, 0xA3};
             generate_can_message(0x11, data_2, 8);
 
