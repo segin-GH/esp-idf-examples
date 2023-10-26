@@ -4,7 +4,7 @@
 #include "freertos/task.h"
 
 // blink a second led on LED_GPIO_2
-#define LED_GPIO 25
+#define LED_GPIO 2
 
 void app_main(void)
 {
