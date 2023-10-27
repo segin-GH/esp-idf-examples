@@ -10,7 +10,7 @@ static const char *SERVER_TAG = "[SERVER]";
 /* event handler for server */
 static esp_err_t on_default_url(httpd_req_t *req)
 {
-    ESP_LOGI(SERVER_TAG,"URL %s:", req->uri);
+    ESP_LOGI(SERVER_TAG, "URL %s:", req->uri);
     httpd_resp_sendstr(req, "<i><b> Hello this is ESP32 Server :) <b><i>");
     return ESP_OK;
 }
@@ -22,7 +22,7 @@ static void start_mdns_service()
     mdns_instance_name_set("bla-bla-bla");
 }
 
-/* init our server */
+/* init server */
 static void init_server()
 {
     httpd_handle_t server = NULL;
@@ -33,8 +33,7 @@ static void init_server()
     httpd_uri_t default_url = {
         .uri = "/",
         .method = HTTP_GET,
-        .handler = on_default_url
-    };
+        .handler = on_default_url};
     httpd_register_uri_handler(server, &default_url);
 }
 
@@ -42,7 +41,7 @@ void app_main(void)
 {
     nvs_flash_init();
     wifi_init();
-    wifi_connect_sta("Segin","2003sejin",10000);
+    wifi_connect_sta("sussy_baka", "luffy@gear5", 1000);
     start_mdns_service();
     init_server();
 }
