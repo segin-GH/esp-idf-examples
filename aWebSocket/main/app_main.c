@@ -135,7 +135,7 @@ void app_main(void)
     init_btn_onboard();
     init_led_as_output(2);
     start_mdns_service();
-    wifi_connect_sta("HACKLAB_2G","HACK@LAB",10000);
+    wifi_connect_sta("sussy_baka","luffy@gear5",10000);
     init_server();
 }
 
