@@ -3,8 +3,12 @@
 #include <sys/stat.h>
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
+#include "esp_log.h"
+#include <errno.h>
 
 static const char *TAG = "example";
+static sdmmc_card_t *card = NULL;
+static sdmmc_host_t host = SDSPI_HOST_DEFAULT();
 
 #define MOUNT_POINT "/sdcard"
 
@@ -13,7 +17,7 @@ static const char *TAG = "example";
 #define PIN_NUM_CLK 14
 #define PIN_NUM_CS 33
 
-void app_main(void)
+esp_err_t initialize_sd_card(void)
 {
     ESP_LOGI(TAG, "Initializing SD card");
 
@@ -23,7 +27,6 @@ void app_main(void)
         .max_files = 5,
         .allocation_unit_size = 16 * 1024};
 
-    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     spi_bus_config_t bus_cfg = {
         .mosi_io_num = PIN_NUM_MOSI,
         .miso_io_num = PIN_NUM_MISO,
@@ -35,15 +38,14 @@ void app_main(void)
     err = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
     if (err != ESP_OK)
     {
-        ESP_LOGE(TAG, "Failed to initialize spi bus for .");
-        return;
+        ESP_LOGE(TAG, "Failed to initialize spi bus for SD card.");
+        return err;
     }
 
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = PIN_NUM_CS;
     slot_config.host_id = host.slot;
 
-    sdmmc_card_t *card;
     const char mount_point[] = MOUNT_POINT;
 
     ESP_LOGI(TAG, "Mounting filesystem");
@@ -51,79 +53,117 @@ void app_main(void)
 
     if (err != ESP_OK)
     {
-        if (err == ESP_FAIL)
-        {
-            ESP_LOGE(TAG, "Failed to mount filesystem. "
-                          "If you want the card to be formatted, set the CONFIG_EXAMPLE_FORMAT_IF_MOUNT_FAILED menuconfig option.");
-        }
-        else
-        {
-            ESP_LOGE(TAG, "Failed to initialize the card (%s). "
-                          "Make sure SD card lines have pull-up resistors in place.",
-                     esp_err_to_name(err));
-        }
-        return;
+        ESP_LOGE(TAG, "Failed to mount filesystem. If you want the card to be formatted, set appropriate menuconfig options.");
+        spi_bus_free(host.slot);
+        return err;
     }
-    ESP_LOGI(TAG, "Filesystem mounted");
 
     sdmmc_card_print_info(stdout, card);
+    return ESP_OK;
+}
 
-    // First create a file.
-    const char *file_hello = MOUNT_POINT "/hello.txt";
-
-    ESP_LOGI(TAG, "Opening file %s", file_hello);
-    FILE *f = fopen(file_hello, "w");
+// Function to write to a file
+esp_err_t write_to_file(const char *filename, const char *content)
+{
+    FILE *f = fopen(filename, "w");
     if (f == NULL)
     {
         ESP_LOGE(TAG, "Failed to open file for writing");
-        return;
+        return ESP_FAIL;
     }
-    fprintf(f, "Hello %s!\n", card->cid.name);
+    fprintf(f, "%s\n", content);
     fclose(f);
     ESP_LOGI(TAG, "File written");
+    return ESP_OK;
+}
 
-    const char *file_foo = MOUNT_POINT "/foo.txt";
-
-    struct stat st;
-    if (stat(file_foo, &st) == 0)
-    {
-        unlink(file_foo);
-    }
-
-    // Rename original file
-    ESP_LOGI(TAG, "Renaming file %s to %s", file_hello, file_foo);
-    if (rename(file_hello, file_foo) != 0)
-    {
-        ESP_LOGE(TAG, "Rename failed");
-        return;
-    }
-
-    // Open renamed file for reading
-    ESP_LOGI(TAG, "Reading file %s", file_foo);
-    f = fopen(file_foo, "r");
+// Function to read from a file
+esp_err_t read_from_file(const char *filename, char *buffer, size_t buffer_size)
+{
+    FILE *f = fopen(filename, "r");
     if (f == NULL)
     {
         ESP_LOGE(TAG, "Failed to open file for reading");
-        return;
+        return ESP_FAIL;
     }
-
-    // Read a line from file
-    char line[64];
-    fgets(line, sizeof(line), f);
+    fgets(buffer, buffer_size, f);
     fclose(f);
 
     // Strip newline
-    char *pos = strchr(line, '\n');
+    char *pos = strchr(buffer, '\n');
     if (pos)
     {
         *pos = '\0';
     }
-    ESP_LOGI(TAG, "Read from file: '%s'", line);
+    ESP_LOGI(TAG, "Read from file: '%s'", buffer);
+    return ESP_OK;
+}
 
-    // All done, unmount partition and disable SPI peripheral
+// Function to delete a file
+esp_err_t delete_file(const char *filename)
+{
+    struct stat st;
+    if (stat(filename, &st) == 0)
+    { // Check if file exists
+        if (unlink(filename) != 0)
+        {
+            ESP_LOGE(TAG, "Failed to delete file %s", filename);
+            return ESP_FAIL; // Return failure if unable to delete
+        }
+    }
+    return ESP_OK; // Return success if file doesn't exist or is deleted
+}
+
+// Function to clean up resources
+void cleanup_resources(const char *mount_point, sdmmc_card_t *card, sdmmc_host_t host)
+{
     esp_vfs_fat_sdcard_unmount(mount_point, card);
     ESP_LOGI(TAG, "Card unmounted");
-
-    // deinitialize the bus after all devices are removed
     spi_bus_free(host.slot);
+}
+
+void app_main(void)
+{
+    // Initialization
+    esp_err_t err = initialize_sd_card();
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "SD card initialization failed");
+        return;
+    }
+
+    // Writing to file
+    const char *file_hello = MOUNT_POINT "/hello.txt";
+    err = write_to_file(file_hello, "Hello world!");
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to write to file %s", file_hello);
+        cleanup_resources(MOUNT_POINT, card, host);
+        return;
+    }
+
+    // Check if file_foo exists and remove it
+    const char *file_foo = MOUNT_POINT "/foo.txt";
+    err = delete_file(file_foo);
+    if (err != ESP_OK)
+    {
+        cleanup_resources(MOUNT_POINT, card, host);
+        return;
+    }
+
+    // Renaming file
+    file_foo = MOUNT_POINT "/foo.txt";
+    if (rename(file_hello, file_foo) != 0)
+    {
+        ESP_LOGE(TAG, "Rename failed with error code: %d", errno);
+        cleanup_resources(MOUNT_POINT, card, host);
+        return;
+    }
+
+    // Reading from file
+    char line[64];
+    read_from_file(file_foo, line, sizeof(line));
+
+    // Cleanup
+    cleanup_resources(MOUNT_POINT, card, host);
 }
