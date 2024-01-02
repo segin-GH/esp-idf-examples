@@ -31,7 +31,7 @@ static void init_server()
     httpd_start(&server, &serverConfig);
 
     httpd_uri_t default_url = {
-        .uri = "/",
+        .uri = "/*",
         .method = HTTP_GET,
         .handler = on_default_url};
     httpd_register_uri_handler(server, &default_url);
@@ -41,7 +41,7 @@ void app_main(void)
 {
     nvs_flash_init();
     wifi_init();
-    wifi_connect_sta("sussy_baka", "luffy@gear5", 1000);
+    wifi_connect_sta("HACKLAB_2G", "HACK@LAB", 1000);
     start_mdns_service();
     init_server();
 }
