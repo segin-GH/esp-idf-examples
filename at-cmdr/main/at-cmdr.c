@@ -63,7 +63,7 @@ void read_uart2_task(void *pvParameters)
     free(response);
     vTaskDelete(NULL);
 }
-AT+CGSOCKCONT=1,"IPV4V6","IOT.COM"
+/* AT+CGSOCKCONT=1,"IPV4V6","IOT.COM" */
 void app_main()
 {
     init_uart(); // init uart, because obviously
