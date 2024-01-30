@@ -63,7 +63,26 @@ void read_uart2_task(void *pvParameters)
     free(response);
     vTaskDelete(NULL);
 }
-/* AT+CGSOCKCONT=1,"IPV4V6","IOT.COM" */
+
+/* AT+CGACT=1,1
+
+AT+CGSOCKCONT=1,"IP","internet.ng.airtel.com" 
+AT+CGSOCKCONT=1,"IPV4V6","IOT.COM"
+
+AT+CGDCONT=1,"IP","IOT.COM"
+
+AT+HTTPPARA="URL","https://app.trakr.live/home"
+
+AT+CNMP=38
+
+AT+HTTPPARA="CID",1
+
+AT+HTTPREAD=0,10000
+
+
+AT+COPS=1,0,"IND airtel airtel",2
+ */
+
 void app_main()
 {
     init_uart(); // init uart, because obviously
