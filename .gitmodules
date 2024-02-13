@@ -1,3 +1,6 @@
 [submodule "esp-idf_cpp"]
 	path = esp-idf_cpp
 	url = https://github.com/segin-GH/esp-idf_cpp.git
+[submodule "demo_esp_littlefs"]
+	path = demo_esp_littlefs
+	url = https://github.com/wreyford/demo_esp_littlefs.git
