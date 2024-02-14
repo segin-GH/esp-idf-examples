@@ -139,6 +139,12 @@ void app_main()
     }
     ESP_ERROR_CHECK(err);
 
+    err = nvs_flash_init();
+    if (err == ESP_OK)
+    {
+        printf("NVS is already installed..\n");
+    }
+
     err = save_cjson_to_nvs();
     if (err != ESP_OK)
     {
