@@ -7,8 +7,8 @@
 
 #define TAG "twai"
 
-#define TX_PIN GPIO_NUM_4
-#define RX_PIN GPIO_NUM_5
+#define TX_PIN GPIO_NUM_5
+#define RX_PIN GPIO_NUM_4
 
 void app_main()
 {
@@ -37,13 +37,13 @@ void app_main()
         return;
     }
 
-    int id = 0;
+    int id = 16;
     for (;;)
     {
 
         // Prepare and send message
         twai_message_t message;
-        message.identifier = id++;
+        message.identifier = id;
         message.extd = 1;
         message.data_length_code = 8;
 
@@ -61,8 +61,8 @@ void app_main()
             printf("Message queued for transmission\n");
         else
             printf("Failed to queue message for transmission\n");
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        if(id == 255)
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        if (id == 255)
             id = 0;
     }
 

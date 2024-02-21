@@ -9,8 +9,8 @@
 #include "stdbool.h"
 
 /* CAN PINS */
-#define TX_PIN GPIO_NUM_4
-#define RX_PIN GPIO_NUM_5
+#define TX_PIN GPIO_NUM_5
+#define RX_PIN GPIO_NUM_4
 
 void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
 {
@@ -28,12 +28,10 @@ void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
     printf("]\n");
 }
 
-
 void twai_receive_task(void *pvParameters)
 {
     for (;;)
     {
-
         twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) != ESP_OK)
             continue;
