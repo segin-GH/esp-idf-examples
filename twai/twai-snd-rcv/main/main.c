@@ -31,16 +31,9 @@ void print_can_msg_in_cool_8t(uint8_t array[], int num_of_element)
 }
 void handle_bus_off()
 {
-    // bus-off recovery sequence, because we care
     twai_reconfigure_alerts(TWAI_ALERT_BUS_RECOVERED, NULL);
-    for (int i = 3; i > 0; i--)
-    {
-        // countdown to recovery, like it's new year's eve
-        ESP_LOGW("MAIN", "Initiate bus recovery in %d", i);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-    twai_initiate_recovery(); // fingers crossed
-    ESP_LOGI("MAIN", "Initiate bus recovery");
+    twai_initiate_recovery();
+    ESP_LOGI("MAIN", "Initiated bus recovery now we wait");
 }
 
 void handle_bus_recovery()
@@ -50,6 +43,7 @@ void handle_bus_recovery()
                                 TWAI_ALERT_ABOVE_ERR_WARN |
                                 TWAI_ALERT_ERR_PASS |
                                 TWAI_ALERT_BUS_OFF |
+                                TWAI_ALERT_BUS_ERROR |
                                 TWAI_ALERT_RX_DATA,
                             NULL);
     ESP_LOGI("MAIN", "Bus Recovered");
@@ -62,11 +56,11 @@ void handle_bus_recovery()
 
 void twai_receive_task(void *pvParameters)
 {
-    // let's set up our circus of alerts once, shall we?
     twai_reconfigure_alerts(TWAI_ALERT_BUS_RECOVERED |
                                 TWAI_ALERT_ABOVE_ERR_WARN |
                                 TWAI_ALERT_ERR_PASS |
                                 TWAI_ALERT_BUS_OFF |
+                                TWAI_ALERT_BUS_ERROR |
                                 TWAI_ALERT_RX_DATA,
                             NULL);
 
@@ -76,33 +70,37 @@ void twai_receive_task(void *pvParameters)
         // oh look, a blocking call, how quaint
         twai_read_alerts(&alerts, portMAX_DELAY);
 
-        switch (alerts)
+        // Let's not clog the log with your existential CAN bus crisis
+        if (alerts & TWAI_ALERT_ABOVE_ERR_WARN)
         {
-        case TWAI_ALERT_ABOVE_ERR_WARN:
-            // someone alert the press, we surpassed an error warning limit
-            ESP_LOGI("MAIN", "Surpassed Error Warning Limit");
-            break;
-        case TWAI_ALERT_ERR_PASS:
-            // welcome to the passive-aggressive club, error style
-            ESP_LOGI("MAIN", "Entered Error Passive state");
-            break;
-        case TWAI_ALERT_BUS_OFF:
-            // oh no, the bus left without us
-            handle_bus_off();
-            break;
-        case TWAI_ALERT_BUS_RECOVERED:
-            // bus recovery, because we're all about second chances
-            handle_bus_recovery();
-            break;
+            ESP_LOGW("MAIN", "Error Warning Limit reached, watch out!");
         }
-
+        if (alerts & TWAI_ALERT_ERR_PASS)
+        {
+            ESP_LOGW("MAIN", "In Error Passive State, get your act together!");
+        }
+        if (alerts & TWAI_ALERT_BUS_ERROR)
+        {
+            ESP_LOGW("MAIN", "Bus Error, the bus is on fire!");
+        }
+        if (alerts & TWAI_ALERT_BUS_OFF)
+        {
+            ESP_LOGW("MAIN", "Bus Off, the apocalypse is upon us");
+            handle_bus_off();
+            ESP_LOGW("MAIN", "Attempting bus recovery, hold your breath");
+        }
+        if (alerts & TWAI_ALERT_BUS_RECOVERED)
+        {
+            ESP_LOGI("MAIN", "Bus Recovered, the sun shines upon us once more");
+            handle_bus_recovery();
+        }
         // attempting to read a message, because why not?
         twai_message_t message;
         if (twai_receive(&message, pdMS_TO_TICKS(1000)) == ESP_OK)
         {
             // let's print our little message, so proud
             printf("[0x%02x]", message.identifier);
-            print_can_msg_in_cool_8t(message.data, 8); // assuming this is a thing
+            print_can_msg_in_cool_8t(message.data, 8);
         }
     }
 }
