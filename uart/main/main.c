@@ -6,7 +6,7 @@
 #define TXD_PIN 4
 #define RXD_PIN 5
 
-#define RX_BUF_SIZE 1024
+#define RX_BUFc_SIZE 1024
 
 void app_main(void)
 {

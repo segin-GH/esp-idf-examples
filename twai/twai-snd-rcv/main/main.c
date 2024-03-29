@@ -70,6 +70,17 @@ void twai_receive_task(void *pvParameters)
         // oh look, a blocking call, how quaint
         twai_read_alerts(&alerts, portMAX_DELAY);
 
+        if (alerts & TWAI_ALERT_RX_DATA)
+        {
+            twai_message_t message;
+            if (twai_receive(&message, pdMS_TO_TICKS(1000)) == ESP_OK)
+            {
+                // let's print our little message, so proud
+                printf("[0x%02x]", message.identifier);
+                print_can_msg_in_cool_8t(message.data, 8);
+            }
+        }
+
         // Let's not clog the log with your existential CAN bus crisis
         if (alerts & TWAI_ALERT_ABOVE_ERR_WARN)
         {
@@ -93,14 +104,6 @@ void twai_receive_task(void *pvParameters)
         {
             ESP_LOGI("MAIN", "Bus Recovered, the sun shines upon us once more");
             handle_bus_recovery();
-        }
-        // attempting to read a message, because why not?
-        twai_message_t message;
-        if (twai_receive(&message, pdMS_TO_TICKS(1000)) == ESP_OK)
-        {
-            // let's print our little message, so proud
-            printf("[0x%02x]", message.identifier);
-            print_can_msg_in_cool_8t(message.data, 8);
         }
     }
 }
@@ -143,9 +146,7 @@ void app_main()
 
     for (;;)
     {
-        int delay = (rand() % 3) + 1;
-        vTaskDelay(pdMS_TO_TICKS(delay * 1000));
-
+        vTaskDelay(pdMS_TO_TICKS(1000));
         // Prepare and send message
         twai_message_t message;
         message.identifier = 0x10;
@@ -163,7 +164,11 @@ void app_main()
 
         ESP_LOGI(TAG, "Sending message...");
         if (twai_transmit(&message, pdMS_TO_TICKS(1000)) == ESP_OK)
-            printf("Message queued for transmission\n");
+        {
+            printf("Message sent: ");
+            printf("[0x%02x]", message.identifier);
+            print_can_msg_in_cool_8t(message.data, 8);
+        }
         else
             printf("Failed to queue message for transmission\n");
 
