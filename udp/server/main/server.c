@@ -49,64 +49,51 @@ void udp_server_task(void *pvParameters)
 {
     char rx_buffer[128];
     char addr_str[128];
-    int addr_family = AF_INET;
-    int ip_protocol = IPPROTO_IP;
     struct sockaddr_in dest_addr;
 
     dest_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     dest_addr.sin_family = AF_INET;
     dest_addr.sin_port = htons(PORT);
-    inet_ntoa_r(dest_addr.sin_addr, addr_str, sizeof(addr_str) - 1);
 
-    int sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
+    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if (sock < 0)
     {
-        ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
+        ESP_LOGE(TAG, "Socket creation failed, what a surprise: errno %d", errno);
         vTaskDelete(NULL);
         return;
     }
-    ESP_LOGI(TAG, "Socket created");
 
-    int err = bind(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
-    if (err < 0)
+    if (bind(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0)
     {
-        ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
+        ESP_LOGE(TAG, "Bind failed, as expected: errno %d", errno);
     }
-    ESP_LOGI(TAG, "Socket bound, port %d", PORT);
+    else
+    {
+        ESP_LOGI(TAG, "Socket bound, finally something went right, port %d", PORT);
+    }
 
     while (1)
     {
-        struct sockaddr_in6 source_addr; // Large enough for both IPv4 or IPv6
+        struct sockaddr_in source_addr;
         socklen_t socklen = sizeof(source_addr);
-        int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
 
-        // Error occurred during receiving
+        int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
         if (len < 0)
         {
-            ESP_LOGE(TAG, "recvfrom failed: errno %d", errno);
+            ESP_LOGE(TAG, "recvfrom failed, shocker: errno %d", errno);
             break;
         }
-        // Data received
         else
         {
-            // Get the sender's ip address as string
-            if (source_addr.sin6_family == PF_INET)
-            {
-                inet_ntoa_r(((struct sockaddr_in *)&source_addr)->sin_addr.s_addr, addr_str, sizeof(addr_str) - 1);
-            }
-            else if (source_addr.sin6_family == PF_INET6)
-            {
-                inet6_ntoa_r(source_addr.sin6_addr, addr_str, sizeof(addr_str) - 1);
-            }
-
-            rx_buffer[len] = 0; // Null-terminate whatever we received and treat it like a string
+            inet_ntoa_r(source_addr.sin_addr, addr_str, sizeof(addr_str) - 1);
+            rx_buffer[len] = '\0';
             printf("Received %d bytes from: %s buffer: %s \n", len, addr_str, rx_buffer);
         }
     }
 
     if (sock != -1)
     {
-        ESP_LOGE(TAG, "Shutting down socket and restarting...");
+        ESP_LOGE(TAG, "Shutting down socket, like we should've done with this code long ago...");
         shutdown(sock, 0);
         close(sock);
     }

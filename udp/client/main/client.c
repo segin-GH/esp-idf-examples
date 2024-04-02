@@ -48,55 +48,46 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     }
 }
 
-static char payload[1024];
-
 void udp_client_task(void *pvParameters)
 {
-    char rx_buffer[128];
-    char addr_str[128];
-    int addr_family = AF_INET;
-    int ip_protocol = IPPROTO_IP;
+    char payload[128]; // because why not announce to the world in 128 characters?
 
-    struct sockaddr_in dest_addr;
-    dest_addr.sin_addr.s_addr = inet_addr(HOST_IP_ADDR);
-    dest_addr.sin_family = AF_INET;
-    dest_addr.sin_port = htons(PORT);
-    inet_ntoa_r(dest_addr.sin_addr, addr_str, sizeof(addr_str) - 1);
+    struct sockaddr_in dest_addr = {
+        .sin_addr.s_addr = inet_addr(HOST_IP_ADDR), // HOST_IP_ADDR, because hardcoding is fun
+        .sin_family = AF_INET,                      // AF_INET, because we're not time travelers
+        .sin_port = htons(PORT),                    // PORT, the beacon of hope
+    };
+    char addr_str[128];                                              // planning to print the internet?
+    inet_ntoa_r(dest_addr.sin_addr, addr_str, sizeof(addr_str) - 1); // because who needs safety?
 
-    int sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
+    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP); // because why use variables when you can hardcode?
     if (sock < 0)
     {
-        ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
-        vTaskDelete(NULL);
+        ESP_LOGE(TAG, "Socket creation failed, try not to cry: errno %d", errno);
+        vTaskDelete(NULL); // escape route
         return;
     }
-    ESP_LOGI(TAG, "Socket created, sending to %s:%d", HOST_IP_ADDR, PORT);
+    ESP_LOGI(TAG, "Socket created, sending to %s:%d", HOST_IP_ADDR, PORT); // because verbosity is next to godliness
 
-    while (1)
-    {
-        for (int i = 0; i < 100; i++)
+    for (int i = 0; i <= 100; i++)
+    {                                                 // because for loops are the pinnacle of programming
+        sprintf(payload, "Message from ESP32 %d", i); // sprintf, because who cares about buffer overflows?
+        if (sendto(sock, payload, strlen(payload), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0)
         {
-            sprintf(payload, "Message from ESP32 %d", i);
-            int err = sendto(sock, payload, strlen(payload), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
-            if (err < 0)
-            {
-                ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-                break;
-            }
-            ESP_LOGI(TAG, "Message sent");
-            vTaskDelay(100 / portTICK_PERIOD_MS);
+            ESP_LOGE(TAG, "Error during sending: errno %d", errno); // because error handling is an afterthought
+            break;                                                  // break, because why try again?
         }
-
-        vTaskDelete(NULL);
+        ESP_LOGI(TAG, "Message sent #%d", i); // because we need to know every single time
+        vTaskDelay(100 / portTICK_PERIOD_MS); // because we're patient
     }
 
     if (sock != -1)
     {
-        ESP_LOGE(TAG, "Shutting down socket");
-        shutdown(sock, 0);
-        close(sock);
+        ESP_LOGE(TAG, "Closing socket, because we're done here");
+        shutdown(sock, 0); // because shutdown is just a formality
+        close(sock);       // because we're tidy
     }
-    vTaskDelete(NULL);
+    vTaskDelete(NULL); // because why not delete the task twice?
 }
 
 void app_main(void)
