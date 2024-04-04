@@ -55,16 +55,19 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     }
 }
 
-/* Add a socket, either IPV4-only or IPV6 dual mode, to the IPV4
-   multicast group */
+/* Add a socket, to the IPV4 multicast group */
 static int socket_add_ipv4_multicast_group(int sock, bool assign_source_if)
 {
+    // Define the multicast group
     struct ip_mreq imreq = {0};
+
+    // Define the source interface
     struct in_addr iaddr = {0};
     int err;
 
-    // Configure source interface
     imreq.imr_interface.s_addr = IPADDR_ANY;
+
+    // Get the IP address of the source interface
     esp_netif_t *netif = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
     esp_netif_ip_info_t ip_info;
 
@@ -74,6 +77,7 @@ static int socket_add_ipv4_multicast_group(int sock, bool assign_source_if)
         return -1; // Use ESP-IDF error codes if appropriate
     }
 
+    // Convert the IP address to a struct in_addr
     inet_addr_from_ip4addr(&iaddr, &ip_info.ip);
 
     // Validate and configure multicast address
@@ -83,6 +87,7 @@ static int socket_add_ipv4_multicast_group(int sock, bool assign_source_if)
         return -1;
     }
 
+    // Check if the address is a multicast address
     if (!IP_MULTICAST(ntohl(imreq.imr_multiaddr.s_addr)))
     {
         ESP_LOGW(V4TAG, "Address '%s' is not a multicast address.", MULTICAST_IPV4_ADDR);
