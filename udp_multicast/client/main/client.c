@@ -19,7 +19,6 @@ static const char *V4TAG = "mcast-ipv4";
 
 static EventGroupHandle_t s_wifi_event_group;
 static int retry_num = 0;
-#define PORT 3333
 
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT BIT1
