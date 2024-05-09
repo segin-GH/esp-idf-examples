@@ -66,7 +66,7 @@ void read_uart2_task(void *pvParameters)
 
 /* AT+CGACT=1,1
 
-AT+CGSOCKCONT=1,"IP","internet.ng.airtel.com" 
+AT+CGSOCKCONT=1,"IP","internet.ng.airtel.com"
 AT+CGSOCKCONT=1,"IPV4V6","IOT.COM"
 
 AT+CGDCONT=1,"IP","IOT.COM"
@@ -87,7 +87,8 @@ void app_main()
 {
     init_uart(); // init uart, because obviously
 
-    xTaskCreatePinnedToCore(read_uart2_task, "read_uart2_task", 2048, NULL, 1, NULL, 1); // create a task to read from UART2
+    xTaskCreatePinnedToCore(read_uart2_task, "read_uart2_task", 2048, NULL, 1, NULL,
+                            1); // create a task to read from UART2
 
     uint8_t *data = (uint8_t *)malloc(BUF_SIZE); // malloc, like it's a free lunch
     if (!data)
@@ -101,7 +102,8 @@ void app_main()
         int len = 0; // init len, because we're optimistic
         while (1)
         {
-            int read_bytes = uart_read_bytes(UART_NUM_0, &data[len], 1, portMAX_DELAY); // reading one byte, like we've got all day
+            int read_bytes =
+                uart_read_bytes(UART_NUM_0, &data[len], 1, portMAX_DELAY); // reading one byte, like we've got all day
             if (read_bytes > 0)
             {
                 if (data[len] == '\n' || data[len] == '\r')
@@ -111,10 +113,14 @@ void app_main()
                     // Constructing the full command
                     data[len] = '\0'; // Null-terminate the input
                     char full_command[len + strlen(COMMAND_SUFFIX) + 1];
-                    int full_command_length = snprintf(full_command, sizeof(full_command), "%s%s", data, COMMAND_SUFFIX);
+                    int full_command_length =
+                        snprintf(full_command, sizeof(full_command), "%s%s", data, COMMAND_SUFFIX);
                     if (full_command_length < 0)
                     {
-                        ESP_LOGE("UART0", "Failed to construct full command; try turning it off and on again"); // handling errors, sort of
+                        ESP_LOGE(
+                            "UART0",
+                            "Failed to construct full command; try turning it off and on again"); // handling errors,
+                                                                                                  // sort of
                         return;
                     }
                     // Print the command before sending it
