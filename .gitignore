@@ -1,4 +1,5 @@
 otafromaWebsite
 protocol_examples_common
-**/build
-**/.vscode
+**/build/**
+**/.vscode/**
+**/.cache/**
