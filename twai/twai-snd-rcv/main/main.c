@@ -1,13 +1,13 @@
 
-#include <stdio.h>
-#include <string.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <freertos/queue.h>
+#include "driver/twai.h"
 #include "esp_log.h"
 #include "esp_system.h"
-#include "driver/twai.h"
 #include "stdbool.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <freertos/task.h>
+#include <stdio.h>
+#include <string.h>
 
 #define TAG "twai"
 
@@ -110,6 +110,12 @@ void twai_receive_task(void *pvParameters)
 
 void app_main()
 {
+
+    // turn on gpio 27
+    gpio_pad_select_gpio(GPIO_NUM_27);
+    gpio_set_direction(GPIO_NUM_27, GPIO_MODE_OUTPUT);
+    gpio_set_level(GPIO_NUM_27, 1);
+
     // Configure TWAI module
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TX_PIN, RX_PIN, TWAI_MODE_NORMAL);
     twai_timing_config_t t_config = TWAI_TIMING_CONFIG_125KBITS();

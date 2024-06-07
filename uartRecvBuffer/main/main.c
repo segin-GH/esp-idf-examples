@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include "esp_log.h"
 #include "driver/uart.h"
+#include "esp_log.h"
 #include "string.h"
+#include <stdio.h>
 
 #define TXD_PIN 17
 #define RXD_PIN 16

@@ -1,7 +1,7 @@
-#include <stdio.h>
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include <stdio.h>
 
 // blink a second led on LED_GPIO_2
 #define LED_GPIO 2
