@@ -1,102 +1,105 @@
-/**
- * @brief SPI MASTER
- * @author segin 
- */
-
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "freertos/queue.h"
-
-#include "esp_system.h"
-#include "esp_event.h"
 #include "driver/spi_master.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include <string.h>
 
-#include "driver/gpio.h"
-#include "esp_intr_alloc.h"
+#define PIN_NUM_MOSI 23
+#define PIN_NUM_MISO 19
+#define PIN_NUM_CLK 18
+#define PIN_NUM_CS1 32
+#define PIN_NUM_CS2 33
 
-#define GPIO_MOSI 23
-#define GPIO_MISO 19
-#define GPIO_SCLK 18
-#define GPIO_CS 27
+static const char *TAG = "spi_master";
 
-#define SENDER_HOST HSPI_HOST
+#define BUF_SIZE 64 // reduced buffer size to match the slave
 
 void app_main(void)
 {
-    gpio_pad_select_gpio(15);
-    gpio_set_direction(15, GPIO_MODE_OUTPUT);
     esp_err_t ret;
-    spi_device_handle_t handle;
 
-    //Configuration for the SPI bus
     spi_bus_config_t buscfg = {
-        .mosi_io_num = GPIO_MOSI,
-        .miso_io_num = GPIO_MISO,
-        .sclk_io_num = GPIO_SCLK,
+        .mosi_io_num = PIN_NUM_MOSI,
+        .miso_io_num = PIN_NUM_MISO,
+        .sclk_io_num = PIN_NUM_CLK,
         .quadwp_io_num = -1,
-        .quadhd_io_num = -1
-    };
-    //Configuration for the SPI device on the other side of the bus
-    spi_device_interface_config_t devcfg={
-        .command_bits = 0,
-        .address_bits = 0,
-        .dummy_bits = 0,
-        .clock_speed_hz = 5000000,
-        .duty_cycle_pos = 128,        //50% duty cycle
+        .quadhd_io_num = -1,
+        .max_transfer_sz = BUF_SIZE};
+
+    spi_device_interface_config_t devcfg1 = {
+        .clock_speed_hz = 5 * 1000 * 1000, // 5 MHz
         .mode = 0,
-        .spics_io_num = -1,
-        .cs_ena_posttrans = 3,        //Keep the CS low 3 cycles after transaction, to stop slave from missing the last bit when CS has less propagation delay than CLK
-        .queue_size = 6
+        .spics_io_num = PIN_NUM_CS1,
+        .queue_size = 3,
     };
-    int n = 0;
-    char sendbuf[130] = {0};
-    char recvbuf[130] = {0};
-    spi_transaction_t t;
-    memset(&t, 0, sizeof(t));
-    
-    //Initialize the SPI bus and add the device we want to send stuff to.
-    ret = spi_bus_initialize(SENDER_HOST, &buscfg, SPI_DMA_CH_AUTO);
-    assert(ret == ESP_OK);
-    ret = spi_bus_add_device(SENDER_HOST, &devcfg, &handle);
-    assert(ret == ESP_OK);
 
-    gpio_set_level(15,0);
+    spi_device_interface_config_t devcfg2 = {
+        .clock_speed_hz = 5 * 1000 * 1000,
+        .mode = 0,
+        .spics_io_num = PIN_NUM_CS2,
+        .queue_size = 3,
+    };
 
-    for(int i = 0; i < 100; ++i )
+    ret = spi_bus_initialize(HSPI_HOST, &buscfg, 1);
+    if (ret != ESP_OK)
     {
-        int res = snprintf(sendbuf, sizeof(sendbuf),
-                "Sender %i ;; Last time, I received: \"%s\"",n,recvbuf);
-        if (res >= sizeof(sendbuf)) 
+        ESP_LOGE(TAG, "Failed to initialize SPI bus: %s", esp_err_to_name(ret));
+        return;
+    }
+
+    spi_device_handle_t handle1;
+    ret = spi_bus_add_device(HSPI_HOST, &devcfg1, &handle1);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to add SPI device 1: %s", esp_err_to_name(ret));
+        return;
+    }
+
+    spi_device_handle_t handle2;
+    ret = spi_bus_add_device(HSPI_HOST, &devcfg2, &handle2);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to add SPI device 2: %s", esp_err_to_name(ret));
+        return;
+    }
+
+    uint8_t sendbuf1[BUF_SIZE] = "Hello, this is SPI master to slave 1.";
+    uint8_t sendbuf2[BUF_SIZE] = "Hello, this is SPI master to slave 2.";
+
+    spi_transaction_t trans1 = {
+        .length = BUF_SIZE * 8,
+        .tx_buffer = sendbuf1,
+        .rx_buffer = NULL};
+
+    spi_transaction_t trans2 = {
+        .length = BUF_SIZE * 8,
+        .tx_buffer = sendbuf2,
+        .rx_buffer = NULL};
+
+    while (1)
+    {
+        // Communicate with slave 1
+        ret = spi_device_transmit(handle1, &trans1);
+        if (ret == ESP_OK)
         {
-            printf("Data truncated\n");
+            ESP_LOGI(TAG, "Sent data to slave 1: %s", sendbuf1);
         }
-        t.length=sizeof(sendbuf)*20;
-        t.tx_buffer=sendbuf;
-        t.rx_buffer=recvbuf;
-        //Wait for slave to be ready for next byte before sending
-        ret=spi_device_transmit(handle, &t);
-        printf("ReceivedbyMaster: %s\n", recvbuf);
-    	memset(&t, 0, sizeof(t));
-        n++;
-      	vTaskDelay(500/portTICK_PERIOD_MS);
-    }
-    
-    gpio_set_level(2,1);
+        else
+        {
+            ESP_LOGE(TAG, "Failed to send SPI data to slave 1: %s", esp_err_to_name(ret));
+        }
 
-    while(true)
-    {
-        vTaskDelete(NULL);
-    }
+        // Communicate with slave 2
+        ret = spi_device_transmit(handle2, &trans2);
+        if (ret == ESP_OK)
+        {
+            ESP_LOGI(TAG, "Sent data to slave 2: %s", sendbuf2);
+        }
+        else
+        {
+            ESP_LOGE(TAG, "Failed to send SPI data to slave 2: %s", esp_err_to_name(ret));
+        }
 
-    //Never reached.
-    ret=spi_bus_remove_device(handle);
-    assert(ret==ESP_OK);
+        vTaskDelay(pdMS_TO_TICKS(1000)); // send data every second
+    }
 }
