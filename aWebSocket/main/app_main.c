@@ -1,16 +1,15 @@
-#include <stdio.h>
-#include <string.h>
-#include "wifi_connect.h"
 #include "ledtoggle.h"
 #include "pushbtn.h"
-#include <nvs_flash.h>
-#include <esp_log.h>
-#include <esp_http_server.h>
-#include <mdns.h>
-#include <stdbool.h>
-#include <driver/gpio.h>
+#include "wifi_connect.h"
 #include <cJSON.h>
-
+#include <driver/gpio.h>
+#include <esp_http_server.h>
+#include <esp_log.h>
+#include <mdns.h>
+#include <nvs_flash.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
 
 static const char *SERVER_TAG = "[SERVER]";
 static httpd_handle_t server = NULL;
@@ -18,7 +17,7 @@ static httpd_handle_t server = NULL;
 /* event handler for server */
 static esp_err_t on_default_url(httpd_req_t *req)
 {
-    ESP_LOGI(SERVER_TAG,"URL %s:", req->uri);
+    ESP_LOGI(SERVER_TAG, "URL %s:", req->uri);
     httpd_resp_sendstr(req, "<i><b> Hello this is ESP32 Server :) <b><i>");
     return ESP_OK;
 }
@@ -50,14 +49,14 @@ int client_session_id;
 static esp_err_t on_web_socket_url(httpd_req_t *req)
 {
     client_session_id = httpd_req_to_sockfd(req);
-    if(req -> method == HTTP_GET)
+    if (req->method == HTTP_GET)
         return ESP_OK;
     httpd_ws_frame_t ws_pkt;
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
     ws_pkt.payload = malloc(WS_MAX_SIZE);
     httpd_ws_recv_frame(req, &ws_pkt, WS_MAX_SIZE);
-    printf("payload: %.*s\n",ws_pkt.len, ws_pkt.payload);
+    printf("payload: %.*s\n", ws_pkt.len, ws_pkt.payload);
     free(ws_pkt.payload);
 
     char *response = "connected ok :) ";
@@ -69,27 +68,25 @@ static esp_err_t on_web_socket_url(httpd_req_t *req)
         .payload = (uint8_t *)response,
         .len = strlen(response),
     };
-   return httpd_ws_send_frame(req, &ws_response);
+    return httpd_ws_send_frame(req, &ws_response);
 }
 
 esp_err_t send_ws_message(char *msg)
 {
-    if(!client_session_id)
+    if (!client_session_id)
     {
         ESP_LOGE("<WebSocket>", "no client_session_id");
         return -1;
     }
 
-    httpd_ws_frame_t ws_message ={
+    httpd_ws_frame_t ws_message = {
         .final = true,
         .fragmented = false,
         .len = strlen(msg),
         .payload = (uint8_t *)msg,
-        .type = HTTPD_WS_TYPE_TEXT
-    };
-   return httpd_ws_send_frame_async(server, client_session_id, &ws_message);
+        .type = HTTPD_WS_TYPE_TEXT};
+    return httpd_ws_send_frame_async(server, client_session_id, &ws_message);
 }
-
 
 static void start_mdns_service()
 {
@@ -108,25 +105,21 @@ static void init_server()
     httpd_uri_t default_url = {
         .uri = "/",
         .method = HTTP_GET,
-        .handler = on_default_url
-    };
+        .handler = on_default_url};
     httpd_register_uri_handler(server, &default_url);
-    
+
     httpd_uri_t toggle_led_url = {
         .uri = "/api/toggle-led",
         .method = HTTP_POST,
-        .handler = on_toggle_led
-    };
+        .handler = on_toggle_led};
     httpd_register_uri_handler(server, &toggle_led_url);
     httpd_uri_t web_socket_url = {
         .uri = "/ws",
         .method = HTTP_GET,
         .handler = on_web_socket_url,
-        .is_websocket = true
-    };
+        .is_websocket = true};
     httpd_register_uri_handler(server, &web_socket_url);
 }
-
 
 void app_main(void)
 {
@@ -135,8 +128,6 @@ void app_main(void)
     init_btn_onboard();
     init_led_as_output(2);
     start_mdns_service();
-    wifi_connect_sta("sussy_baka","luffy@gear5",10000);
+    wifi_connect_sta("sussy_baka", "luffy@gear5", 10000);
     init_server();
 }
-
-
